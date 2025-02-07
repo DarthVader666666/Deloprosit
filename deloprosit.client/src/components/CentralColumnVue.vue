@@ -1,12 +1,12 @@
 <script></script>
 <template>
-    <div class="right-container">
-c
+    <div class="central-container">
+a
     </div>
 </template>
 
 <style scoped>
-    .right-container {
+    .central-container {
         width: 100px;
     }
 </style>

@@ -5,7 +5,7 @@ import MainVue from './components/MainVue.vue';
 </script>
 
 <template>
-  <div class="main-container">
+  <div class="app-container">
     <HeaderVue/>
     <SearchVue/>
     <MainVue/>
@@ -13,7 +13,7 @@ import MainVue from './components/MainVue.vue';
 </template>
 
 <style scoped>
-  .main-container {
+  .app-container {
     direction: flex;  
     flex-direction: column;
     min-width: 1300px;
