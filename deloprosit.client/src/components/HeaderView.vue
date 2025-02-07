@@ -28,12 +28,13 @@
         height: 4rem;
         align-content: center;
         padding-right: 1rem;        
+        box-shadow: 0 7px 15px -3px black;
     }
 
     .form-container {
         flex-direction: column;
         justify-content: start;
-        padding-left: 47rem;
+        padding-left: 54rem;
     }
 
     .anchors {

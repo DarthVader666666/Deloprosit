@@ -1,14 +1,16 @@
 <script setup>
-import HeaderVue from './components/HeaderVue.vue';
-import SearchVue from './components/SearchVue.vue';
-import MainVue from './components/MainVue.vue';
+import HeaderView from './components/HeaderView.vue';
+import SearchView from './components/SearchView.vue';
+import MainView from './components/MainView.vue';
+import FooterView from './components/FooterView.vue'
 </script>
 
 <template>
   <div class="app-container">
-    <HeaderVue/>
-    <SearchVue/>
-    <MainVue/>
+    <HeaderView/>
+    <SearchView/>
+    <MainView/>
+    <FooterView/>
   </div>
 </template>
 
@@ -16,7 +18,6 @@ import MainVue from './components/MainVue.vue';
   .app-container {
     direction: flex;  
     flex-direction: column;
-    min-width: 1300px;
-    box-shadow: 0 7px 15px -3px black;
+    min-width: 1380px;    
   }
 </style>
