@@ -16,8 +16,6 @@ import FooterView from './components/FooterView.vue'
 
 <style scoped>
   .app-container {
-    direction: flex;  
-    flex-direction: column;
-    min-width: 1380px;    
+    width:auto;
   }
 </style>

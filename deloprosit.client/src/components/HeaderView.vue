@@ -24,17 +24,20 @@
 
 <style scoped>
     .header-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: end;
+        padding-top: 1rem;
         background-image: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
         height: 4rem;
         align-content: center;
-        padding-right: 1rem;        
         box-shadow: 0 7px 15px -3px black;
     }
 
     .form-container {
+        width: 520px;
         flex-direction: column;
         justify-content: start;
-        padding-left: 54rem;
     }
 
     .anchors {
