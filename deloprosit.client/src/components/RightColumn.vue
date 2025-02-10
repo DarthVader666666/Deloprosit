@@ -6,7 +6,4 @@
 </template>
 
 <style scoped>
-    .right-container {
-        min-width:120px;
-    }
 </style>

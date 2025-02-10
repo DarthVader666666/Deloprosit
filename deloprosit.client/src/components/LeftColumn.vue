@@ -15,10 +15,6 @@
 </template>
 
 <style scoped>
-    .left-container {
-        min-width:120px;
-    }
-
     .paragraphs {        
         text-align: start;
         padding: 1rem;
