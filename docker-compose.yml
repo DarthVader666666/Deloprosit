@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  deloprosit.client:
+    build:
+      context: .
+      dockerfile: deloprosit.client/Dockerfile
+      target: prod
+      args:
+        - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+    container_name: deloprosit.client
+    depends_on:
+        - deloprosit.server
+    networks:
+      - api
+  deloprosit.server:
+    image: ${DOCKER_REGISTRY-}deloprositserver
+    build:
+      context: .
+      dockerfile: Deloprosit.Server/Dockerfile
+    networks:
+      - api
+ 
+networks:
+  api:
+    driver: bridge

@@ -20,7 +20,7 @@
     }
 
     input {
-        width: 300px;
+        width: 40%;
         margin-right: 5px;
     }
 </style>

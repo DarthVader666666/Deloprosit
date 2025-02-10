@@ -35,9 +35,9 @@
     }
 
     .form-container {
-        width: 520px;
         flex-direction: column;
         justify-content: start;
+        padding-right: 15px;
     }
 
     .anchors {

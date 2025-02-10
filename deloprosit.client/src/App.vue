@@ -6,16 +6,11 @@ import FooterView from './components/FooterView.vue'
 </script>
 
 <template>
-  <div class="app-container">
-    <HeaderView/>
-    <SearchView/>
-    <MainView/>
-    <FooterView/>
-  </div>
+  <HeaderView/>
+  <SearchView/>
+  <MainView/>
+  <FooterView/>
 </template>
 
 <style scoped>
-  .app-container {
-    width:auto;
-  }
 </style>

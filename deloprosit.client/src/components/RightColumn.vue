@@ -1,12 +1,12 @@
 <script></script>
 <template>
     <div class="right-container">
-
+        SDFSDF
     </div>
 </template>
 
 <style scoped>
     .right-container {
-        width: 20%;
+        min-width:120px;
     }
 </style>

@@ -16,7 +16,7 @@
 
 <style scoped>
     .left-container {
-        width: 20%;
+        min-width:120px;
     }
 
     .paragraphs {        
