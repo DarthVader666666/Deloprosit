@@ -11,3 +11,9 @@ body {
 #app {
   width: 80%;
 }
+
+@media(max-width: 665px) {
+  #app {
+    width: 100%;
+  }
+}

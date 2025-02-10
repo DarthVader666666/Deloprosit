@@ -35,6 +35,7 @@
     }
 
     .form-container {
+        display: flex;
         flex-direction: column;
         justify-content: start;
         padding-right: 15px;
@@ -61,5 +62,11 @@
 
     label {
         font-weight: bold;
-    }    
+    }
+
+    @media(max-width: 665px) {
+        #app {
+          width: 100%;
+        }
+    }
 </style>
