@@ -17,7 +17,6 @@ import CentralColumnView from './CentralColumn.vue'
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        max-height: 1300px;        
         background-color: white;
         box-shadow: 0 7px 15px -3px black;
     }
