@@ -88,7 +88,4 @@ async Task MigrateSeedDatabase(IServiceScope? scope, bool jsonFileCreated)
 
 async Task SeedJsonDb(DataStore dataStore, IConfiguration configuration)
 {
-    var adminEmail = configuration["AdminEmail"] ?? throw new ArgumentNullException("AdminEmail is null.");
-    var adminPassword = configuration["AdminPassword"] ?? throw new ArgumentNullException("AdminPassword is null.");
-
 }
