@@ -43,7 +43,7 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '^/home': {
+            '^/deloprosit': {
                 target,
                 secure: false
             }

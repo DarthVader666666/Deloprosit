@@ -1,25 +1,44 @@
-<script>
+<script setup>
+import axios from 'axios';
+import { ref } from 'vue';
+
+const loginRequestForm = ref({
+    nicknameOrEmail: null,
+    password: null
+});
+
+const handleLogin = () => {
+    axios.post('deloprosit/authorization/login/', JSON.stringify(loginRequestForm), 
+        {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
+}
 </script>
+
 <template>
     <div class="header-container">
         <div class="form-container">
-            <form class="login-inputs" action="deloprosit/user/login/" method="post">
+            <form class="login-inputs" @submit="handleLogin">
                 <div>
                     <label>Логин: </label>
-                    <input type="text">
+                    <input v-model="loginRequestForm.nicknameOrEmail" name="NicknameOrEmail" type="text">
                 </div>
                 <div>
                     <label>Пароль: </label>
-                    <input type="password">
+                    <input v-model="password" name="Password" type="password">
                 </div>
                 <button type="submit">Войти</button>
             </form>
             <div class="login-anchors">
-                <a href="deloprosit/user/register/">Регистрация</a> | <a href="deloprosit/user/password/">Забыл(а) пароль</a> |
+                <a>Регистрация</a> | <a>Забыл(а) пароль</a> |
                 <label for="remember">
                     <input class="checkbox" type="checkbox" id="remember">Запомнить
                 </label>
-            </div>            
+            </div>
         </div>
     </div>
 </template>

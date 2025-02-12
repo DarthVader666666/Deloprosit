@@ -13,7 +13,7 @@ namespace Deloprosit.Server.Controllers
 {
     [EnableCors("AllowClient")]
     [ApiController]
-    [Route("[controller]/")]
+    [Route("[controller]")]
     public class AuthorizationController : ControllerBase
     {
         private readonly IRepository<User> _userRepository;
@@ -43,7 +43,7 @@ namespace Deloprosit.Server.Controllers
 
             if (user == null)
             {
-                NotFound(new { errorText = "User does not exist." });
+                return NotFound(new { errorText = "User does not exist." });
             }
 
             var claimsIdentity = await GetIdentityAsync(user);
