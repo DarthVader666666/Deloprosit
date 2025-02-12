@@ -1,4 +1,8 @@
+using Deloprosit.Bll.Interfaces;
+using Deloprosit.Bll.Services;
 using Deloprosit.Data;
+using Deloprosit.Data.Entities;
+using Deloprosit.Server.Configurations;
 
 using JsonFlatFileDataStore;
 
@@ -16,16 +20,19 @@ builder.Services.AddLogging(logs =>
 
 builder.Services.AddControllers();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => options.LoginPath = "/login");
 builder.Services.AddAuthorization();
 
-builder.Services.AddCors(options => options.AddPolicy("AllowAll",
+builder.Services.AddCors(options => options.AddPolicy("AllowClient",
     new CorsPolicyBuilder().AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build()));
 
 if (builder.Environment.IsDevelopment())
 {
     var connectionString = builder.Configuration.GetConnectionString("DeloprositDb");
     builder.Services.AddDbContext<DeloprositDbContext>(options => options.UseSqlServer(connectionString));
+    builder.Services.AddScoped<IRepository<User>, UserRepository>();
+    builder.Services.AddScoped<IRepository<Role>, RoleRepository>();
 }
 else
 {
@@ -49,6 +56,10 @@ else
     builder.Services.AddScoped(serviceProvider => new DataStore(path, useLowerCamelCase: false));
 }
 
+builder.Services.AddScoped<CryptoService>();
+builder.Services.AddScoped<EmailSender>();
+builder.Services.ConfigureAutomapper();
+
 var provider = builder?.Services?.BuildServiceProvider();
 using var scope = provider?.CreateScope();
 await MigrateSeedDatabase(scope, jsonFileCreated);
@@ -62,7 +73,7 @@ app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
-app.UseCors();
+app.UseCors("AllowClient");
 app.UseAuthentication();
 app.UseAuthorization();
 

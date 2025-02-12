@@ -9,7 +9,9 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "deloprosit.client", "delopr
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{6F167688-5496-49F3-A1E5-0D16F78E66E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deloprosit.Data", "Deloprosit.Data\Deloprosit.Data.csproj", "{178D6FB6-C46B-411A-9D16-F17FC5A4E89D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deloprosit.Data", "Deloprosit.Data\Deloprosit.Data.csproj", "{178D6FB6-C46B-411A-9D16-F17FC5A4E89D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deloprosit.Bll", "Deloprosit.Bll\Deloprosit.Bll.csproj", "{071C709B-C79F-4D54-88AF-251CC3D122D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{178D6FB6-C46B-411A-9D16-F17FC5A4E89D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{178D6FB6-C46B-411A-9D16-F17FC5A4E89D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{178D6FB6-C46B-411A-9D16-F17FC5A4E89D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{071C709B-C79F-4D54-88AF-251CC3D122D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{071C709B-C79F-4D54-88AF-251CC3D122D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{071C709B-C79F-4D54-88AF-251CC3D122D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{071C709B-C79F-4D54-88AF-251CC3D122D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
