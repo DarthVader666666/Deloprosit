@@ -62,9 +62,9 @@ namespace Deloprosit.Server.Controllers
 
             var claimsPrinciple = new ClaimsPrincipal(claimsIdentity);            
 
-            await HttpContext.SignInAsync("Cookies", claimsPrinciple);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrinciple);
                 
-            return NoContent();
+            return Ok();
         }
 
         [HttpGet]

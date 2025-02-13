@@ -8,10 +8,16 @@ const loginRequestForm = ref({
 });
 
 const handleLogin = () => {
+    axios.defaults.withCredentials = true;
     axios.post('https://localhost:7250/authorization/login/', JSON.stringify(loginRequestForm.value), {
         headers: {
             'Content-Type': 'application/json'    
-        }});
+        }}).then(response => {
+            if(response.status === 200) {
+                loginRequestForm.value.nicknameOrEmail = null;
+                loginRequestForm.value.password = null;
+            }
+        });        
 }
 
 const handleLala = () => {
