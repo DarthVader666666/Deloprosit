@@ -28,14 +28,14 @@ namespace Deloprosit.Bll.Services
             throw new NotImplementedException();
         }
 
-        public Task<User?> FindByAsync(string? parameter)
+        public Task<User?> FindByAsync(object? parameter)
         {
-            if (parameter == null)
+            if (parameter == null || parameter is not string)
             {
                 return Task.FromResult<User?>(null);
             }
 
-            return Task.FromResult(_dbContext.Users.FirstOrDefault(user => user.Email == parameter || user.Nickname == parameter));
+            return Task.FromResult(_dbContext.Users.FirstOrDefault(user => parameter as string == user.Nickname));
         }
 
         public Task<User?> GetAsync(int? id)

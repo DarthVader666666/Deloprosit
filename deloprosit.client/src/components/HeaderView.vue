@@ -8,35 +8,36 @@ const loginRequestForm = ref({
 });
 
 const handleLogin = () => {
-    axios.post('deloprosit/authorization/login/', JSON.stringify(loginRequestForm), 
-        {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'multipart/form-data'
-            }
-        }
-    );
+    axios.post('https://localhost:7250/authorization/login/', JSON.stringify(loginRequestForm.value), {
+        headers: {
+            'Content-Type': 'application/json'    
+        }});
 }
+
+const handleLala = () => {
+    axios.get('https://localhost:7250/authorization/lala/');
+}
+
 </script>
 
 <template>
     <div class="header-container">
         <div class="form-container">
-            <form class="login-inputs" @submit="handleLogin">
+            <div class="login-inputs">
                 <div>
                     <label>Логин: </label>
-                    <input v-model="loginRequestForm.nicknameOrEmail" name="NicknameOrEmail" type="text">
+                    <input v-model="loginRequestForm.nicknameOrEmail" type="text" required @keydown.enter.prevent="handleLogin">
                 </div>
                 <div>
                     <label>Пароль: </label>
-                    <input v-model="password" name="Password" type="password">
+                    <input v-model="loginRequestForm.password" type="password" required @keydown.enter.prevent="handleLogin">
                 </div>
-                <button type="submit">Войти</button>
-            </form>
+                <button @click.prevent="handleLogin">Войти</button>
+            </div>
             <div class="login-anchors">
-                <a>Регистрация</a> | <a>Забыл(а) пароль</a> |
+                <a href="#" @click.prevent="handleLala">Регистрация</a> | <a>Забыл(а) пароль</a> |
                 <label for="remember">
-                    <input class="checkbox" type="checkbox" id="remember">Запомнить
+                    <input type="checkbox" id="remember">Запомнить
                 </label>
             </div>
         </div>
@@ -53,6 +54,7 @@ const handleLogin = () => {
         background-image: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
         align-content: center;
         box-shadow: 0 7px 15px -3px black;
+        border-radius: 0 0 5px 5px;
     }
 
     .form-container {

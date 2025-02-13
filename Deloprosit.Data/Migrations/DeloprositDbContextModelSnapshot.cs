@@ -121,7 +121,7 @@ namespace Deloprosit.Data.Migrations
                         {
                             UserId = 2,
                             Nickname = "vader",
-                            Password = "Haemorr_8421"
+                            Password = "efavXKTzRTFnR7w69A7OJA=="
                         });
                 });
 
@@ -134,6 +134,8 @@ namespace Deloprosit.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles");
 
@@ -148,6 +150,35 @@ namespace Deloprosit.Data.Migrations
                             UserId = 2,
                             RoleId = 2
                         });
+                });
+
+            modelBuilder.Entity("Deloprosit.Data.Entities.UserRole", b =>
+                {
+                    b.HasOne("Deloprosit.Data.Entities.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Deloprosit.Data.Entities.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Deloprosit.Data.Entities.Role", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("Deloprosit.Data.Entities.User", b =>
+                {
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

@@ -27,18 +27,6 @@ namespace Deloprosit.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRoles",
-                columns: table => new
-                {
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -61,6 +49,30 @@ namespace Deloprosit.Data.Migrations
                     table.PrimaryKey("PK_Users", x => x.UserId);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserRoles",
+                columns: table => new
+                {
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "RoleId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "RoleId", "RoleName" },
@@ -72,6 +84,15 @@ namespace Deloprosit.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "AdditionalComments", "Avatar", "BirthDate", "City", "Country", "Email", "FirstName", "LastName", "Nickname", "Password", "Title" },
+                values: new object[,]
+                {
+                    { 1, null, null, null, null, null, null, null, null, null, "", null },
+                    { 2, null, null, null, null, null, null, null, null, "vader", "efavXKTzRTFnR7w69A7OJA==", null }
+                });
+
+            migrationBuilder.InsertData(
                 table: "UserRoles",
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[,]
@@ -80,14 +101,10 @@ namespace Deloprosit.Data.Migrations
                     { 2, 2 }
                 });
 
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "UserId", "AdditionalComments", "Avatar", "BirthDate", "City", "Country", "Email", "FirstName", "LastName", "Nickname", "Password", "Title" },
-                values: new object[,]
-                {
-                    { 1, null, null, null, null, null, null, null, null, null, "", null },
-                    { 2, null, null, null, null, null, null, null, null, "vader", "Haemorr_8421", null }
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_RoleId",
+                table: "UserRoles",
+                column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -108,10 +125,10 @@ namespace Deloprosit.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "UserRoles");
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Users");

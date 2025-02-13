@@ -1,14 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Deloprosit.Server.Controllers
 {
-    [Route("[controller]")]
+    [EnableCors("AllowClient")]
     [ApiController]
+    [Route("[controller]")]
     public class HomeController : ControllerBase
     {
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        [Route("home/index")]
+        public async Task<IActionResult> Index([FromQuery] string returnUrl)
         {
-            return Ok();
+            return Ok(returnUrl);
         }
     }
 }

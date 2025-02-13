@@ -1,10 +1,20 @@
 ﻿using Deloprosit.Bll.Interfaces;
+using Deloprosit.Data;
 using Deloprosit.Data.Entities;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Deloprosit.Bll.Services
 {
     public class RoleRepository : IRepository<Role>
     {
+        public readonly DeloprositDbContext _dbContext;
+
+        public RoleRepository(DeloprositDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
         public Task<Role?> CreateAsync(Role item)
         {
             throw new NotImplementedException();
@@ -20,7 +30,7 @@ namespace Deloprosit.Bll.Services
             throw new NotImplementedException();
         }
 
-        public Task<Role?> FindByAsync(string? parameter)
+        public Task<Role?> FindByAsync(object? parameter)
         {
             throw new NotImplementedException();
         }
@@ -32,7 +42,8 @@ namespace Deloprosit.Bll.Services
 
         public Task<IEnumerable<Role?>> GetListAsync(int? id)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IEnumerable<Role?>>(_dbContext.UserRoles.Where(x => x.UserId == id)
+                .SelectMany(userRole => _dbContext.Roles.Where(role => userRole.RoleId == role.RoleId)));
         }
 
         public Task<Role?> UpdateAsync(Role item)

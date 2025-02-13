@@ -65,7 +65,10 @@ namespace Deloprosit.Data
             });
             modelBuilder.Entity<UserRole>(userRole =>
             {
-                userRole.HasKey(x => new { x.UserId, x.RoleId });
+                userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
+                userRole.HasOne(ur => ur.User).WithMany(u => u.UserRoles).HasForeignKey(ur => ur.UserId);
+                userRole.HasOne(ur => ur.Role).WithMany(r => r.UserRoles).HasForeignKey(ur => ur.RoleId);
+
                 userRole.HasData(
                     new UserRole
                     {

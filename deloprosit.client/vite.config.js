@@ -44,14 +44,14 @@ export default defineConfig({
     server: {
         proxy: {
             '^/deloprosit': {
-                target,
+                target: 'https://localhost:7250',
                 secure: false
             }
         },
         port: 5173,
-        https: {
-            key: fs.readFileSync(keyFilePath),
-            cert: fs.readFileSync(certFilePath),
-        }
+        //https: {
+        //    key: fs.readFileSync(keyFilePath),
+        //    cert: fs.readFileSync(certFilePath),
+        //}
     }
 })

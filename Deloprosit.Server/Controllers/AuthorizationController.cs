@@ -8,6 +8,8 @@ using Deloprosit.Bll.Services;
 using Azure.Communication.Email;
 using Deloprosit.Server.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Deloprosit.Server.Controllers
 {
@@ -46,25 +48,37 @@ namespace Deloprosit.Server.Controllers
                 return NotFound(new { errorText = "User does not exist." });
             }
 
-            var claimsIdentity = await GetIdentityAsync(user);
-
-            if (claimsIdentity == null)
+            if (_cryptoService.Encrypt(userLogIn.Password) != user.Password)
             {
-                return Problem(statusCode: 500, title: "Internal Server Error", detail: "Couldn't get user claims Identity.");
+                return BadRequest(new { errorText = "Wrong password." });
             }
 
-            var claimsPrinciple = new ClaimsPrincipal(claimsIdentity);
+            var claimsIdentity = await GetIdentityAsync(user);
 
             if (claimsIdentity == null)
             {
                 return BadRequest(new { errorText = "Invalid email or password." });
             }
 
-            await HttpContext.SignInAsync(claimsPrinciple);
-                
-            var response = new LogInResponseModel();
+            var claimsPrinciple = new ClaimsPrincipal(claimsIdentity);            
 
-            return Ok(response);
+            await HttpContext.SignInAsync("Cookies", claimsPrinciple);
+                
+            return NoContent();
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("[action]")]
+        public IActionResult Lala()
+        {
+            return Ok();
+        }
+
+        [HttpGet]
+        public IActionResult Forbidden()
+        {
+            return Unauthorized();
         }
 
         [HttpPost]
@@ -132,7 +146,7 @@ namespace Deloprosit.Server.Controllers
 
         private async Task<ClaimsIdentity?> GetIdentityAsync(User? user)
         {
-            if (user != null && user.Password == _cryptoService.Encrypt(user.Password))
+            if (user != null)
             {
                 var roles = await _roleRepository.GetListAsync(user.UserId);
                 var roleType = string.Join(", ", roles.Select(x => x?.RoleName));

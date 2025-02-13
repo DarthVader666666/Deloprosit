@@ -17,6 +17,7 @@
         margin-top: 1rem;
         margin-bottom: 1rem;
         box-shadow: 0 7px 15px -3px black;
+        border-radius: 5px;
     }
 
     input {

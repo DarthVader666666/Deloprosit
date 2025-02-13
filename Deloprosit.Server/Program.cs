@@ -20,12 +20,31 @@ builder.Services.AddLogging(logs =>
 
 builder.Services.AddControllers();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => options.LoginPath = "/login");
+builder.Services.AddAuthentication(options => options.DefaultScheme = "Cookies")
+    .AddCookie("Cookies", options => {
+        options.Cookie.Name = "Deloprosit_Cookies";
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = redirectContext =>
+            {
+                redirectContext.HttpContext.Response.StatusCode = 401;
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Name = "Deloprosit_Cookies";
+    options.Cookie.Path = "/";
+    options.Cookie.Domain = "localhost";
+});
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options => options.AddPolicy("AllowClient",
-    new CorsPolicyBuilder().AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build()));
+    new CorsPolicyBuilder().WithOrigins("http://localhost:5173", "https://localhost:5173").AllowAnyHeader().AllowAnyMethod().Build()));
 
 if (builder.Environment.IsDevelopment())
 {
@@ -74,6 +93,11 @@ app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowClient");
+app.UseCookiePolicy(
+    new CookiePolicyOptions
+    {
+        Secure = CookieSecurePolicy.Always
+    });
 app.UseAuthentication();
 app.UseAuthorization();
 
