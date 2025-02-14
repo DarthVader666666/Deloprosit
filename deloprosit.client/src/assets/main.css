@@ -33,20 +33,22 @@ body {
   gap: 10px;
 }
 
-@media(max-width: 700px) {
+@media (max-width: 1500px) {
   #app {
     width: 100%;
   }
+}
 
+@media(max-width: 800px) {
   .central-container {
     display: none;
   }
 
-  .right-container {
+  .left-container {
     width: 50%;
   }
 
-  .left-container {
+  .right-container {
     width: 50%;
   }
 

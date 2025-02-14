@@ -37,8 +37,10 @@ const handleLogin = () => {
         });
 }
 
-const handleLogout = () => {    
-    axios.post(`${baseUrl.value}/authorization/logout/`, {
+const handleLogout = () => {
+    if(window.confirm('Вы уверены, что хотите выйти?'))
+    {
+        axios.post(`${baseUrl.value}/authorization/logout/`, {
         headers: {
             'Content-Type': 'application/json'
         }}).then(response => {
@@ -46,6 +48,7 @@ const handleLogout = () => {
                 nickname.value = null;
             }
         });
+    }    
 }
 
 </script>
@@ -53,7 +56,7 @@ const handleLogout = () => {
 <template>
     <div class="header-container">
         <div v-if="errorText">{{ errorText }}</div>
-        <div class="nickname" v-if="nickname">Добро пожаловать, <span>{{ nickname }}</span>!
+        <div class="nickname" v-if="nickname">Добро пожаловать, <span>{{ nickname }}!</span>
             <button @click="handleLogout">Выйти</button>
         </div>
         <div v-else class="form-container">
@@ -98,6 +101,7 @@ const handleLogout = () => {
 
     .nickname span {
       font-weight: bold;
+      padding-right: 15px;
     }
 
     .header-container {
