@@ -8,7 +8,6 @@ using Deloprosit.Bll.Services;
 using Azure.Communication.Email;
 using Deloprosit.Server.Models;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Deloprosit.Server.Controllers
@@ -24,6 +23,7 @@ namespace Deloprosit.Server.Controllers
         private readonly IConfiguration _configuration;
         private readonly CryptoService _cryptoService;
         private readonly EmailSender _emailSender;
+        const char rolesSeperator = ',';
 
         public AuthorizationController(
             IRepository<User> userRepository, IRepository<Role> roleRepository, IMapper mapper,
@@ -57,28 +57,29 @@ namespace Deloprosit.Server.Controllers
 
             if (claimsIdentity == null)
             {
-                return BadRequest(new { errorText = "Invalid email or password." });
+                return BadRequest(new { errorText = "Couldn't get user identity." });
             }
 
             var claimsPrinciple = new ClaimsPrincipal(claimsIdentity);            
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrinciple);
-                
-            return Ok();
+
+            return Ok(new { nickname = user.Nickname, roles = claimsIdentity.RoleClaimType.Split(rolesSeperator) });
         }
 
-        [HttpGet]
-        [Authorize]
+        [HttpPost]
         [Route("[action]")]
-        public IActionResult Lala()
+        public async Task<IActionResult> LogOut()
         {
-            return Ok();
-        }
-
-        [HttpGet]
-        public IActionResult Forbidden()
-        {
-            return Unauthorized();
+            try
+            {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                return Ok();
+            }
+            catch (Exception ex) 
+            {
+                return Problem($"Logout failed. {ex.Message}", statusCode: 500);
+            }
         }
 
         [HttpPost]
@@ -149,7 +150,7 @@ namespace Deloprosit.Server.Controllers
             if (user != null)
             {
                 var roles = await _roleRepository.GetListAsync(user.UserId);
-                var roleType = string.Join(", ", roles.Select(x => x?.RoleName));
+                var roleType = string.Join(rolesSeperator, roles.Select(x => x?.RoleName));
 
                 var claims = new List<Claim>
                     {

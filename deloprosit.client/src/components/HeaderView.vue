@@ -1,47 +1,75 @@
 <script setup>
 import axios from 'axios';
 import { ref } from 'vue';
+import { onMounted } from 'vue';
 
 const loginRequestForm = ref({
     nicknameOrEmail: null,
     password: null
 });
 
+const nickname = ref(null);
+const errorText = ref(null);
+const baseUrl = ref(null); 
+
+onMounted(() => {
+    axios.defaults.withCredentials = true;
+    baseUrl.value = import.meta.env.VITE_API_SERVER_URL;
+})
+
 const handleLogin = () => {
     axios.defaults.withCredentials = true;
-    axios.post('https://localhost:7250/authorization/login/', JSON.stringify(loginRequestForm.value), {
+    axios.post(`${baseUrl.value}/authorization/login/`, JSON.stringify(loginRequestForm.value), {
         headers: {
-            'Content-Type': 'application/json'    
+            'Content-Type': 'application/json'
         }}).then(response => {
             if(response.status === 200) {
                 loginRequestForm.value.nicknameOrEmail = null;
                 loginRequestForm.value.password = null;
+
+                nickname.value = response.data.nickname;
             }
-        });        
+
+            if(response.status === 404 || response.status === 404) {
+                errorText.value = response.data.errorText;
+                console.log(response.data.errorText)
+            }
+        });
 }
 
-const handleLala = () => {
-    axios.get('https://localhost:7250/authorization/lala/');
+const handleLogout = () => {    
+    axios.post(`${baseUrl.value}/authorization/logout/`, {
+        headers: {
+            'Content-Type': 'application/json'
+        }}).then(response => {
+            if(response.status === 200) {
+                nickname.value = null;
+            }
+        });
 }
 
 </script>
 
 <template>
     <div class="header-container">
-        <div class="form-container">
-            <div class="login-inputs">
+        <div v-if="errorText">{{ errorText }}</div>
+        <div class="nickname" v-if="nickname">Добро пожаловать, <span>{{ nickname }}</span>!
+            <button @click="handleLogout">Выйти</button>
+        </div>
+        <div v-else class="form-container">
+            <div class="login-inputs" @keydown.enter.prevent="handleLogin">
                 <div>
                     <label>Логин: </label>
-                    <input v-model="loginRequestForm.nicknameOrEmail" type="text" required @keydown.enter.prevent="handleLogin">
+                    <input v-model="loginRequestForm.nicknameOrEmail" type="text" placeholder="Почта или никнэйм" required>
                 </div>
                 <div>
                     <label>Пароль: </label>
-                    <input v-model="loginRequestForm.password" type="password" required @keydown.enter.prevent="handleLogin">
+                    <input v-model="loginRequestForm.password" type="password" placeholder="Пароль" required>
                 </div>
                 <button @click.prevent="handleLogin">Войти</button>
             </div>
             <div class="login-anchors">
-                <a href="#" @click.prevent="handleLala">Регистрация</a> | <a>Забыл(а) пароль</a> |
+                <a href="#">Регистрация</a> | <a>Забыл(а) пароль</a> |
                 <label for="remember">
                     <input type="checkbox" id="remember">Запомнить
                 </label>
@@ -51,18 +79,6 @@ const handleLala = () => {
 </template>
 
 <style scoped>
-    .header-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: end;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-        background-image: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
-        align-content: center;
-        box-shadow: 0 7px 15px -3px black;
-        border-radius: 0 0 5px 5px;
-    }
-
     .form-container {
         display: flex;
         flex-direction: column;
@@ -73,6 +89,27 @@ const handleLala = () => {
     .login-anchors {
         align-content: center;
         padding-top: 5px;
+    }
+
+    .nickname {
+      font-size: large;
+      padding-right: 15px;
+    }
+
+    .nickname span {
+      font-weight: bold;
+    }
+
+    .header-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: end;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      background-image: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
+      align-content: center;
+      box-shadow: 0 7px 15px -3px black;
+      border-radius: 0 0 5px 5px;
     }
 
     a {
