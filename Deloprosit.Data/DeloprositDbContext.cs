@@ -29,8 +29,12 @@ namespace Deloprosit.Data
             modelBuilder.Entity<User>(user =>
             {
                 user.HasKey(x => x.UserId);
-                user.HasOne(x => x.Account).WithOne(x => x.User).HasForeignKey("Account");
-                user.Property(x => x.FirstName).HasMaxLength(maxNameLength).IsRequired();
+                user.HasIndex(x => x.Email).IsUnique();
+                user.HasIndex(x => x.Nickname).IsUnique();
+                user.Property(x => x.Email).HasMaxLength(maxNameLength).IsRequired();
+                user.Property(x => x.Nickname).HasMaxLength(maxNameLength).IsRequired();
+                user.Property(x => x.Password).HasMaxLength(maxNameLength).IsRequired();
+                user.Property(x => x.FirstName).HasMaxLength(maxNameLength);
                 user.Property(x => x.LastName).HasMaxLength(maxNameLength);
                 user.Property(x => x.UserTitle).HasMaxLength(maxNameLength);
                 user.Property(x => x.Country).HasMaxLength(maxNameLength);
@@ -41,36 +45,13 @@ namespace Deloprosit.Data
                     new User
                     {
                         UserId = 1,
-                        AccountId = 1,
-                        FirstName = "Александр"
-                    },
-                    new User
-                    {
-                        UserId = 2,
-                        AccountId = 2,
-                        FirstName = "Вадим"
-                    });
-            });
-            modelBuilder.Entity<Account>(account =>
-            {
-                account.HasKey(x => x.AccountId);
-                account.HasOne(x => x.User).WithOne(x => x.Account).HasForeignKey("User");
-                account.HasIndex(x => x.Email).IsUnique();
-                account.HasIndex(x => x.Nickname).IsUnique();
-                account.Property(x => x.Email).HasMaxLength(maxNameLength).IsRequired();
-                account.Property(x => x.Nickname).HasMaxLength(maxNameLength).IsRequired();
-                account.Property(x => x.Password).HasMaxLength(maxNameLength).IsRequired();
-                account.HasData(
-                    new Account
-                    {
-                        AccountId = 1,
                         Password = _configuration["OwnerPassword"],
                         Nickname = "owner",
                         Email = "owner@owner.com"
                     },
-                    new Account
+                    new User
                     {
-                        AccountId = 2,
+                        UserId = 2,
                         Password = _configuration["AdminPassword"],
                         Nickname = "admin",
                         Email = "admin@admin.com"
@@ -98,20 +79,20 @@ namespace Deloprosit.Data
                         RoleName = nameof(UserRoleType.User)
                     });
             });
-            modelBuilder.Entity<AccountRole>(userRole =>
+            modelBuilder.Entity<UserRole>(userRole =>
             {
-                userRole.HasKey(ur => new { ur.AccountId, ur.RoleId });
-                userRole.HasOne(ur => ur.Account).WithMany(u => u.AccountRoles).HasForeignKey(ur => ur.AccountId);
+                userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
+                userRole.HasOne(ur => ur.User).WithMany(u => u.UserRoles).HasForeignKey(ur => ur.UserId);
                 userRole.HasOne(ur => ur.Role).WithMany(r => r.UserRoles).HasForeignKey(ur => ur.RoleId);
                 userRole.HasData(
-                    new AccountRole
+                    new UserRole
                     {
-                        AccountId = 1,
+                        UserId = 1,
                         RoleId = (int)UserRoleType.Owner
                     },
-                    new AccountRole
+                    new UserRole
                     {
-                        AccountId = 2,
+                        UserId = 2,
                         RoleId = (int)UserRoleType.Admin
                     });
             });
@@ -128,6 +109,7 @@ namespace Deloprosit.Data
             {
                 theme.HasKey(x => x.ThemeId);
                 theme.Property(x => x.Description).HasMaxLength(maxInfoLength).IsRequired();
+                theme.Property(x => x.DateCreated).IsRequired();
                 theme.HasOne(x => x.Chapter).WithMany(x => x.Themes).HasForeignKey(x => x.ChapterId);
                 theme.HasOne(x => x.User).WithMany(x => x.Themes).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
             });
@@ -135,15 +117,15 @@ namespace Deloprosit.Data
             {
                 comment.HasKey(x => x.CommentId);
                 comment.Property(x => x.Text).HasMaxLength(maxInfoLength).IsRequired();
+                comment.Property(x => x.DateCreated).IsRequired();
                 comment.HasOne(x => x.Theme).WithMany(x => x.Comments).HasForeignKey(x => x.ThemeId);
                 comment.HasOne(x => x.User).WithMany(x => x.Comments).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
             });
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<Account> Accounts { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<AccountRole> AccountRoles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Chapter> Chapters { get; set; }
         public DbSet<Theme> Themes { get; set; }
         public DbSet<Comment> Comments { get; set; }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Deloprosit.Data.Migrations
 {
     [DbContext(typeof(DeloprositDbContext))]
-    [Migration("20250215130755_Initial")]
+    [Migration("20250215211413_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -24,88 +24,6 @@ namespace Deloprosit.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Deloprosit.Data.Entities.Account", b =>
-                {
-                    b.Property<int>("AccountId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AccountId"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Nickname")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AccountId");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.HasIndex("Nickname")
-                        .IsUnique();
-
-                    b.ToTable("Accounts");
-
-                    b.HasData(
-                        new
-                        {
-                            AccountId = 1,
-                            Email = "owner@owner.com",
-                            Nickname = "owner",
-                            Password = "",
-                            UserId = 0
-                        },
-                        new
-                        {
-                            AccountId = 2,
-                            Email = "admin@admin.com",
-                            Nickname = "admin",
-                            Password = "efavXKTzRTFnR7w69A7OJA==",
-                            UserId = 0
-                        });
-                });
-
-            modelBuilder.Entity("Deloprosit.Data.Entities.AccountRole", b =>
-                {
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AccountId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AccountRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            AccountId = 1,
-                            RoleId = 1
-                        },
-                        new
-                        {
-                            AccountId = 2,
-                            RoleId = 2
-                        });
-                });
 
             modelBuilder.Entity("Deloprosit.Data.Entities.Chapter", b =>
                 {
@@ -120,8 +38,10 @@ namespace Deloprosit.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<DateTime?>("DateCreated")
-                        .IsRequired()
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateDeleted")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
@@ -142,7 +62,10 @@ namespace Deloprosit.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentId"));
 
-                    b.Property<DateTime?>("DateCreated")
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateDeleted")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateEdited")
@@ -217,6 +140,12 @@ namespace Deloprosit.Data.Migrations
                     b.Property<int>("ChapterId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateDeleted")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -242,9 +171,6 @@ namespace Deloprosit.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
                     b.Property<byte[]>("Avatar")
                         .HasMaxLength(8000)
                         .HasColumnType("varbinary(8000)");
@@ -260,8 +186,12 @@ namespace Deloprosit.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("Email")
                         .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FirstName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -273,13 +203,26 @@ namespace Deloprosit.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Nickname")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("UserTitle")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("AccountId")
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Nickname")
                         .IsUnique();
 
                     b.ToTable("Users");
@@ -288,34 +231,44 @@ namespace Deloprosit.Data.Migrations
                         new
                         {
                             UserId = 1,
-                            AccountId = 1,
-                            FirstName = "Александр"
+                            Email = "owner@owner.com",
+                            Nickname = "owner",
+                            Password = ""
                         },
                         new
                         {
                             UserId = 2,
-                            AccountId = 2,
-                            FirstName = "Вадим"
+                            Email = "admin@admin.com",
+                            Nickname = "admin",
+                            Password = "efavXKTzRTFnR7w69A7OJA=="
                         });
                 });
 
-            modelBuilder.Entity("Deloprosit.Data.Entities.AccountRole", b =>
+            modelBuilder.Entity("Deloprosit.Data.Entities.UserRole", b =>
                 {
-                    b.HasOne("Deloprosit.Data.Entities.Account", "Account")
-                        .WithMany("AccountRoles")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.HasOne("Deloprosit.Data.Entities.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
-                    b.Navigation("Account");
+                    b.HasKey("UserId", "RoleId");
 
-                    b.Navigation("Role");
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            RoleId = 2
+                        });
                 });
 
             modelBuilder.Entity("Deloprosit.Data.Entities.Chapter", b =>
@@ -367,20 +320,21 @@ namespace Deloprosit.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Deloprosit.Data.Entities.User", b =>
+            modelBuilder.Entity("Deloprosit.Data.Entities.UserRole", b =>
                 {
-                    b.HasOne("Deloprosit.Data.Entities.Account", "Account")
-                        .WithOne("User")
-                        .HasForeignKey("Deloprosit.Data.Entities.User", "AccountId")
+                    b.HasOne("Deloprosit.Data.Entities.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Account");
-                });
+                    b.HasOne("Deloprosit.Data.Entities.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("Deloprosit.Data.Entities.Account", b =>
-                {
-                    b.Navigation("AccountRoles");
+                    b.Navigation("Role");
 
                     b.Navigation("User");
                 });
@@ -407,6 +361,8 @@ namespace Deloprosit.Data.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Themes");
+
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

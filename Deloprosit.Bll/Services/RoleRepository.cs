@@ -42,7 +42,7 @@ namespace Deloprosit.Bll.Services
 
         public Task<IEnumerable<Role?>> GetListAsync(int? id)
         {
-            return Task.FromResult<IEnumerable<Role?>>(_dbContext.AccountRoles.Where(x => x.AccountId == id)
+            return Task.FromResult<IEnumerable<Role?>>(_dbContext.UserRoles.Where(x => x.UserId == id)
                 .SelectMany(userRole => _dbContext.Roles.Where(role => userRole.RoleId == role.RoleId)));
         }
 

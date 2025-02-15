@@ -69,11 +69,12 @@ else
 
 builder.Services.AddScoped<CryptoService>();
 builder.Services.AddScoped<EmailSender>();
+builder.Services.AddScoped<UserManager>();
 builder.Services.ConfigureAutomapper();
 
 var provider = builder?.Services?.BuildServiceProvider();
 using var scope = provider?.CreateScope();
-//await MigrateSeedDatabase(scope, jsonFileCreated);
+await MigrateSeedDatabase(scope, jsonFileCreated);
 
 var app = builder.Build();
 

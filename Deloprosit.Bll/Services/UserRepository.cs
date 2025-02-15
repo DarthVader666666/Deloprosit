@@ -1,6 +1,7 @@
 ﻿using Deloprosit.Bll.Interfaces;
 using Deloprosit.Data;
 using Deloprosit.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Deloprosit.Bll.Services
 {
@@ -30,12 +31,14 @@ namespace Deloprosit.Bll.Services
 
         public Task<User?> FindByAsync(object? parameter)
         {
-            if (parameter == null || parameter is not string)
+            if (parameter is not string)
             {
                 return Task.FromResult<User?>(null);
             }
 
-            return Task.FromResult(new User());// _dbContext.Users.FirstOrDefault(user => parameter as string == user.Nickname));
+            var account = _dbContext.Users.FirstOrDefault(account => account.Nickname == parameter as string);
+
+            return Task.FromResult(account);
         }
 
         public Task<User?> GetAsync(int? id)

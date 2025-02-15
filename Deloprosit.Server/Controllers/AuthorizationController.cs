@@ -23,11 +23,12 @@ namespace Deloprosit.Server.Controllers
         private readonly IConfiguration _configuration;
         private readonly CryptoService _cryptoService;
         private readonly EmailSender _emailSender;
+        private readonly UserManager _userManager;
         const char rolesSeperator = ',';
 
         public AuthorizationController(
             IRepository<User> userRepository, IRepository<Role> roleRepository, IMapper mapper,
-            IConfiguration configuration, CryptoService cryptoService, EmailSender emailSender)
+            IConfiguration configuration, CryptoService cryptoService, EmailSender emailSender, UserManager userManager)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
@@ -35,23 +36,24 @@ namespace Deloprosit.Server.Controllers
             _configuration = configuration;
             _cryptoService = cryptoService;
             _emailSender = emailSender;
+            _userManager = userManager;
         }
 
         [HttpPost]
         [Route("[action]")]
         public async Task<IActionResult> LogIn([FromBody] UserLogInModel userLogIn)
         {
-            var user = await _userRepository.FindByAsync(userLogIn.NicknameOrEmail);
+            var user = await _userManager.GetUserByAsync(userLogIn.NicknameOrEmail);
 
             if (user == null)
             {
                 return NotFound(new { errorText = "User does not exist." });
             }
 
-            //if (_cryptoService.Encrypt(userLogIn.Password) != user.Password)
-            //{
-            //    return BadRequest(new { errorText = "Wrong password." });
-            //}
+            if (_cryptoService.Encrypt(userLogIn.Password) != user.Password)
+            {
+                return BadRequest(new { errorText = "Wrong password." });
+            }
 
             var claimsIdentity = await GetIdentityAsync(user);
 
@@ -64,7 +66,7 @@ namespace Deloprosit.Server.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrinciple);
 
-            return Ok();// new { nickname = user.Nickname, roles = claimsIdentity.RoleClaimType.Split(rolesSeperator) });
+            return Ok(new { nickname = user.Nickname, roles = claimsIdentity.RoleClaimType.Split(rolesSeperator) });
         }
 
         [HttpPost]
@@ -126,14 +128,14 @@ namespace Deloprosit.Server.Controllers
         [Route("[action]")]
         public async Task<IActionResult> Confirm([FromQuery] string encryptedEmail, [FromQuery] string encryptedPassword, [FromQuery] string firstName, [FromQuery] string lastName)
         {
-            User user = null;// await _userRepository.CreateAsync(new User { Email = encryptedEmail, Password = encryptedPassword, FirstName = firstName, LastName = lastName });
+            var user = await _userRepository.CreateAsync(new User { Email = encryptedEmail, Password = encryptedPassword, FirstName = firstName, LastName = lastName });
 
             if (user == null)
             {
                 return Redirect($"{_configuration["ClientUrl"]}/confirm?success=false&message=User%20could%20not%20be%20created.");
             }
 
-            OkObjectResult result = null;// await LogIn(new UserLogInModel { NicknameOrEmail = _cryptoService.Decrypt(user.Email), Password = _cryptoService.Decrypt(user.Password) });
+            var result = await LogIn(new UserLogInModel { NicknameOrEmail = _cryptoService.Decrypt(user.Email), Password = _cryptoService.Decrypt(user.Password) });
 
             var okResult = result as OkObjectResult;
 
@@ -154,7 +156,7 @@ namespace Deloprosit.Server.Controllers
 
                 var claims = new List<Claim>
                     {
-                        //new (ClaimsIdentity.DefaultNameClaimType, user.Email ?? string.Empty),
+                        new (ClaimsIdentity.DefaultNameClaimType, user.Email ?? string.Empty),
                         new (ClaimsIdentity.DefaultRoleClaimType, roleType)
                     };
 
