@@ -35,7 +35,7 @@ namespace Deloprosit.Bll.Services
                 return Task.FromResult<User?>(null);
             }
 
-            return Task.FromResult(_dbContext.Users.FirstOrDefault(user => parameter as string == user.Nickname));
+            return Task.FromResult(new User());// _dbContext.Users.FirstOrDefault(user => parameter as string == user.Nickname));
         }
 
         public Task<User?> GetAsync(int? id)

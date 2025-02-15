@@ -9,6 +9,10 @@ namespace Deloprosit.Data
     public class DeloprositDbContext: DbContext
     {
         private readonly IConfiguration _configuration;
+        const int maxRoleNameLength = 50;
+        const int maxNameLength = 100;
+        const int maxInfoLength = 1000;
+        const int maxBytesLength = 8000;
 
         public DeloprositDbContext(DbContextOptions<DeloprositDbContext> options, IConfiguration configuration) : base(options)
         {
@@ -25,27 +29,58 @@ namespace Deloprosit.Data
             modelBuilder.Entity<User>(user =>
             {
                 user.HasKey(x => x.UserId);
-                user.HasIndex(x => x.Email).IsUnique();
+                user.HasOne(x => x.Account).WithOne(x => x.User).HasForeignKey("Account");
+                user.Property(x => x.FirstName).HasMaxLength(maxNameLength).IsRequired();
+                user.Property(x => x.LastName).HasMaxLength(maxNameLength);
+                user.Property(x => x.UserTitle).HasMaxLength(maxNameLength);
+                user.Property(x => x.Country).HasMaxLength(maxNameLength);
+                user.Property(x => x.City).HasMaxLength(maxNameLength);
+                user.Property(x => x.Info).HasMaxLength(maxInfoLength);
+                user.Property(x => x.Avatar).HasMaxLength(maxBytesLength);
                 user.HasData(
                     new User
                     {
                         UserId = 1,
-                        Password = _configuration["OwnerPassword"]
+                        AccountId = 1,
+                        FirstName = "Александр"
                     },
                     new User
                     {
                         UserId = 2,
-                        Password = _configuration["AdminPassword"],
-                        Nickname = "vader"
+                        AccountId = 2,
+                        FirstName = "Вадим"
                     });
-                user.HasIndex(x => x.Email).IsUnique();
-                user.HasIndex(x => x.Nickname).IsUnique();
-                user.Property(x => x.Password).IsRequired().HasMaxLength(100);
-                user.Property(x => x.Avatar).HasMaxLength(10000);
+            });
+            modelBuilder.Entity<Account>(account =>
+            {
+                account.HasKey(x => x.AccountId);
+                account.HasOne(x => x.User).WithOne(x => x.Account).HasForeignKey("User");
+                account.HasIndex(x => x.Email).IsUnique();
+                account.HasIndex(x => x.Nickname).IsUnique();
+                account.Property(x => x.Email).HasMaxLength(maxNameLength).IsRequired();
+                account.Property(x => x.Nickname).HasMaxLength(maxNameLength).IsRequired();
+                account.Property(x => x.Password).HasMaxLength(maxNameLength).IsRequired();
+                account.HasData(
+                    new Account
+                    {
+                        AccountId = 1,
+                        Password = _configuration["OwnerPassword"],
+                        Nickname = "owner",
+                        Email = "owner@owner.com"
+                    },
+                    new Account
+                    {
+                        AccountId = 2,
+                        Password = _configuration["AdminPassword"],
+                        Nickname = "admin",
+                        Email = "admin@admin.com"
+                    });
             });
             modelBuilder.Entity<Role>(role =>
             {
                 role.HasKey(x => x.RoleId);
+                role.HasIndex(x => x.RoleName).IsUnique();
+                role.Property(x => x.RoleName).HasMaxLength(maxRoleNameLength).IsRequired();
                 role.HasData(
                     new Role
                     {
@@ -63,28 +98,54 @@ namespace Deloprosit.Data
                         RoleName = nameof(UserRoleType.User)
                     });
             });
-            modelBuilder.Entity<UserRole>(userRole =>
+            modelBuilder.Entity<AccountRole>(userRole =>
             {
-                userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
-                userRole.HasOne(ur => ur.User).WithMany(u => u.UserRoles).HasForeignKey(ur => ur.UserId);
+                userRole.HasKey(ur => new { ur.AccountId, ur.RoleId });
+                userRole.HasOne(ur => ur.Account).WithMany(u => u.AccountRoles).HasForeignKey(ur => ur.AccountId);
                 userRole.HasOne(ur => ur.Role).WithMany(r => r.UserRoles).HasForeignKey(ur => ur.RoleId);
-
                 userRole.HasData(
-                    new UserRole
+                    new AccountRole
                     {
-                        UserId = 1,
+                        AccountId = 1,
                         RoleId = (int)UserRoleType.Owner
                     },
-                    new UserRole
+                    new AccountRole
                     {
-                        UserId = 2,
+                        AccountId = 2,
                         RoleId = (int)UserRoleType.Admin
                     });
+            });
+            modelBuilder.Entity<Chapter>(chapter =>
+            {
+                chapter.HasKey(x => x.ChapterId);
+                chapter.HasMany(x => x.Themes).WithOne(x => x.Chapter).HasForeignKey(x => x.ChapterId);
+                chapter.HasOne(x => x.User).WithMany(x => x.Chapters).HasForeignKey(x => x.UserId);
+                chapter.Property(x => x.UserId).IsRequired();
+                chapter.Property(x => x.DateCreated).IsRequired();
+                chapter.Property(x => x.ChapterTitle).HasMaxLength(maxInfoLength).IsRequired();
+            });
+            modelBuilder.Entity<Theme>(theme => 
+            {
+                theme.HasKey(x => x.ThemeId);
+                theme.Property(x => x.Description).HasMaxLength(maxInfoLength).IsRequired();
+                theme.HasOne(x => x.Chapter).WithMany(x => x.Themes).HasForeignKey(x => x.ChapterId);
+                theme.HasOne(x => x.User).WithMany(x => x.Themes).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
+            });
+            modelBuilder.Entity<Comment>(comment =>
+            {
+                comment.HasKey(x => x.CommentId);
+                comment.Property(x => x.Text).HasMaxLength(maxInfoLength).IsRequired();
+                comment.HasOne(x => x.Theme).WithMany(x => x.Comments).HasForeignKey(x => x.ThemeId);
+                comment.HasOne(x => x.User).WithMany(x => x.Comments).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
             });
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Account> Accounts { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<AccountRole> AccountRoles { get; set; }
+        public DbSet<Chapter> Chapters { get; set; }
+        public DbSet<Theme> Themes { get; set; }
+        public DbSet<Comment> Comments { get; set; }
     }
 }

@@ -48,10 +48,10 @@ namespace Deloprosit.Server.Controllers
                 return NotFound(new { errorText = "User does not exist." });
             }
 
-            if (_cryptoService.Encrypt(userLogIn.Password) != user.Password)
-            {
-                return BadRequest(new { errorText = "Wrong password." });
-            }
+            //if (_cryptoService.Encrypt(userLogIn.Password) != user.Password)
+            //{
+            //    return BadRequest(new { errorText = "Wrong password." });
+            //}
 
             var claimsIdentity = await GetIdentityAsync(user);
 
@@ -64,7 +64,7 @@ namespace Deloprosit.Server.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrinciple);
 
-            return Ok(new { nickname = user.Nickname, roles = claimsIdentity.RoleClaimType.Split(rolesSeperator) });
+            return Ok();// new { nickname = user.Nickname, roles = claimsIdentity.RoleClaimType.Split(rolesSeperator) });
         }
 
         [HttpPost]
@@ -126,14 +126,14 @@ namespace Deloprosit.Server.Controllers
         [Route("[action]")]
         public async Task<IActionResult> Confirm([FromQuery] string encryptedEmail, [FromQuery] string encryptedPassword, [FromQuery] string firstName, [FromQuery] string lastName)
         {
-            var user = await _userRepository.CreateAsync(new User { Email = encryptedEmail, Password = encryptedPassword, FirstName = firstName, LastName = lastName });
+            User user = null;// await _userRepository.CreateAsync(new User { Email = encryptedEmail, Password = encryptedPassword, FirstName = firstName, LastName = lastName });
 
             if (user == null)
             {
                 return Redirect($"{_configuration["ClientUrl"]}/confirm?success=false&message=User%20could%20not%20be%20created.");
             }
 
-            var result = await LogIn(new UserLogInModel { NicknameOrEmail = _cryptoService.Decrypt(user.Email), Password = _cryptoService.Decrypt(user.Password) });
+            OkObjectResult result = null;// await LogIn(new UserLogInModel { NicknameOrEmail = _cryptoService.Decrypt(user.Email), Password = _cryptoService.Decrypt(user.Password) });
 
             var okResult = result as OkObjectResult;
 
@@ -154,7 +154,7 @@ namespace Deloprosit.Server.Controllers
 
                 var claims = new List<Claim>
                     {
-                        new (ClaimsIdentity.DefaultNameClaimType, user.Email ?? string.Empty),
+                        //new (ClaimsIdentity.DefaultNameClaimType, user.Email ?? string.Empty),
                         new (ClaimsIdentity.DefaultRoleClaimType, roleType)
                     };
 
