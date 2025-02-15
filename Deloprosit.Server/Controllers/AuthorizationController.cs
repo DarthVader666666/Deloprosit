@@ -18,20 +18,17 @@ namespace Deloprosit.Server.Controllers
     public class AuthorizationController : ControllerBase
     {
         private readonly IRepository<User> _userRepository;
-        private readonly IRepository<Role> _roleRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly CryptoService _cryptoService;
         private readonly EmailSender _emailSender;
         private readonly UserManager _userManager;
-        const char rolesSeperator = ',';
 
         public AuthorizationController(
-            IRepository<User> userRepository, IRepository<Role> roleRepository, IMapper mapper,
-            IConfiguration configuration, CryptoService cryptoService, EmailSender emailSender, UserManager userManager)
+            IRepository<User> userRepository, IMapper mapper, IConfiguration configuration, CryptoService cryptoService, 
+            EmailSender emailSender, UserManager userManager)
         {
             _userRepository = userRepository;
-            _roleRepository = roleRepository;
             _mapper = mapper;
             _configuration = configuration;
             _cryptoService = cryptoService;
@@ -50,23 +47,19 @@ namespace Deloprosit.Server.Controllers
                 return NotFound(new { errorText = "User does not exist." });
             }
 
-            if (_cryptoService.Encrypt(userLogIn.Password) != user.Password)
+            if (_userManager.IsMatchPassword(user, userLogIn.Password))
             {
                 return BadRequest(new { errorText = "Wrong password." });
             }
 
-            var claimsIdentity = await GetIdentityAsync(user);
+            var roles = await _userManager.LogIn(user, HttpContext);
 
-            if (claimsIdentity == null)
+            if (roles == null || !roles.Any()) 
             {
                 return BadRequest(new { errorText = "Couldn't get user identity." });
             }
 
-            var claimsPrinciple = new ClaimsPrincipal(claimsIdentity);            
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrinciple);
-
-            return Ok(new { nickname = user.Nickname, roles = claimsIdentity.RoleClaimType.Split(rolesSeperator) });
+            return Ok(new { nickname = user.Nickname, roles });
         }
 
         [HttpPost]
@@ -75,7 +68,7 @@ namespace Deloprosit.Server.Controllers
         {
             try
             {
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                await _userManager.LogOut(HttpContext);
                 return Ok();
             }
             catch (Exception ex) 
@@ -147,26 +140,7 @@ namespace Deloprosit.Server.Controllers
             return Redirect($"{_configuration["ClientUrl"]}/confirm?key=");
         }
 
-        private async Task<ClaimsIdentity?> GetIdentityAsync(User? user)
-        {
-            if (user != null)
-            {
-                var roles = await _roleRepository.GetListAsync(user.UserId);
-                var roleType = string.Join(rolesSeperator, roles.Select(x => x?.RoleName));
 
-                var claims = new List<Claim>
-                    {
-                        new (ClaimsIdentity.DefaultNameClaimType, user.Email ?? string.Empty),
-                        new (ClaimsIdentity.DefaultRoleClaimType, roleType)
-                    };
-
-                var claimsIdentity = new ClaimsIdentity(claims, "Cookies");                
-
-                return claimsIdentity;
-            }
-
-            return null;
-        }
 
         private async Task<bool> DoesUserExist(string? email)
         {
