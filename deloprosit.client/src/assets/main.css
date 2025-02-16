@@ -35,6 +35,12 @@ body {
   box-shadow: 0 7px 15px -3px black;
 }
 
+.register-form {
+  width: 80%;
+  padding: 10px;
+  background-color: rgb(241, 235, 235);
+}
+
 .login-inputs {
   display: flex;
   flex-direction: row;
@@ -60,7 +66,7 @@ body {
     width: 50%;
   }
 
-  .register-container .register-form {
+  .register-form {
     width: 100%;
   }
 

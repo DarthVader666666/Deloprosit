@@ -49,11 +49,7 @@ import LeftColumnView from './LeftColumnView.vue'
     width: 20%;
 }
 
-.register-form {
-    width: 80%;
-    padding: 10px;
-    background-color: rgb(241, 235, 235);
-}
+
 
 .register-inputs {
     display: flex;
