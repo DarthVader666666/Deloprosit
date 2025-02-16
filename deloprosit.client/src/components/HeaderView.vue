@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
+import { RouterLink } from 'vue-router';
 
 const loginRequestForm = ref({
     nicknameOrEmail: null,
@@ -75,7 +76,7 @@ const handleLogout = () => {
                 <button @click.prevent="handleLogin">Войти</button>
             </div>
             <div class="login-anchors">
-                <a href="#">Регистрация</a> | <a>Забыл(а) пароль</a> |
+                <RouterLink to="/authentication/register">Регистрация</RouterLink> | <a>Забыл(а) пароль</a> |
                 <label for="remember">
                     <input type="checkbox" id="remember">Запомнить
                 </label>

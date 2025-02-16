@@ -1,7 +1,7 @@
 <script setup>
-import LeftColumnView from './LeftColumn.vue';
+import LeftColumnView from './LeftColumnView.vue';
 import RightColumnView from './RightColumn.vue';
-import CentralColumnView from './CentralColumn.vue'
+import CentralColumnView from './CentralColumnView.vue'
 </script>
 
 <template>
