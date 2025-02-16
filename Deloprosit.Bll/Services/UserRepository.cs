@@ -1,7 +1,6 @@
 ﻿using Deloprosit.Bll.Interfaces;
 using Deloprosit.Data;
 using Deloprosit.Data.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace Deloprosit.Bll.Services
 {

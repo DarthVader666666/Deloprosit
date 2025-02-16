@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
+using Azure.Communication.Email;
 using Deloprosit.Bll.Interfaces;
+using Deloprosit.Bll.Services;
 using Deloprosit.Data.Entities;
+using Deloprosit.Server.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Deloprosit.Bll.Services;
-using Azure.Communication.Email;
-using Deloprosit.Server.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Deloprosit.Server.Controllers
 {
@@ -38,7 +35,7 @@ namespace Deloprosit.Server.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> LogIn([FromBody] UserLogInModel userLogIn)
+        public async Task<IActionResult> LogIn([FromBody] UserLogInRequestModel userLogIn)
         {
             var user = await _userManager.GetUserByAsync(userLogIn.NicknameOrEmail);
 
@@ -59,7 +56,11 @@ namespace Deloprosit.Server.Controllers
                 return BadRequest(new { errorText = "Couldn't get user identity." });
             }
 
-            return Ok(new { nickname = user.Nickname, roles });
+            return Ok(new UserLogInResponseModel()
+            { 
+                Nickname = user.Nickname, 
+                Roles = roles 
+            });
         }
 
         [HttpPost]
@@ -128,11 +129,11 @@ namespace Deloprosit.Server.Controllers
                 return Redirect($"{_configuration["ClientUrl"]}/confirm?success=false&message=User%20could%20not%20be%20created.");
             }
 
-            var result = await LogIn(new UserLogInModel { NicknameOrEmail = _cryptoService.Decrypt(user.Email), Password = _cryptoService.Decrypt(user.Password) });
+            var result = await LogIn(new UserLogInRequestModel { NicknameOrEmail = _cryptoService.Decrypt(user.Email), Password = _cryptoService.Decrypt(user.Password) });
 
             var okResult = result as OkObjectResult;
 
-            if (okResult == null || okResult.Value == null || okResult.Value as LogInResponseModel == null)
+            if (okResult == null || okResult.Value == null || okResult.Value as UserLogInResponseModel == null)
             {
                 return Redirect($"{_configuration["ClientUrl"]}/confirm?success=false&message=Failed%20during%20login%20user%20{_cryptoService.Decrypt(encryptedEmail)}");
             }
