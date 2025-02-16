@@ -27,6 +27,14 @@ body {
   min-width:120px;
 }
 
+.register-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: white;
+  box-shadow: 0 7px 15px -3px black;
+}
+
 .login-inputs {
   display: flex;
   flex-direction: row;
@@ -50,6 +58,14 @@ body {
 
   .right-container {
     width: 50%;
+  }
+
+  .register-container .register-form {
+    width: 100%;
+  }
+
+  .register-container .left-container {
+    display: none;
   }
 
   .login-inputs {

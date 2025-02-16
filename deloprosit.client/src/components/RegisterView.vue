@@ -45,14 +45,6 @@ import LeftColumnView from './LeftColumnView.vue'
     </div>
 </template>
 <style scoped>
-.register-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    background-color: white;
-    box-shadow: 0 7px 15px -3px black;
-}
-
 .left-container {
     width: 20%;
 }
@@ -96,6 +88,7 @@ import LeftColumnView from './LeftColumnView.vue'
 
 .info textarea {
     max-width: 60%;
+    min-width: 300px;
     height: 150px;
 }
 

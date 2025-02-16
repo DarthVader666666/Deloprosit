@@ -1,7 +1,17 @@
-<script></script>
+<script setup>
+import { ref } from 'vue';
+import { onMounted } from 'vue';
+
+const environment = ref(null);
+
+onMounted(() =>  {
+    environment.value = import.meta.env.VITE_API_ENVIRONMENT;
+});
+
+</script>
 <template>
     <div class="footer-container">
-        <h1>FOOTER</h1>
+        <h1>{{ environment }}</h1>
     </div>
 </template>
 

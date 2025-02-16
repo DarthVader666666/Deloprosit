@@ -57,8 +57,7 @@ const handleLogout = () => {
 </script>
 
 <template>
-    <div class="header-container">
-        <label class="message">{{ environment }}</label>
+    <div class="header-container">        
         <div v-if="errorText" class="message">{{ errorText }}</div>
         <div v-else-if="nickname" class="message">Добро пожаловать, <span>{{ nickname }}!</span>
             <button @click="handleLogout">Выйти</button>
