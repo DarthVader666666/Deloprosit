@@ -10,11 +10,13 @@ const loginRequestForm = ref({
 
 const nickname = ref(null);
 const errorText = ref(null);
-const baseUrl = ref(null); 
+const baseUrl = ref(null);
+const environment = ref(null);
 
 onMounted(() => {
     axios.defaults.withCredentials = true;
     baseUrl.value = import.meta.env.VITE_API_SERVER_URL;
+    environment.value = import.meta.env.VITE_API_ENVIRONMENT;
 })
 
 const handleLogin = () => {
@@ -55,8 +57,9 @@ const handleLogout = () => {
 
 <template>
     <div class="header-container">
-        <div v-if="errorText">{{ errorText }}</div>
-        <div class="nickname" v-if="nickname">Добро пожаловать, <span>{{ nickname }}!</span>
+        <label class="message">{{ environment }}</label>
+        <div v-if="errorText" class="message">{{ errorText }}</div>
+        <div v-else-if="nickname" class="message">Добро пожаловать, <span>{{ nickname }}!</span>
             <button @click="handleLogout">Выйти</button>
         </div>
         <div v-else class="form-container">
@@ -94,12 +97,12 @@ const handleLogout = () => {
         padding-top: 5px;
     }
 
-    .nickname {
+    .message {
       font-size: large;
       padding-right: 15px;
     }
 
-    .nickname span {
+    .message span {
       font-weight: bold;
       padding-right: 15px;
     }
