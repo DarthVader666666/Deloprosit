@@ -3,8 +3,11 @@ import router from './router';
 import { createApp } from 'vue'
 import App from './App.vue'
 import VueCookies from 'vue3-cookies'
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 
 createApp(App)
 .use(VueCookies)
 .use(router)
-.mount('#app')
+.use(Toast, { timeout: 2000 })
+.mount('#app');

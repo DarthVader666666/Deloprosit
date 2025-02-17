@@ -1,5 +1,6 @@
 <script setup>
 import axios from 'axios';
+import { useToast } from 'vue-toastification';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
@@ -10,7 +11,7 @@ const loginRequestForm = ref({
 });
 
 const nickname = ref(null);
-const errorText = ref(null);
+const toast = useToast();
 const baseUrl = ref(null);
 const environment = ref(null);
 
@@ -29,18 +30,16 @@ const handleLogin = () => {
             'Content-Type': 'application/json'
         }
     }).then(response => {
-            if(response.status === 200) {
-                loginRequestForm.value.nicknameOrEmail = null;
-                loginRequestForm.value.password = null;
-
-                nickname.value = response.data.nickname;
-            }
-
-            if(response.status === 404 || response.status === 404) {
-                errorText.value = response.data.errorText;
-                console.log(response.data.errorText)
-            }
-        });
+        if(response.status === 200) {
+            loginRequestForm.value.nicknameOrEmail = null;
+            loginRequestForm.value.password = null;
+            nickname.value = response.data.nickname;
+            toast.success(`Вы вошли, как ${response.data.nickname}`);
+    }}).catch(error => {
+        if(error.response.status === 404 || error.response.status === 400) {
+            toast.error(error.response.data.errorText);
+        }
+    });
 }
 
 const handleLogout = () => {
@@ -49,13 +48,14 @@ const handleLogout = () => {
         axios.post(`${baseUrl.value}/authorization/logout/`, {
         headers: {
             'Content-Type': 'application/json'
-        }}).then(response => {
+        }})
+        .then(response => {
             if(response.status === 200) {
                 nickname.value = null;
             }
-            else {
-                errorText.value = response.data.errorText;
-            }
+        })
+        .catch(error => {
+            toast.error(error.response.message);
         });
     }    
 }

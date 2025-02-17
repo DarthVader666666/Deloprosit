@@ -28,7 +28,7 @@ namespace Deloprosit.Bll.Services
 
         public bool IsMatchPassword(User user, string? encryptedPassword)
         {
-            return _cryptoService.Encrypt(user.Password) == encryptedPassword;
+            return _cryptoService.Decrypt(user.Password) == encryptedPassword;
         }
 
         public async Task<string[]?> LogIn(User user, HttpContext httpContext)

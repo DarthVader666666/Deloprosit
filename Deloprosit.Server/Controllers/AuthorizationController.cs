@@ -41,12 +41,12 @@ namespace Deloprosit.Server.Controllers
 
             if (user == null)
             {
-                return NotFound(new { errorText = "User does not exist." });
+                return NotFound(new { errorText = "Пользователь не найден" });
             }
 
-            if (_userManager.IsMatchPassword(user, userLogIn.Password))
+            if (!_userManager.IsMatchPassword(user, userLogIn.Password))
             {
-                return BadRequest(new { errorText = "Wrong password." });
+                return BadRequest(new { errorText = "Неверный пароль" });
             }
 
             var roles = await _userManager.LogIn(user, HttpContext);
@@ -72,7 +72,7 @@ namespace Deloprosit.Server.Controllers
                 await _userManager.LogOut(HttpContext);
                 return Ok();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return Problem($"Logout failed. {ex.Message}", statusCode: 500);
             }
