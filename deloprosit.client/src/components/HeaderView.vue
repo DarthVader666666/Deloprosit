@@ -36,9 +36,16 @@ const handleLogin = () => {
             nickname.value = response.data.nickname;
             toast.success(`Вы вошли, как ${response.data.nickname}`);
     }}).catch(error => {
-        if(error.response.status === 404 || error.response.status === 400) {
+        const status = error.response.status;
+        if(status === 404 || status === 400) {
             toast.error(error.response.data.errorText);
         }
+        else if (status == 500) {
+            toast.error('Ошибка сервера');
+        }
+
+        loginRequestForm.value.nicknameOrEmail = null;
+        loginRequestForm.value.password = null;
     });
 }
 
@@ -64,8 +71,7 @@ const handleLogout = () => {
 
 <template>
     <div class="header-container">        
-        <div v-if="errorText" class="message">{{ errorText }}</div>
-        <div v-else-if="nickname" class="message">Добро пожаловать, <span>{{ nickname }}!</span>
+        <div v-if="nickname" class="message">Добро пожаловать, <span>{{ nickname }}!</span>
             <button @click="handleLogout">Выйти</button>
         </div>
         <form v-else class="form-container" @submit.prevent="handleLogin">
@@ -81,7 +87,7 @@ const handleLogout = () => {
                 <button type="submit">Войти</button>
             </div>
             <div class="login-anchors">
-                <RouterLink to="/authentication/register">Регистрация</RouterLink> | <a>Забыл(а) пароль</a> |
+                <RouterLink to="/register">Регистрация</RouterLink> | <a>Забыл(а) пароль</a> |
                 <label for="remember">
                     <input type="checkbox" id="remember">Запомнить
                 </label>

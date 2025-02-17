@@ -1,6 +1,8 @@
-﻿using Deloprosit.Bll.Interfaces;
+﻿using Azure.Communication.Email;
+using Deloprosit.Bll.Interfaces;
 using Deloprosit.Data;
 using Deloprosit.Data.Entities;
+using System.Net.Mail;
 
 namespace Deloprosit.Bll.Services
 {
@@ -35,7 +37,16 @@ namespace Deloprosit.Bll.Services
                 return Task.FromResult<User?>(null);
             }
 
-            var user = _dbContext.Users.FirstOrDefault(user => user.Nickname == parameter as string);
+            User? user = null;
+
+            if (IsValidEmail(parameter as string))
+            {
+                user = _dbContext.Users.FirstOrDefault(user => user.Email == parameter as string);
+            }
+            else
+            {
+                user = _dbContext.Users.FirstOrDefault(user => user.Nickname == parameter as string);
+            }
 
             return Task.FromResult(user);
         }
@@ -53,6 +64,30 @@ namespace Deloprosit.Bll.Services
         public Task<User?> UpdateAsync(User item)
         {
             throw new NotImplementedException();
+        }
+
+        private static bool IsValidEmail(string? email)
+        {
+            if (email == null)
+            { 
+                return false;
+            }
+
+            var trimmedEmail = email.Trim();
+
+            if (trimmedEmail.EndsWith("."))
+            {
+                return false;
+            }
+            try
+            {
+                var addr = new MailAddress(email);
+                return addr.Address == trimmedEmail;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

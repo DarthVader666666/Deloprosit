@@ -5,6 +5,8 @@ import { onMounted } from 'vue';
 import axios from 'axios';
 
 const baseUrl = ref(null);
+const showNicknameError = ref(false);
+const showEmailError = ref(false);
 
 const registerModel = ref({
     nickname: null,
@@ -23,15 +25,33 @@ onMounted(() => {
     baseUrl.value = import.meta.env.VITE_API_SERVER_URL;
 });
 
-const handleSend = (event) => {
-    console.log(event.target)
-
-    axios.post(`${baseUrl.value}/authorization/register/`, JSON.stringify(registerModel.value),
+const handleSend = () => {
+    axios.post(`${baseUrl.value}/register/`, JSON.stringify(registerModel.value),
     {
         headers: {
             'Content-Type': 'application/json'
         }
     });
+}
+
+async function doesUserExist (nicknameOrEmail) {
+    var response = await axios.get(`${baseUrl.value}/register/userExists/${nicknameOrEmail}`);
+
+    if(response.status == 200) {
+        return response.data.userExists;
+    }
+
+    return false;
+}
+
+const handleNicknameMatch = async (event) => {
+    const nickname = event.target.value;
+    showNicknameError.value = await doesUserExist(nickname);
+}
+
+const handleEmailMatch = async (event) => {
+    const nickname = event.target.value;
+    showEmailError.value = await doesUserExist(nickname);
 }
 
 </script>
@@ -41,7 +61,7 @@ const handleSend = (event) => {
         <form class="register-form" @submit.prevent="handleSend">
             <div class="register-inputs">
                 <div class="spans">
-                    <span>Никнэйм: <span class="red-star">*</span></span>                
+                    <span>Никнэйм: <span class="red-star">*</span></span>
                     <span>Email: <span class="red-star">*</span></span>
                     <span>Имя: </span>
                     <span>Фамилия: </span>
@@ -53,8 +73,10 @@ const handleSend = (event) => {
                     <span>Должность: </span>                
                 </div>
                 <div class="inputs">
-                    <input v-model="registerModel.nickname" type="text" maxlength="30" required>
-                    <input v-model="registerModel.email" type="email" maxlength="50" required>
+                    <input v-model="registerModel.nickname" @input.prevent="handleNicknameMatch" type="text" maxlength="30" required>
+                        <span v-if="showNicknameError" class="user-exists-error">Никнэйм занят</span>
+                    <input v-model="registerModel.email" @input.prevent="handleEmailMatch" type="email" maxlength="50" required>
+                        <span v-if="showEmailError" class="user-exists-error">Email занят</span>
                     <input v-model="registerModel.firstName" type="text" maxlength="30">
                     <input v-model="registerModel.lastName" type="text" maxlength="30">
                     <input v-model="registerModel.password" type="password" maxlength="30" required>
@@ -130,5 +152,11 @@ const handleSend = (event) => {
 
 .red-star {
     color: red;
+}
+
+.user-exists-error {
+    color: red;
+    font-weight: lighter;
+    font-size: x-small;
 }
 </style>

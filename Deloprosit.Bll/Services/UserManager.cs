@@ -81,5 +81,10 @@ namespace Deloprosit.Bll.Services
 
             return null;
         }
+
+        public async Task<bool> DoesUserExistAsync(string? nicknameOrEmail)
+        {
+            return await _userRepository.FindByAsync(nicknameOrEmail) != null;
+        }
     }
 }
