@@ -22,10 +22,13 @@ onMounted(() => {
 
 const handleLogin = () => {
     axios.defaults.withCredentials = true;
-    axios.post(`${baseUrl.value}/authorization/login/`, JSON.stringify(loginRequestForm.value), {
-        headers: {
+    axios.post(`${baseUrl.value}/authorization/login/`, JSON.stringify(loginRequestForm.value), 
+    {
+        headers: 
+        {
             'Content-Type': 'application/json'
-        }}).then(response => {
+        }
+    }).then(response => {
             if(response.status === 200) {
                 loginRequestForm.value.nicknameOrEmail = null;
                 loginRequestForm.value.password = null;
@@ -50,6 +53,9 @@ const handleLogout = () => {
             if(response.status === 200) {
                 nickname.value = null;
             }
+            else {
+                errorText.value = response.data.errorText;
+            }
         });
     }    
 }
@@ -62,7 +68,7 @@ const handleLogout = () => {
         <div v-else-if="nickname" class="message">Добро пожаловать, <span>{{ nickname }}!</span>
             <button @click="handleLogout">Выйти</button>
         </div>
-        <div v-else class="form-container">
+        <form v-else class="form-container" @submit.prevent="handleLogin">
             <div class="login-inputs" @keydown.enter.prevent="handleLogin">
                 <div>
                     <label>Логин: </label>
@@ -72,7 +78,7 @@ const handleLogout = () => {
                     <label>Пароль: </label>
                     <input v-model="loginRequestForm.password" type="password" placeholder="Пароль" required>
                 </div>
-                <button @click.prevent="handleLogin">Войти</button>
+                <button type="submit">Войти</button>
             </div>
             <div class="login-anchors">
                 <RouterLink to="/authentication/register">Регистрация</RouterLink> | <a>Забыл(а) пароль</a> |
@@ -80,7 +86,7 @@ const handleLogout = () => {
                     <input type="checkbox" id="remember">Запомнить
                 </label>
             </div>
-        </div>
+        </form>
     </div>
 </template>
 

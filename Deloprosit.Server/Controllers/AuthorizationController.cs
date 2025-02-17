@@ -98,7 +98,7 @@ namespace Deloprosit.Server.Controllers
             }
 
             var url = $"<button>" +
-                $"<a href='{_configuration["ClientUrl"]}/api/authorization/confirm?" +
+                $"<a href='{_configuration["ClientUrl"]}/authorization/confirm?" +
                 $"encryptedEmail={_cryptoService.Encrypt(userRegister.Email)}&encryptedPassword={_cryptoService.Encrypt(userRegister.Password)}" +
                 $"&firstName={userRegister.FirstName}&lastName={userRegister.LastName}' " +
                 $"style=\"text-decoration: none; color: black\">" +
