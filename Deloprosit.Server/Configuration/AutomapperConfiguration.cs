@@ -13,7 +13,7 @@ namespace Deloprosit.Server.Configurations
             {
                 var config = new MapperConfiguration(autoMapperConfig =>
                 {
-                    autoMapperConfig.CreateMap<UserRegisterModel, User>();
+                    autoMapperConfig.CreateMap<RegisterRequestModel, User>();
                 });
 
                 return config.CreateMapper();

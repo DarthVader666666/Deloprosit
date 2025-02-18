@@ -23,11 +23,12 @@ onMounted(() => {
 
 const handleLogin = () => {
     axios.defaults.withCredentials = true;
-    axios.post(`${baseUrl.value}/authorization/login/`, JSON.stringify(loginRequestForm.value), 
+    axios.post(`${baseUrl.value}/authorization/login/`, null,
     {
         headers: 
         {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authenticate': JSON.stringify(loginRequestForm.value)
         }
     }).then(response => {
         if(response.status === 200) {

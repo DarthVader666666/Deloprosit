@@ -7,6 +7,8 @@ using Deloprosit.Server.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
+using Newtonsoft.Json;
+
 namespace Deloprosit.Server.Controllers
 {
     [EnableCors("AllowClient")]
@@ -35,23 +37,25 @@ namespace Deloprosit.Server.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> LogIn([FromBody] UserLogInRequestModel userLogIn)
+        public async Task<IActionResult> LogIn()
         {
-            var user = await _userManager.GetUserByAsync(userLogIn.NicknameOrEmail);
+            var userLogIn = JsonConvert.DeserializeObject<UserLogInRequestModel>(HttpContext.Request.Headers["Authenticate"].ToString());
+
+            var user = await _userManager.GetUserByAsync(userLogIn?.NicknameOrEmail);
 
             if (user == null)
             {
                 return NotFound(new { errorText = "Пользователь не найден" });
             }
 
-            if (!_userManager.IsMatchPassword(user, userLogIn.Password))
+            if (!_userManager.IsMatchPassword(user, userLogIn?.Password))
             {
                 return BadRequest(new { errorText = "Неверный пароль" });
             }
 
             var roles = await _userManager.LogIn(user, HttpContext);
 
-            if (roles == null || !roles.Any()) 
+            if (roles == null || !roles.Any())
             {
                 return BadRequest(new { errorText = "Couldn't get user identity." });
             }
@@ -80,9 +84,11 @@ namespace Deloprosit.Server.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterModel userRegister)
+        public async Task<IActionResult> Register()
         {
-            if (userRegister.Password == null)
+            var userRegister = JsonConvert.DeserializeObject<RegisterRequestModel>(HttpContext.Request.Headers["Register"].ToString());
+
+            if (userRegister?.Password == null)
             {
                 return BadRequest("Password is null");
             }
@@ -122,21 +128,21 @@ namespace Deloprosit.Server.Controllers
         [Route("[action]")]
         public async Task<IActionResult> Confirm([FromQuery] string encryptedEmail, [FromQuery] string encryptedPassword, [FromQuery] string firstName, [FromQuery] string lastName)
         {
-            var user = await _userRepository.CreateAsync(new User { Email = encryptedEmail, Password = encryptedPassword, FirstName = firstName, LastName = lastName });
+            //var user = await _userRepository.CreateAsync(new User { Email = encryptedEmail, Password = encryptedPassword, FirstName = firstName, LastName = lastName });
 
-            if (user == null)
-            {
-                return Redirect($"{_configuration["ClientUrl"]}/confirm?success=false&message=User%20could%20not%20be%20created.");
-            }
+            //if (user == null)
+            //{
+            //    return Redirect($"{_configuration["ClientUrl"]}/confirm?success=false&message=User%20could%20not%20be%20created.");
+            //}
 
-            var result = await LogIn(new UserLogInRequestModel { NicknameOrEmail = _cryptoService.Decrypt(user.Email), Password = _cryptoService.Decrypt(user.Password) });
+            //var result = await LogIn(new UserLogInRequestModel { NicknameOrEmail = _cryptoService.Decrypt(user.Email), Password = _cryptoService.Decrypt(user.Password) });
 
-            var okResult = result as OkObjectResult;
+            //var okResult = result as OkObjectResult;
 
-            if (okResult == null || okResult.Value == null || okResult.Value as UserLogInResponseModel == null)
-            {
-                return Redirect($"{_configuration["ClientUrl"]}/confirm?success=false&message=Failed%20during%20login%20user%20{_cryptoService.Decrypt(encryptedEmail)}");
-            }
+            //if (okResult == null || okResult.Value == null || okResult.Value as UserLogInResponseModel == null)
+            //{
+            //    return Redirect($"{_configuration["ClientUrl"]}/confirm?success=false&message=Failed%20during%20login%20user%20{_cryptoService.Decrypt(encryptedEmail)}");
+            //}
 
             return Redirect($"{_configuration["ClientUrl"]}/confirm?key=");
         }

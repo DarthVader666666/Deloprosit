@@ -1,5 +1,9 @@
 ﻿using Deloprosit.Bll.Services;
+using Deloprosit.Server.Models;
+
 using Microsoft.AspNetCore.Mvc;
+
+using Newtonsoft.Json;
 
 namespace Deloprosit.Server.Controllers
 {
@@ -12,6 +16,13 @@ namespace Deloprosit.Server.Controllers
         public RegisterController(UserManager userManager)
         {
             _userManager = userManager;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index()
+        {
+            var userRegister = JsonConvert.DeserializeObject<RegisterRequestModel>(HttpContext.Request.Headers["Register"].ToString());
+            return Ok();
         }
 
         [HttpGet]

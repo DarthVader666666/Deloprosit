@@ -41,7 +41,7 @@ namespace Deloprosit.Bll.Services
 
             if (IsValidEmail(parameter as string))
             {
-                user = _dbContext.Users.FirstOrDefault(user => user.Email == parameter as string);
+                user = _dbContext.Users.FirstOrDefault(user => user.Email == (parameter as string));
             }
             else
             {
@@ -73,16 +73,24 @@ namespace Deloprosit.Bll.Services
                 return false;
             }
 
-            var trimmedEmail = email.Trim();
+            var beforeAt = email.Split('@');
 
-            if (trimmedEmail.EndsWith("."))
+            if (beforeAt.Length != 2)
             {
                 return false;
             }
+
+            var afterAt = beforeAt[1].Split('.');
+
+            if (afterAt.Length != 2)
+            {
+                return false;
+            }
+
             try
             {
                 var addr = new MailAddress(email);
-                return addr.Address == trimmedEmail;
+                return addr.Address == email;
             }
             catch
             {

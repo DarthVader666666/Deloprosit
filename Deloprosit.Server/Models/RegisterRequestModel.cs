@@ -1,6 +1,6 @@
 ﻿namespace Deloprosit.Server.Models
 {
-    public class UserRegisterModel
+    public class RegisterRequestModel
     {
         public string? Nickname { get; set; }
         public string? Email { get; set; }
