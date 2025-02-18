@@ -39,7 +39,13 @@ const handleLogin = () => {
     }}).catch(error => {
         const status = error.response.status;
         if(status === 404 || status === 400) {
-            toast.error(error.response.data.errorText);
+            const errorText = error.response.data.errorText;
+            if(errorText) {
+                toast.error(errorText);
+            }
+            else {
+                toast.error('Сервер не доступен');
+            }            
         }
         else if (status == 500) {
             toast.error('Ошибка сервера');
