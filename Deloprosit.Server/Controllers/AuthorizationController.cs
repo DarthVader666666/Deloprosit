@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Azure.Communication.Email;
 using Deloprosit.Bll.Interfaces;
 using Deloprosit.Bll.Services;
 using Deloprosit.Data.Entities;
@@ -36,12 +35,14 @@ namespace Deloprosit.Server.Controllers
         }
 
         [HttpPost]
-        [Route("[action]")]
-        public async Task<IActionResult> LogIn()
+        [Route("[action]/{nickname}")]
+        public async Task<IActionResult> LogIn(string? nickname = null)
         {
-            var userLogIn = JsonConvert.DeserializeObject<UserLogInRequestModel>(HttpContext.Request.Headers["Authenticate"].ToString());
+            var userLogIn = JsonConvert.DeserializeObject<UserLogInRequestModel>(HttpContext.Request.Headers["Authentication"].ToString());
 
-            var user = await _userManager.GetUserByAsync(userLogIn?.NicknameOrEmail);
+            var nicknameOrEmail = nickname == null ? userLogIn.Email : nickname;
+
+            var user = await _userManager.GetUserByAsync(nicknameOrEmail);
 
             if (user == null)
             {
@@ -53,17 +54,17 @@ namespace Deloprosit.Server.Controllers
                 return BadRequest(new { errorText = "Неверный пароль" });
             }
 
-            var roles = await _userManager.LogIn(user, HttpContext);
+            var creds = await _userManager.LogIn(user, HttpContext);
 
-            if (roles == null || !roles.Any())
+            if (creds == null || !creds.Value.Roles.Any())
             {
                 return BadRequest(new { errorText = "Couldn't get user identity." });
             }
 
             return Ok(new UserLogInResponseModel()
             { 
-                Nickname = user.Nickname, 
-                Roles = roles 
+                Nickname = creds.Value.Nickname, 
+                Roles = creds.Value.Roles
             });
         }
 
@@ -88,33 +89,33 @@ namespace Deloprosit.Server.Controllers
         {
             var userRegister = JsonConvert.DeserializeObject<RegisterRequestModel>(HttpContext.Request.Headers["Register"].ToString());
 
-            if (userRegister?.Password == null)
-            {
-                return BadRequest("Password is null");
-            }
+            //if (userRegister?.Password == null)
+            //{
+            //    return BadRequest("Password is null");
+            //}
 
-            if (userRegister.Email == null)
-            {
-                return BadRequest("Email is null");
-            }
+            //if (userRegister.Email == null)
+            //{
+            //    return BadRequest("Email is null");
+            //}
 
-            if (await DoesUserExist(_cryptoService.Encrypt(userRegister.Email)))
-            {
-                return BadRequest(new { errorText = "User with this email already exists." });
-            }
+            //if (await DoesUserExist(_cryptoService.Encrypt(userRegister.Email)))
+            //{
+            //    return BadRequest(new { errorText = "User with this email already exists." });
+            //}
 
-            var url = $"<button>" +
-                $"<a href='{_configuration["ClientUrl"]}/authorization/confirm?" +
-                $"encryptedEmail={_cryptoService.Encrypt(userRegister.Email)}&encryptedPassword={_cryptoService.Encrypt(userRegister.Password)}" +
-                $"&firstName={userRegister.FirstName}&lastName={userRegister.LastName}' " +
-                $"style=\"text-decoration: none; color: black\">" +
-                $"Confirm Registration" +
-                $"</a>" +
-                $"</button>";
+            //var url = $"<button>" +
+            //    $"<a href='{_configuration["ClientUrl"]}/authorization/confirm?" +
+            //    $"encryptedEmail={_cryptoService.Encrypt(userRegister.Email)}&encryptedPassword={_cryptoService.Encrypt(userRegister.Password)}" +
+            //    $"&firstName={userRegister.FirstName}&lastName={userRegister.LastName}' " +
+            //    $"style=\"text-decoration: none; color: black\">" +
+            //    $"Confirm Registration" +
+            //    $"</a>" +
+            //    $"</button>";
 
-            var result = await _emailSender.SendEmailAsync(userRegister.Email, "Please, confirm Your registration", url);
+            //var result = await _emailSender.SendEmailAsync(userRegister.Email, "Please, confirm Your registration", url);
 
-            if (result?.Value.Status == EmailSendStatus.Succeeded)
+            if (true)//result)
             {
                 return Ok(new { message = "Email sent" });
             }

@@ -13,7 +13,7 @@ namespace Deloprosit.Bll.Services
             _configuration = configuration;
         }
 
-        public async Task<EmailSendOperation?> SendEmailAsync(string email, string subject, string message)
+        public async Task<bool> SendEmailAsync(string email, string subject, string message)
         {
             var sender = _configuration["AzureEmailSender"];
             var connectionString = _configuration.GetConnectionString("AzureCommunicationService");
@@ -24,15 +24,14 @@ namespace Deloprosit.Bll.Services
 
             try
             {
-                var task = client.SendAsync(Azure.WaitUntil.Completed, sender, email, subject, message);
-                result = await task;
+                result = await client.SendAsync(Azure.WaitUntil.Completed, sender, email, subject, message);
             }
             catch (Exception ex)
             {
                 Console.Write(ex.Message);
             }
 
-            return result;
+            return result?.Value.Status == EmailSendStatus.Succeeded;
         }
     }
 }

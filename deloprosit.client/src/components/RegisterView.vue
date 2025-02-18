@@ -51,7 +51,20 @@ const handleSend = () => {
     {
         headers: {
             'Content-Type': 'application/json',
-            'Register': JSON.stringify(registerModel.value)
+            'Registration': JSON.stringify(
+                {
+                    nickname: getUnicodeByteArray(registerModel.value.nickname),
+                    email: registerModel.value.email,
+                    firstName: getUnicodeByteArray(registerModel.value.firstName),
+                    lastName: getUnicodeByteArray(registerModel.value.lastName),
+                    password: getUnicodeByteArray(registerModel.value.password),
+                    birthDate: registerModel.value.birthDate,
+                    registerDate: getCurrentDate(),
+                    country: getUnicodeByteArray(registerModel.value.country),
+                    city: getUnicodeByteArray(registerModel.value.city),
+                    title: getUnicodeByteArray(registerModel.value.title),
+                    info: getUnicodeByteArray(registerModel.value.info)
+                })
         }
     });
 }
@@ -69,8 +82,31 @@ async function doesUserExist (nicknameOrEmail) {
 
 function validateEmail (email) {
     return email.match(
-        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  );
+        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+}
+
+function getUnicodeByteArray(text) {
+    if(!text) {
+        return null;
+    }
+
+    var bytes = [];
+
+    for (var i = 0; i < text.length; ++i) {
+        var code = text.charCodeAt(i);    
+        bytes.push(code);
+    }
+
+    return bytes;
+}
+
+function getCurrentDate() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+
+    return year + '-' + month + '-' + day;
 }
 
 const handleNicknameMatch = async (event) => {

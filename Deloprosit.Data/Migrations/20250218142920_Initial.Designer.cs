@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Deloprosit.Data.Migrations
 {
     [DbContext(typeof(DeloprositDbContext))]
-    [Migration("20250217151212_Added RegisterDate to User")]
-    partial class AddedRegisterDatetoUser
+    [Migration("20250218142920_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -229,22 +229,6 @@ namespace Deloprosit.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            Email = "owner@owner.com",
-                            Nickname = "owner",
-                            Password = ""
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            Email = "admin@admin.com",
-                            Nickname = "admin",
-                            Password = "efavXKTzRTFnR7w69A7OJA=="
-                        });
                 });
 
             modelBuilder.Entity("Deloprosit.Data.Entities.UserRole", b =>
@@ -260,18 +244,6 @@ namespace Deloprosit.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            RoleId = 1
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            RoleId = 2
-                        });
                 });
 
             modelBuilder.Entity("Deloprosit.Data.Entities.Chapter", b =>

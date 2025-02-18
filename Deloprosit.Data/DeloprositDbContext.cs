@@ -41,21 +41,6 @@ namespace Deloprosit.Data
                 user.Property(x => x.City).HasMaxLength(maxNameLength);
                 user.Property(x => x.Info).HasMaxLength(maxInfoLength);
                 user.Property(x => x.Avatar).HasMaxLength(maxBytesLength);
-                user.HasData(
-                    new User
-                    {
-                        UserId = 1,
-                        Password = _configuration["OwnerPassword"],
-                        Nickname = "owner",
-                        Email = "owner@owner.com"
-                    },
-                    new User
-                    {
-                        UserId = 2,
-                        Password = _configuration["AdminPassword"],
-                        Nickname = "admin",
-                        Email = "admin@admin.com"
-                    });
             });
             modelBuilder.Entity<Role>(role =>
             {
@@ -84,17 +69,6 @@ namespace Deloprosit.Data
                 userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
                 userRole.HasOne(ur => ur.User).WithMany(u => u.UserRoles).HasForeignKey(ur => ur.UserId);
                 userRole.HasOne(ur => ur.Role).WithMany(r => r.UserRoles).HasForeignKey(ur => ur.RoleId);
-                userRole.HasData(
-                    new UserRole
-                    {
-                        UserId = 1,
-                        RoleId = (int)UserRoleType.Owner
-                    },
-                    new UserRole
-                    {
-                        UserId = 2,
-                        RoleId = (int)UserRoleType.Admin
-                    });
             });
             modelBuilder.Entity<Chapter>(chapter =>
             {

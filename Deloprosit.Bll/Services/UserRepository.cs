@@ -37,13 +37,9 @@ namespace Deloprosit.Bll.Services
                 return Task.FromResult<User?>(null);
             }
 
-            User? user = null;
+            var user = _dbContext.Users.FirstOrDefault(user => user.Email == (parameter as string));
 
-            if (IsValidEmail(parameter as string))
-            {
-                user = _dbContext.Users.FirstOrDefault(user => user.Email == (parameter as string));
-            }
-            else
+            if (user == null)
             {
                 user = _dbContext.Users.FirstOrDefault(user => user.Nickname == parameter as string);
             }
@@ -66,36 +62,36 @@ namespace Deloprosit.Bll.Services
             throw new NotImplementedException();
         }
 
-        private static bool IsValidEmail(string? email)
-        {
-            if (email == null)
-            { 
-                return false;
-            }
+        //private static bool IsValidEmail(string? email)
+        //{
+        //    if (email == null)
+        //    { 
+        //        return false;
+        //    }
 
-            var beforeAt = email.Split('@');
+        //    var beforeAt = email.Split('@');
 
-            if (beforeAt.Length != 2)
-            {
-                return false;
-            }
+        //    if (beforeAt.Length != 2)
+        //    {
+        //        return false;
+        //    }
 
-            var afterAt = beforeAt[1].Split('.');
+        //    var afterAt = beforeAt[1].Split('.');
 
-            if (afterAt.Length != 2)
-            {
-                return false;
-            }
+        //    if (afterAt.Length != 2)
+        //    {
+        //        return false;
+        //    }
 
-            try
-            {
-                var addr = new MailAddress(email);
-                return addr.Address == email;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        //    try
+        //    {
+        //        var addr = new MailAddress(email);
+        //        return addr.Address == email;
+        //    }
+        //    catch
+        //    {
+        //        return false;
+        //    }
+        //}
     }
 }

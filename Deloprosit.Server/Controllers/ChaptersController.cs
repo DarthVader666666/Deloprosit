@@ -10,7 +10,5 @@ namespace Deloprosit.Server.Controllers
         {
             
         }
-
-
     }
 }

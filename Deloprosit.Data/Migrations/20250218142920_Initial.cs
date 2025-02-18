@@ -36,6 +36,7 @@ namespace Deloprosit.Data.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RegisterDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     UserTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -160,24 +161,6 @@ namespace Deloprosit.Data.Migrations
                     { 1, "Owner" },
                     { 2, "Admin" },
                     { 3, "User" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "UserId", "Avatar", "BirthDate", "City", "Country", "Email", "FirstName", "Info", "LastName", "Nickname", "Password", "UserTitle" },
-                values: new object[,]
-                {
-                    { 1, null, null, null, null, "owner@owner.com", null, null, null, "owner", "", null },
-                    { 2, null, null, null, null, "admin@admin.com", null, null, null, "admin", "efavXKTzRTFnR7w69A7OJA==", null }
-                });
-
-            migrationBuilder.InsertData(
-                table: "UserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[,]
-                {
-                    { 1, 1 },
-                    { 2, 2 }
                 });
 
             migrationBuilder.CreateIndex(
