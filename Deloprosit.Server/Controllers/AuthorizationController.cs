@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
+using System.Text;
 
 namespace Deloprosit.Server.Controllers
 {
@@ -35,21 +36,20 @@ namespace Deloprosit.Server.Controllers
         }
 
         [HttpPost]
-        [Route("[action]/{nickname}")]
-        public async Task<IActionResult> LogIn(string? nickname = null)
+        [Route("[action]")]
+        public async Task<IActionResult> LogIn([FromQuery]string? nickname = null)
         {
-            var userLogIn = JsonConvert.DeserializeObject<UserLogInRequestModel>(HttpContext.Request.Headers["Authentication"].ToString());
+            var userLogInRequestModel = JsonConvert.DeserializeObject<UserLogInRequestModel>(HttpContext.Request.Headers["Authentication"].ToString());
+            var password = Encoding.UTF8.GetString(userLogInRequestModel?.Password ?? []);
 
-            var nicknameOrEmail = nickname == null ? userLogIn.Email : nickname;
-
-            var user = await _userManager.GetUserByAsync(nicknameOrEmail);
+            var user = await _userManager.GetUserByAsync(nickname: nickname, email: userLogInRequestModel?.Email);
 
             if (user == null)
             {
                 return NotFound(new { errorText = "Пользователь не найден" });
             }
 
-            if (!_userManager.IsMatchPassword(user, userLogIn?.Password))
+            if (!_userManager.IsMatchPassword(user, password))
             {
                 return BadRequest(new { errorText = "Неверный пароль" });
             }
@@ -62,8 +62,8 @@ namespace Deloprosit.Server.Controllers
             }
 
             return Ok(new UserLogInResponseModel()
-            { 
-                Nickname = creds.Value.Nickname, 
+            {
+                Nickname = creds.Value.Nickname,
                 Roles = creds.Value.Roles
             });
         }

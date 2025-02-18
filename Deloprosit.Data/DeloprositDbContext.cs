@@ -41,6 +41,7 @@ namespace Deloprosit.Data
                 user.Property(x => x.City).HasMaxLength(maxNameLength);
                 user.Property(x => x.Info).HasMaxLength(maxInfoLength);
                 user.Property(x => x.Avatar).HasMaxLength(maxBytesLength);
+                user.Property(x => x.IsConfirmed).HasDefaultValue(false);
             });
             modelBuilder.Entity<Role>(role =>
             {

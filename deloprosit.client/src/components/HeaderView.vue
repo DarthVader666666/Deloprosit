@@ -21,23 +21,43 @@ onMounted(() => {
     environment.value = import.meta.env.VITE_API_ENVIRONMENT;
 })
 
+function getUnicodeByteArray(text) {
+    const utf8Encode = new TextEncoder();
+    return Object.values(utf8Encode.encode(text));
+}
+
+function validateEmail (email) {
+    return email.match(
+        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+}
+
 const handleLogin = () => {
+    const nicknameValue = validateEmail(loginRequestForm.value.nicknameOrEmail) ? '' : loginRequestForm.value.nicknameOrEmail
+    const emailValue = validateEmail(loginRequestForm.value.nicknameOrEmail) ? loginRequestForm.value.nicknameOrEmail : null;
+
     axios.defaults.withCredentials = true;
-    axios.post(`${baseUrl.value}/authorization/login/`, null,
+    axios.post(`${baseUrl.value}/authorization/login?nickname=${nicknameValue}`, null,
     {
         headers: 
         {
             'Content-Type': 'application/json',
-            'Authenticate': JSON.stringify(loginRequestForm.value)
+            'Authentication': JSON.stringify({
+                email: emailValue,
+                password: getUnicodeByteArray(loginRequestForm.value.password)
+            })
         }
-    }).then(response => {
+    })
+    .then(response => {
         if(response.status === 200) {
             loginRequestForm.value.nicknameOrEmail = null;
             loginRequestForm.value.password = null;
             nickname.value = response.data.nickname;
             toast.success(`Вы вошли, как ${response.data.nickname}`);
-    }}).catch(error => {
+        }
+    })
+    .catch(error => {
         const status = error.response.status;
+
         if(status === 404 || status === 400) {
             const errorText = error.response.data.errorText;
             if(errorText) {
@@ -47,7 +67,7 @@ const handleLogin = () => {
                 toast.error('Сервер не доступен');
             }            
         }
-        else if (status == 500) {
+        else if (status === 500) {
             toast.error('Ошибка сервера');
         }
 

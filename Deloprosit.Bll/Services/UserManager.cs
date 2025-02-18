@@ -1,4 +1,5 @@
-﻿using Deloprosit.Bll.Interfaces;
+﻿using Azure.Communication.Email;
+using Deloprosit.Bll.Interfaces;
 using Deloprosit.Data.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -28,14 +29,16 @@ namespace Deloprosit.Bll.Services
             _emailSender = emailSender;
         }
 
-        public async Task<User?> GetUserByAsync(string? nicknameOrEmail, bool encrypted = false)
+        public async Task<User?> GetUserByAsync(string? nickname = null, string? email = null)
         {
-            if (!encrypted)
+            if (nickname == null)
             {
-                nicknameOrEmail = _cryptoService.Encrypt(nicknameOrEmail);
+                return await _userRepository.FindByAsync(_cryptoService.Encrypt(email));
             }
-
-            return await _userRepository.FindByAsync(nicknameOrEmail);
+            else
+            {
+                return await _userRepository.FindByAsync(nickname);
+            }
         }
 
         public bool IsMatchPassword(User user, string? encryptedPassword)
@@ -58,7 +61,7 @@ namespace Deloprosit.Bll.Services
 
             var roles = claimsIdentity.Claims.FirstOrDefault(x => x.Type == ClaimsIdentity.DefaultRoleClaimType)?.Value;
 
-            return (_cryptoService.Decrypt(user.Nickname), roles?.Split(rolesSeperator));
+            return (user.Nickname, roles?.Split(rolesSeperator));
         }
 
         public async Task LogOut(HttpContext httpContext)
@@ -73,18 +76,35 @@ namespace Deloprosit.Bll.Services
             }
         }
 
-        public async Task CreateUser(User? user)
+        public async Task<bool> RegisterAsync(User? user)
         {
-            var url = $"<button>" +
-                $"<a href='{_configuration["ClientUrl"]}/registration/confirm?" +
-                $"key={user.Email}&encryptedPassword={user.Password}" +
-                $"&firstName={user.FirstName}&lastName={user.LastName}' " +
+            if (user == null)
+            {
+                return false;
+            }
+
+            var email = user.Email;
+            user.Email = _cryptoService.Encrypt(email);
+            user.Password = _cryptoService.Encrypt(user.Password);
+
+            var createdUser = await _userRepository.CreateAsync(user);
+
+            if (createdUser == null || createdUser.Email == null)
+            {
+                return false;
+            }
+
+            var url = 
+                $"<button>" +
+                $"<a href='{_configuration["ClientUrl"]}/registration/confirm?key={createdUser.Email}'" +
                 $"style=\"text-decoration: none; color: black\">" +
-                $"Confirm Registration" +
+                $"Подтвердить регистрацию" +
                 $"</a>" +
                 $"</button>";
 
-            var result = await _emailSender.SendEmailAsync(user.Email, "Deloprosit: Письмо с подтверждением регистрации", url);
+            var result = await _emailSender.SendEmailAsync(email, "Пожалуйста, подтвердите регистрацию", url);
+
+            return result;
         }
 
         private async Task<ClaimsIdentity?> GetIdentityAsync(User? user)
@@ -96,7 +116,7 @@ namespace Deloprosit.Bll.Services
 
                 var claims = new List<Claim>
                     {
-                        new (ClaimsIdentity.DefaultNameClaimType, user.Email ?? string.Empty),
+                        new (ClaimsIdentity.DefaultNameClaimType, _cryptoService.Decrypt(user.Email) ?? string.Empty),
                         new (ClaimsIdentity.DefaultRoleClaimType, roleType)
                     };
 
@@ -117,5 +137,10 @@ namespace Deloprosit.Bll.Services
 
             return await _userRepository.FindByAsync(nicknameOrEmail) != null;
         }
+
+        //public async Task<string> DecodeUnicodeArray(int[]? charCodes)
+        //{ 
+            
+        //}
     }
 }

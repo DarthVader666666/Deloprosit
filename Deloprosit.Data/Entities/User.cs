@@ -15,6 +15,7 @@
         public byte[]? Avatar { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
+        public bool IsConfirmed { get; set; } = false;
         public virtual ICollection<UserRole>? UserRoles { get; set; }
         public virtual ICollection<Chapter>? Chapters { get; set; }
         public virtual ICollection<Theme>? Themes { get; set; }

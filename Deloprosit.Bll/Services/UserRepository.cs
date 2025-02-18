@@ -15,9 +15,15 @@ namespace Deloprosit.Bll.Services
             _dbContext = dbContext;
         }
 
-        public Task<User?> CreateAsync(User item)
+        public async Task<User?> CreateAsync(User item)
         {
-            throw new NotImplementedException();
+            var createdUser = _dbContext.Users.Add(item).Entity;
+            await _dbContext.SaveChangesAsync();
+
+            _dbContext.UserRoles.Add(new UserRole { UserId = createdUser.UserId });
+            await _dbContext.SaveChangesAsync();
+
+            return createdUser;
         }
 
         public Task<User?> DeleteAsync(int? id)
@@ -38,11 +44,7 @@ namespace Deloprosit.Bll.Services
             }
 
             var user = _dbContext.Users.FirstOrDefault(user => user.Email == (parameter as string));
-
-            if (user == null)
-            {
-                user = _dbContext.Users.FirstOrDefault(user => user.Nickname == parameter as string);
-            }
+            user ??= _dbContext.Users.FirstOrDefault(user => user.Nickname == parameter as string);
 
             return Task.FromResult(user);
         }

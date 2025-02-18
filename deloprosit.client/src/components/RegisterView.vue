@@ -3,11 +3,13 @@ import LeftColumnView from './LeftColumnView.vue'
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 import { computed } from 'vue';
+import { useToast } from 'vue-toastification';
 import axios from 'axios';
 
 const baseUrl = ref(null);
 const showNicknameError = ref(false);
 const showEmailError = ref(false);
+const toast = useToast();
 
 const registerModel = ref({
     nickname: null,
@@ -66,6 +68,34 @@ const handleSend = () => {
                     info: getUnicodeByteArray(registerModel.value.info)
                 })
         }
+    })
+    .then(response => 
+    {
+        if(response.status === 200) {
+            toast.success('Письмо отправлено');
+
+            registerModel.value.nickname = null;
+            registerModel.value.email = null;
+            registerModel.value.firstName = null;
+            registerModel.value.lastName = null;
+            registerModel.value.password = null;
+            registerModel.value.birthDate = null;
+            registerModel.value.country = null;
+            registerModel.value.city = null;
+            registerModel.value.title = null;
+            registerModel.value.info = null;
+
+            repeatPassword.value = null;
+        }
+    })
+    .catch(error => {
+        const status = error.response.status;
+        if(status === 400) {
+            toast.error('Не удалось отправить письмо');       
+        }
+        else if (status === 500) {
+            toast.error('Ошибка сервера');
+        }
     });
 }
 
@@ -86,18 +116,8 @@ function validateEmail (email) {
 }
 
 function getUnicodeByteArray(text) {
-    if(!text) {
-        return null;
-    }
-
-    var bytes = [];
-
-    for (var i = 0; i < text.length; ++i) {
-        var code = text.charCodeAt(i);    
-        bytes.push(code);
-    }
-
-    return bytes;
+    const utf8Encode = new TextEncoder();
+    return Object.values(utf8Encode.encode(text));
 }
 
 function getCurrentDate() {

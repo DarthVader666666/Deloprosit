@@ -70,6 +70,7 @@ else
 builder.Services.AddScoped<CryptoService>();
 builder.Services.AddScoped<EmailSender>();
 builder.Services.AddScoped<UserManager>();
+
 builder.Services.ConfigureAutomapper();
 
 var provider = builder?.Services?.BuildServiceProvider();
