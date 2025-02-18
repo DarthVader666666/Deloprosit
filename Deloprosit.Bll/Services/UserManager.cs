@@ -1,5 +1,4 @@
-﻿using Azure.Communication.Email;
-using Deloprosit.Bll.Interfaces;
+﻿using Deloprosit.Bll.Interfaces;
 using Deloprosit.Data.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -89,20 +88,20 @@ namespace Deloprosit.Bll.Services
 
             var createdUser = await _userRepository.CreateAsync(user);
 
-            if (createdUser == null || createdUser.Email == null)
+            if (createdUser == null || email == null)
             {
                 return false;
             }
 
             var url = 
-                $"<button>" +
+                $"<button type=\"button\">" +
                 $"<a href='{_configuration["ClientUrl"]}/registration/confirm?key={createdUser.Email}'" +
                 $"style=\"text-decoration: none; color: black\">" +
                 $"Подтвердить регистрацию" +
                 $"</a>" +
                 $"</button>";
 
-            var result = await _emailSender.SendEmailAsync(email, "Пожалуйста, подтвердите регистрацию", url);
+            var result = await _emailSender.SendEmailAsync(email, "Пожалуйста, подтвердите регистрацию в Deloprosit", url);
 
             return result;
         }
@@ -137,10 +136,5 @@ namespace Deloprosit.Bll.Services
 
             return await _userRepository.FindByAsync(nicknameOrEmail) != null;
         }
-
-        //public async Task<string> DecodeUnicodeArray(int[]? charCodes)
-        //{ 
-            
-        //}
     }
 }
