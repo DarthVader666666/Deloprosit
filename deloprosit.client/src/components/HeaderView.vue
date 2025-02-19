@@ -1,17 +1,19 @@
 <script setup>
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
-import { ref } from 'vue';
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
+import { useCookies } from 'vue3-cookies';
 
 const loginRequestForm = ref({
     nicknameOrEmail: null,
     password: null
 });
 
-const nickname = ref(null);
 const toast = useToast();
+const cookies = useCookies(['Deloprosit-Cookies']);
+
+const nickname = ref(null);
 const baseUrl = ref(null);
 const environment = ref(null);
 
@@ -51,6 +53,7 @@ const handleLogin = () => {
             loginRequestForm.value.nicknameOrEmail = null;
             loginRequestForm.value.password = null;
             nickname.value = response.data.nickname;
+
             toast.success(`Вы вошли, как ${response.data.nickname}`);
         }
     })
@@ -73,6 +76,12 @@ const handleLogin = () => {
         loginRequestForm.value.nicknameOrEmail = null;
         loginRequestForm.value.password = null;
     });
+
+    cookies.get('my_cookies');
+    cookies.set('my_cookies', 'QWERTY')
+
+    console.log(cookies.get('my_cookies'))
+
 }
 
 const handleLogout = () => {
@@ -98,9 +107,9 @@ const handleLogout = () => {
 <template>
     <div class="header-container">
         <div class="logo">
-            <h1>Deloprosit</h1>
+            <RouterLink to="/"><h1>DP</h1></RouterLink>            
         </div>
-        <div v-if="nickname" class="message">Добро пожаловать, <span>{{ nickname }}!</span>
+        <div v-if="nickname" class="message">Профиль, <span>{{ nickname }}!</span>
             <button @click="handleLogout">Выйти</button>
         </div>
         <form v-else class="form-container" @submit.prevent="handleLogin">
@@ -151,7 +160,7 @@ const handleLogout = () => {
     .header-container {
       display: flex;
       flex-direction: row;
-      justify-content: end;
+      justify-content: space-between;
       padding-top: 1rem;
       padding-bottom: 1rem;
       background-image: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
@@ -161,15 +170,20 @@ const handleLogout = () => {
     }
 
     .logo {
-        position: absolute;
-        right: 60%;
-        top: -10px;
-        margin: 0;
-        padding: 0;        
-        color: rgb(124, 172, 124);
         text-shadow: 3px 3px rgba(22, 22, 22, 0.651);
-        text-align: center;
+        height: 18px;
+        margin-top: -24px;
+        margin-left: 10px;
+    }
+
+    .logo a {
+        text-decoration: none;
+        color: rgb(124, 172, 124);
         font-size: 18px;
+    }
+
+    .logo a:hover {
+        color: rgb(124, 172, 124);
     }
 
     a {
