@@ -96,7 +96,10 @@ const handleLogout = () => {
 </script>
 
 <template>
-    <div class="header-container">        
+    <div class="header-container">
+        <div class="logo">
+            <h1>Deloprosit</h1>
+        </div>
         <div v-if="nickname" class="message">Добро пожаловать, <span>{{ nickname }}!</span>
             <button @click="handleLogout">Выйти</button>
         </div>
@@ -155,6 +158,18 @@ const handleLogout = () => {
       align-content: center;
       box-shadow: 0 7px 15px -3px black;
       border-radius: 0 0 5px 5px;
+    }
+
+    .logo {
+        position: absolute;
+        right: 60%;
+        top: -10px;
+        margin: 0;
+        padding: 0;        
+        color: rgb(124, 172, 124);
+        text-shadow: 3px 3px rgba(22, 22, 22, 0.651);
+        text-align: center;
+        font-size: 18px;
     }
 
     a {

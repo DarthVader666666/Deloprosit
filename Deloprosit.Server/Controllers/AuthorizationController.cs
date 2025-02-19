@@ -49,6 +49,11 @@ namespace Deloprosit.Server.Controllers
                 return NotFound(new { errorText = "Пользователь не найден" });
             }
 
+            if (!user.IsConfirmed)
+            {
+                return NotFound(new { errorText = "Пользователь не подтвержден" });
+            }
+
             if (!_userManager.IsMatchPassword(user, password))
             {
                 return BadRequest(new { errorText = "Неверный пароль" });

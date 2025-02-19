@@ -81,27 +81,31 @@ namespace Deloprosit.Bll.Services
             {
                 return false;
             }
-
-            var email = user.Email;
-            user.Email = _cryptoService.Encrypt(email);
-            user.Password = _cryptoService.Encrypt(user.Password);
-
-            var createdUser = await _userRepository.CreateAsync(user);
-
-            if (createdUser == null || email == null)
-            {
-                return false;
-            }
-
+            
             var url = 
                 $"<button type=\"button\" style=\"border: black; border-width: 1px\">" +
-                $"<a href='{_configuration["ClientUrl"]}/registration/confirm?key={_cryptoService.Encrypt(createdUser.Nickname)}.{createdUser.Email}'" +
+                $"<a href='{_configuration["ClientUrl"]}/registration/confirm?key={_cryptoService.Encrypt(user.Nickname)}.{_cryptoService.Encrypt(user.Email)}'" +
                 $"style=\"text-decoration: none; color: black\">" +
                 $"Подтвердить регистрацию" +
                 $"</a>" +
                 $"</button>";
 
-            var result = await _emailSender.SendEmailAsync(email, "Пожалуйста, подтвердите регистрацию в Deloprosit", url);
+            var result = await _emailSender.SendEmailAsync(user.Email ?? string.Empty, "Пожалуйста, подтвердите регистрацию в Deloprosit", url);
+
+            if (!result)
+            {
+                return false;
+            }
+
+            user.Email = _cryptoService.Encrypt(user.Email);
+            user.Password = _cryptoService.Encrypt(user.Password);
+
+            var createdUser = await _userRepository.CreateAsync(user);
+
+            if (createdUser == null)
+            {
+                return false;
+            }
 
             return result;
         }
