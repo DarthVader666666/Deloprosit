@@ -131,9 +131,9 @@ namespace Deloprosit.Bll.Services
             return updatedUser;
         }
 
-        public async Task<bool> DoesUserExistAsync(string? nicknameOrEmail, bool encrypted = false)
+        public async Task<bool> DoesUserExistAsync(string? nicknameOrEmail, bool doEncrypt = false)
         {
-            if (!encrypted)
+            if (doEncrypt)
             {
                 nicknameOrEmail = _cryptoService.Encrypt(nicknameOrEmail);
             }

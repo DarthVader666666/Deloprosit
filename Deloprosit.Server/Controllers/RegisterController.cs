@@ -74,10 +74,19 @@ namespace Deloprosit.Server.Controllers
         }
 
         [HttpGet]
-        [Route("[action]/{nicknameOrEmail}")]
-        public async Task<IActionResult> UserExists([FromRoute] string? nicknameOrEmail) 
+        [Route("[action]")]
+        public async Task<IActionResult> UserExists([FromQuery] string? nickname, [FromQuery] string? email) 
         {
-            var userExists = await _userManager.DoesUserExistAsync(nicknameOrEmail);
+            var userExists = false;
+
+            if (nickname == null)
+            {
+                userExists = await _userManager.DoesUserExistAsync(email, doEncrypt: true);
+            }
+            else
+            {
+                userExists = await _userManager.DoesUserExistAsync(nickname);
+            }
 
             if (userExists)
             {

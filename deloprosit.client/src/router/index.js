@@ -1,5 +1,5 @@
 import RegisterView from "@/components/RegisterView.vue";
-import MainView from "@/components/MainView.vue";
+import HomeView from "@/components/HomeView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -7,8 +7,8 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: 'main',
-            component: MainView
+            name: 'home',
+            component: HomeView
         },
         {
             path: '/register',

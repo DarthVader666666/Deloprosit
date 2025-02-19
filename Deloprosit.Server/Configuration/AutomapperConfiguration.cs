@@ -32,7 +32,8 @@ namespace Deloprosit.Server.Configurations
 
         private static string? EncodeUTF8(byte[]? bytes)
         {
-            return Encoding.UTF8.GetString(bytes ?? []);
+            var line = Encoding.UTF8.GetString(bytes ?? []);
+            return line.Any() ? line : null;
         }
     }
 }
