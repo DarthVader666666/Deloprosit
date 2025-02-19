@@ -16,11 +16,13 @@ namespace Deloprosit.Server.Controllers
     {
         private readonly UserManager _userManager;
         private readonly IMapper _automapper;
+        private readonly IConfiguration _configuration;
 
         public RegisterController(UserManager userManager, EmailSender emailSender, IMapper automaper, IConfiguration configuration)
         {
             _userManager = userManager;
             _automapper = automaper;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -55,6 +57,20 @@ namespace Deloprosit.Server.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        public async Task<IActionResult> Confirm([FromQuery] string? key)
+        {
+            var confirmedUser = await _userManager.ConfirmUserAsync(key);
+
+            if (confirmedUser == null)
+            {
+                return Problem("Ошибка подтверждения", statusCode: 500);
+            }
+
+            return Redirect($"{_configuration["ClientUrl"]}/registration?confirmed=true&nickname={confirmedUser.Nickname}");
         }
 
         [HttpGet]

@@ -30,12 +30,12 @@ onMounted(() => {
     baseUrl.value = import.meta.env.VITE_API_SERVER_URL;
 });
 
-const sendButtonDisabled = computed(() => {    
-    return !(registerModel.value.nickname && registerModel.value.email && registerModel.value.password && passwordsMatch.value)
+const isDisabledSendButton = computed(() => {    
+    return !(registerModel.value.nickname && registerModel.value.email && registerModel.value.password && isMatchPassword.value)
     || showNicknameError.value || showEmailError.value || showPasswordsError.value;
 });
 
-const passwordsMatch = computed(() => {
+const isMatchPassword = computed(() => {
     return registerModel.value.password === repeatPassword.value;
 });
 
@@ -44,7 +44,7 @@ const showPasswordsError = computed(() => {
         return false;
     }
     else {
-        return !passwordsMatch.value;
+        return !isMatchPassword.value;
     }
 });
 
@@ -190,7 +190,7 @@ const handleEmailMatch = async (event) => {
             </div>
             <hr/>
             <div class="buttons">
-                <button type="submit" :disabled="sendButtonDisabled">Отправить</button>
+                <button type="submit" :disabled="isDisabledSendButton">Отправить</button>
                 <button type="button"><a href="/">Отменить</a></button>
             </div>
         </form>

@@ -15,8 +15,13 @@ namespace Deloprosit.Bll.Services
             _dbContext = dbContext;
         }
 
-        public async Task<User?> CreateAsync(User item)
+        public async Task<User?> CreateAsync(User? item)
         {
+            if (item == null)
+            { 
+                return null;
+            }
+
             var createdUser = _dbContext.Users.Add(item).Entity;
             await _dbContext.SaveChangesAsync();
 
@@ -59,41 +64,22 @@ namespace Deloprosit.Bll.Services
             throw new NotImplementedException();
         }
 
-        public Task<User?> UpdateAsync(User item)
+        public async Task<User?> UpdateAsync(User? item)
         {
-            throw new NotImplementedException();
+            if (item == null)
+            {
+                return null;
+            }
+
+            var updatedUser = _dbContext.Users.Add(item).Entity;
+            int result = await _dbContext.SaveChangesAsync();
+
+            if (result <= 0)
+            {
+                return null;
+            }
+
+            return updatedUser;
         }
-
-        //private static bool IsValidEmail(string? email)
-        //{
-        //    if (email == null)
-        //    { 
-        //        return false;
-        //    }
-
-        //    var beforeAt = email.Split('@');
-
-        //    if (beforeAt.Length != 2)
-        //    {
-        //        return false;
-        //    }
-
-        //    var afterAt = beforeAt[1].Split('.');
-
-        //    if (afterAt.Length != 2)
-        //    {
-        //        return false;
-        //    }
-
-        //    try
-        //    {
-        //        var addr = new MailAddress(email);
-        //        return addr.Address == email;
-        //    }
-        //    catch
-        //    {
-        //        return false;
-        //    }
-        //}
     }
 }

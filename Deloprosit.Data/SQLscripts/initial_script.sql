@@ -1,3 +1,5 @@
+use DeloprositDb
+
 INSERT INTO Users (Nickname, Email, Password)
 VALUES ('owner', '', ''), ('admin', 'JtfP1IxKgKVGB4ADFXFnvA==', 'efavXKTzRTFnR7w69A7OJA==')
 

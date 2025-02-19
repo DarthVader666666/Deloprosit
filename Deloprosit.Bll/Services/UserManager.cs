@@ -94,8 +94,8 @@ namespace Deloprosit.Bll.Services
             }
 
             var url = 
-                $"<button type=\"button\">" +
-                $"<a href='{_configuration["ClientUrl"]}/registration/confirm?key={createdUser.Email}'" +
+                $"<button type=\"button\" style=\"border: black; border-width: 1px\">" +
+                $"<a href='{_configuration["ClientUrl"]}/registration/confirm?key={_cryptoService.Encrypt(createdUser.Nickname)}.{createdUser.Email}'" +
                 $"style=\"text-decoration: none; color: black\">" +
                 $"Подтвердить регистрацию" +
                 $"</a>" +
@@ -104,6 +104,41 @@ namespace Deloprosit.Bll.Services
             var result = await _emailSender.SendEmailAsync(email, "Пожалуйста, подтвердите регистрацию в Deloprosit", url);
 
             return result;
+        }
+
+        public async Task<User?> ConfirmUserAsync(string? key)
+        {
+            var decodedKey = key?.Split('.');
+            var encryptedNickname = decodedKey?[0];
+            var encryptedEmail = decodedKey?[1];
+
+            var user = await GetUserByAsync(_cryptoService.Decrypt(encryptedNickname));
+
+            if (user == null || user.Email != encryptedEmail)
+            {
+                return null;
+            }
+
+            user.IsConfirmed = true;
+
+            var updatedUser = await _userRepository.UpdateAsync(user);
+
+            if (updatedUser == null)
+            {
+                return null;
+            }
+
+            return updatedUser;
+        }
+
+        public async Task<bool> DoesUserExistAsync(string? nicknameOrEmail, bool encrypted = false)
+        {
+            if (!encrypted)
+            {
+                nicknameOrEmail = _cryptoService.Encrypt(nicknameOrEmail);
+            }
+
+            return await _userRepository.FindByAsync(nicknameOrEmail) != null;
         }
 
         private async Task<ClaimsIdentity?> GetIdentityAsync(User? user)
@@ -127,14 +162,37 @@ namespace Deloprosit.Bll.Services
             return null;
         }
 
-        public async Task<bool> DoesUserExistAsync(string? nicknameOrEmail, bool encrypted = false)
-        {
-            if (!encrypted)
-            {
-                nicknameOrEmail = _cryptoService.Encrypt(nicknameOrEmail);
-            }
 
-            return await _userRepository.FindByAsync(nicknameOrEmail) != null;
-        }
+        //private static bool IsValidEmail(string? email)
+        //{
+        //    if (email == null)
+        //    { 
+        //        return false;
+        //    }
+
+        //    var beforeAt = email.Split('@');
+
+        //    if (beforeAt.Length != 2)
+        //    {
+        //        return false;
+        //    }
+
+        //    var afterAt = beforeAt[1].Split('.');
+
+        //    if (afterAt.Length != 2)
+        //    {
+        //        return false;
+        //    }
+
+        //    try
+        //    {
+        //        var addr = new MailAddress(email);
+        //        return addr.Address == email;
+        //    }
+        //    catch
+        //    {
+        //        return false;
+        //    }
+        //}
     }
 }
