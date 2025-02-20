@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
+
+using System.Security.Claims;
 using System.Text;
 
 namespace Deloprosit.Server.Controllers
@@ -37,7 +39,7 @@ namespace Deloprosit.Server.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> LogIn([FromQuery]string? nickname = null)
+        public async Task<IActionResult> LogIn([FromQuery]string? nickname = null, [FromQuery] bool? remember = false)
         {
             var userLogInRequestModel = JsonConvert.DeserializeObject<UserLogInRequestModel>(HttpContext.Request.Headers["Authentication"].ToString());
             var password = Encoding.UTF8.GetString(userLogInRequestModel?.Password ?? []);
@@ -69,9 +71,32 @@ namespace Deloprosit.Server.Controllers
             return Ok(new UserLogInResponseModel()
             {
                 Nickname = creds.Value.Nickname,
-                Roles = creds.Value.Roles
+                Roles = creds.Value.Roles,
+                Remember = remember
             });
         }
+
+        [HttpGet]
+        [Route("[action]")]
+        public IActionResult CookieCredentials()
+        {
+            var user = HttpContext.User;
+
+            if (user.Identity == null || !user.Identity.IsAuthenticated)
+            {
+                return Ok("Пользователь не аутентифицирован");
+            }
+
+            var claims = user.Claims;
+
+            return Ok(new UserLogInResponseModel()
+            {
+                Nickname = claims.FirstOrDefault(x => x.Type == ClaimsIdentity.DefaultNameClaimType)?.Value,
+                Roles = claims.FirstOrDefault(x => x.Type == ClaimsIdentity.DefaultRoleClaimType)?.Value.Split(','),
+                IsAuthenticated = user.Identity.IsAuthenticated
+            });
+        }
+
 
         [HttpPost]
         [Route("[action]")]

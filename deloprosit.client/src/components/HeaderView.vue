@@ -10,17 +10,33 @@ const loginRequestForm = ref({
     password: null
 });
 
+const coockieName = 'Deloprosit_Cookies';
+
 const toast = useToast();
-const cookies = useCookies(['Deloprosit-Cookies']);
+const cookieManager = useCookies();
 
 const nickname = ref(null);
+const remember = ref (false);
 const baseUrl = ref(null);
 const environment = ref(null);
 
-onMounted(() => {
+onMounted(async () => {
     axios.defaults.withCredentials = true;
     baseUrl.value = import.meta.env.VITE_API_SERVER_URL;
     environment.value = import.meta.env.VITE_API_ENVIRONMENT;
+
+    const activeCookies = cookieManager.cookies.get(coockieName);
+    const localCookies = localStorage.getItem(coockieName);
+
+    if (!activeCookies && localCookies) {
+        cookieManager.cookies.set(coockieName, localCookies);
+    }    
+
+    const response = await axios.get(`${baseUrl.value}/authorization/cookiecredentials`);
+
+    if(response.data.isAuthenticated === true && response.data.nickname) {
+        nickname.value = response.data.nickname;
+    }
 })
 
 function getUnicodeByteArray(text) {
@@ -37,7 +53,7 @@ const handleLogin = () => {
     const emailValue = validateEmail(loginRequestForm.value.nicknameOrEmail) ? loginRequestForm.value.nicknameOrEmail : null;
 
     axios.defaults.withCredentials = true;
-    axios.post(`${baseUrl.value}/authorization/login?nickname=${nicknameValue}`, null,
+    axios.post(`${baseUrl.value}/authorization/login?nickname=${nicknameValue}&remember=${remember.value}`, null,
     {
         headers: 
         {
@@ -53,6 +69,14 @@ const handleLogin = () => {
             loginRequestForm.value.nicknameOrEmail = null;
             loginRequestForm.value.password = null;
             nickname.value = response.data.nickname;
+
+            if(response.data.remember === true) {
+                const cookie = document.cookie.split('=');
+            
+                if(cookie && cookie.length === 2) {
+                    localStorage.setItem(cookie[0], cookie[1]);
+                }  
+            }
 
             toast.success(`Вы вошли, как ${response.data.nickname}`);
         }
@@ -76,12 +100,6 @@ const handleLogin = () => {
         loginRequestForm.value.nicknameOrEmail = null;
         loginRequestForm.value.password = null;
     });
-
-    cookies.get('my_cookies');
-    cookies.set('my_cookies', 'QWERTY')
-
-    console.log(cookies.get('my_cookies'))
-
 }
 
 const handleLogout = () => {
@@ -94,6 +112,8 @@ const handleLogout = () => {
         .then(response => {
             if(response.status === 200) {
                 nickname.value = null;
+
+                localStorage.removeItem('Deloprosit_Cookies');
             }
         })
         .catch(error => {
@@ -109,7 +129,7 @@ const handleLogout = () => {
         <div class="logo">
             <RouterLink to="/"><h1>DP</h1></RouterLink>            
         </div>
-        <div v-if="nickname" class="message">Профиль, <span>{{ nickname }}!</span>
+        <div v-if="nickname" class="message"><span>{{ nickname }}</span>
             <button @click="handleLogout">Выйти</button>
         </div>
         <form v-else class="form-container" @submit.prevent="handleLogin">
@@ -127,7 +147,7 @@ const handleLogout = () => {
             <div class="login-anchors">
                 <RouterLink to="/register">Регистрация</RouterLink> | <a>Забыл(а) пароль</a> | 
                 <label for="remember-checkbox">Запомнить</label>
-                <input type="checkbox" id="remember-checkbox">
+                <input v-model="remember" type="checkbox" id="remember-checkbox">
             </div>
         </form>
     </div>
@@ -146,9 +166,15 @@ const handleLogout = () => {
         padding-top: 5px;
     }
 
+    .login-anchors input {
+        height: 15px;
+        width: 15px;
+    }
+
     .message {
       font-size: large;
       padding-right: 15px;
+      align-content: center;
     }
 
     .message span {
@@ -166,6 +192,7 @@ const handleLogout = () => {
       align-content: center;
       box-shadow: 0 7px 15px -3px black;
       border-radius: 0 0 5px 5px;
+      min-height: 45px;
     }
 
     .logo {
@@ -173,6 +200,7 @@ const handleLogout = () => {
         height: 18px;
         margin-top: -24px;
         margin-left: 10px;
+        width: 10px;
     }
 
     .logo a {

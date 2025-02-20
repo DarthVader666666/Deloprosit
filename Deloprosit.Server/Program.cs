@@ -23,13 +23,14 @@ builder.Services.AddControllers();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => {
         options.Cookie.Name = "Deloprosit_Cookies";
+        //options.Cookie.MaxAge = TimeSpan.FromDays(1);
         //options.Cookie.SameSite = SameSiteMode.None;
         options.Events.OnRedirectToLogin = (context) =>
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return Task.CompletedTask;
         };
-        options.Cookie.HttpOnly = true;
+        options.Cookie.HttpOnly = false;
     });
 
 builder.Services.AddAuthorization();

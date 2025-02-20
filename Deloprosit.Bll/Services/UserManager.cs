@@ -149,13 +149,13 @@ namespace Deloprosit.Bll.Services
         {
             if (user != null)
             {
-                var roles = await _roleRepository.GetListAsync(user.UserId);
-                var roleType = string.Join(rolesSeperator, roles.Select(x => x?.RoleName));
+                var rolesArray = await _roleRepository.GetListAsync(user.UserId);
 
                 var claims = new List<Claim>
                     {
-                        new (ClaimsIdentity.DefaultNameClaimType, _cryptoService.Decrypt(user.Email) ?? string.Empty),
-                        new (ClaimsIdentity.DefaultRoleClaimType, roleType)
+                        new (ClaimsIdentity.DefaultNameClaimType, user.Nickname ?? string.Empty),
+                        new ("Email", _cryptoService.Decrypt(user.Email) ?? string.Empty),
+                        new (ClaimsIdentity.DefaultRoleClaimType, string.Join(rolesSeperator, rolesArray.Select(x => x?.RoleName)))
                     };
 
                 var claimsIdentity = new ClaimsIdentity(claims, authorizationScheme);
