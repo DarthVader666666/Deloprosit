@@ -124,7 +124,7 @@ namespace Deloprosit.Bll.Services
 
             var user = await GetUserByAsync(_cryptoService.Decrypt(encryptedNickname));
 
-            if (user == null || user.Email != encryptedEmail)
+            if (user == null || user.Email != encryptedEmail || user.IsConfirmed)
             {
                 return null;
             }
