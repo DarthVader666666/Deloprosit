@@ -71,7 +71,7 @@ namespace Deloprosit.Bll.Services
                 return null;
             }
 
-            var updatedUser = _dbContext.Users.Add(item).Entity;
+            var updatedUser = _dbContext.Users.Update(item).Entity;
             int result = await _dbContext.SaveChangesAsync();
 
             if (result <= 0)

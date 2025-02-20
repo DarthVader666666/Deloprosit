@@ -2,9 +2,11 @@
 using Deloprosit.Data.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
 
 using System.Security.Claims;
+using System.Text;
 
 namespace Deloprosit.Bll.Services
 {
@@ -18,6 +20,8 @@ namespace Deloprosit.Bll.Services
 
         private const char rolesSeperator = ',';
         private const string authorizationScheme = "Cookies";
+        private const string key1 = "key1";
+        private const string key2 = "key2";
 
         public UserManager(IRepository<User> userRepository, IRepository<Role> roleRepository, IConfiguration configuration, CryptoService cryptoService, EmailSender emailSender)
         {
@@ -75,16 +79,19 @@ namespace Deloprosit.Bll.Services
             }
         }
 
-        public async Task<bool> RegisterAsync(User? user)
+        public async Task<bool> RegisterAsync(User? user, string? serverUrl)
         {
             if (user == null)
             {
                 return false;
             }
-            
+
+            var nicknameByteString = GetByteString(key1, user.Nickname);
+            var emailByteString = GetByteString(key2, user.Email);
+
             var url = 
                 $"<button type=\"button\" style=\"border: black; border-width: 1px\">" +
-                $"<a href='{_configuration["ClientUrl"]}/registration/confirm?key={_cryptoService.Encrypt(user.Nickname)}.{_cryptoService.Encrypt(user.Email)}'" +
+                $"<a href='{serverUrl}confirm?{key1}={nicknameByteString}&amp;{key2}={emailByteString}'" +
                 $"style=\"text-decoration: none; color: black\">" +
                 $"Подтвердить регистрацию" +
                 $"</a>" +
@@ -110,11 +117,10 @@ namespace Deloprosit.Bll.Services
             return result;
         }
 
-        public async Task<User?> ConfirmUserAsync(string? key)
+        public async Task<User?> ConfirmUserAsync(string[]? keys)
         {
-            var decodedKey = key?.Split('.');
-            var encryptedNickname = decodedKey?[0];
-            var encryptedEmail = decodedKey?[1];
+            var encryptedNickname = keys?[0];
+            var encryptedEmail = keys?[1];
 
             var user = await GetUserByAsync(_cryptoService.Decrypt(encryptedNickname));
 
@@ -164,6 +170,11 @@ namespace Deloprosit.Bll.Services
             }
 
             return null;
+        }
+
+        private string? GetByteString(string? keyName, string? text, bool doEncrypt = true)
+        {
+            return string.Join($"&amp;{keyName}=", Encoding.UTF8.GetBytes(doEncrypt ? _cryptoService.Encrypt(text) ?? "" : text ?? "").Select(x => x.ToString()));
         }
 
 

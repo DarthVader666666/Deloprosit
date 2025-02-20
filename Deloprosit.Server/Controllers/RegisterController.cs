@@ -1,9 +1,12 @@
-﻿using AutoMapper;
+﻿using System.Text;
+
+using AutoMapper;
 
 using Deloprosit.Bll.Services;
 using Deloprosit.Data.Entities;
 using Deloprosit.Server.Models;
 
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
@@ -47,7 +50,9 @@ namespace Deloprosit.Server.Controllers
 
             var user = _automapper.Map<User>(userRegister);
 
-            var result = await _userManager.RegisterAsync(user);
+            var serverUrl = HttpContext.Request.GetDisplayUrl();
+
+            var result = await _userManager.RegisterAsync(user, serverUrl);
 
             if (result)
             {
@@ -61,16 +66,21 @@ namespace Deloprosit.Server.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        public async Task<IActionResult> Confirm([FromQuery] string? key)
+        public async Task<IActionResult> Confirm([FromQuery] int[]? key1, [FromQuery] int[]? key2)
         {
-            var confirmedUser = await _userManager.ConfirmUserAsync(key);
+            var confirmedUser = await _userManager.ConfirmUserAsync(
+                [
+                    Encoding.UTF8.GetString((key1 ?? []).Select(x => (byte)x).ToArray()), 
+                    Encoding.UTF8.GetString((key2 ?? []).Select(x => (byte)x).ToArray())
+                ]
+            );
 
             if (confirmedUser == null)
             {
                 return Problem("Ошибка подтверждения", statusCode: 500);
             }
 
-            return Redirect($"{_configuration["ClientUrl"]}/registration?confirmed=true&nickname={confirmedUser.Nickname}");
+            return Redirect($"{_configuration["ClientUrl"]}/register?confirmed=true&nickname={confirmedUser.Nickname}");
         }
 
         [HttpGet]
