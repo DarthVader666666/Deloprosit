@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, defineProps, defineEmits } from 'vue';
+import { ref, onMounted, computed, defineEmits } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
 import axios from 'axios';

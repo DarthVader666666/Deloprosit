@@ -125,10 +125,9 @@ const handleLogout = () => {
                 <button type="submit">Войти</button>
             </div>
             <div class="login-anchors">
-                <RouterLink to="/register">Регистрация</RouterLink> | <a>Забыл(а) пароль</a> |
-                <label for="remember">
-                    <input type="checkbox" id="remember">Запомнить
-                </label>
+                <RouterLink to="/register">Регистрация</RouterLink> | <a>Забыл(а) пароль</a> | 
+                <label for="remember-checkbox">Запомнить</label>
+                <input type="checkbox" id="remember-checkbox">
             </div>
         </form>
     </div>
