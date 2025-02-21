@@ -95,7 +95,7 @@ function timeoutAsync(ms) {
 }
 
 async function doesUserExist (nickname, email) {
-    await timeoutAsync(200);
+    await timeoutAsync(500);
 
     var url = `${baseUrl.value}/register/userExists?` + (nickname ? `nickname=${nickname}` : `email=${email}`);
     var response = await axios.get(url);

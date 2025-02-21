@@ -16,7 +16,7 @@ namespace Deloprosit.Server.Controllers
     [EnableCors("AllowClient")]
     [ApiController]
     [Route("[controller]")]
-    public class AuthorizationController : ControllerBase
+    public class AuthenticationController : ControllerBase
     {
         private readonly IRepository<User> _userRepository;
         private readonly IMapper _mapper;
@@ -25,7 +25,7 @@ namespace Deloprosit.Server.Controllers
         private readonly EmailSender _emailSender;
         private readonly UserManager _userManager;
 
-        public AuthorizationController(
+        public AuthenticationController(
             IRepository<User> userRepository, IMapper mapper, IConfiguration configuration, CryptoService cryptoService, 
             EmailSender emailSender, UserManager userManager)
         {

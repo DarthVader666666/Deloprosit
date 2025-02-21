@@ -51,7 +51,7 @@ const handlePending = async (promise) => {
 
 <style scoped>
 .left-container {
-    width: 20%;
+    width: var(--SIDE-COLUMN-WIDTH);
 }
 
 h2 {

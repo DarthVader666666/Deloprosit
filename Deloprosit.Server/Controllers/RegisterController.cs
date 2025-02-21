@@ -50,9 +50,7 @@ namespace Deloprosit.Server.Controllers
 
             var user = _automapper.Map<User>(userRegister);
 
-            var serverUrl = HttpContext.Request.GetDisplayUrl();
-
-            var result = await _userManager.RegisterAsync(user, serverUrl);
+            var result = await _userManager.RegisterAsync(user, HttpContext.Request.GetDisplayUrl());
 
             if (result)
             {
@@ -80,7 +78,9 @@ namespace Deloprosit.Server.Controllers
                 return Problem("Ошибка подтверждения", statusCode: 500);
             }
 
-            return Redirect($"{_configuration["ClientUrl"]}/register?confirmed=true&nickname={confirmedUser.Nickname}");
+            var r = await _userManager.LogIn(confirmedUser, HttpContext);
+
+            return Redirect($"{_configuration["ClientUrl"]}");
         }
 
         [HttpGet]

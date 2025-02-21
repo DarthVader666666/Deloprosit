@@ -2,6 +2,11 @@
   --MAIN-BCKGND-CLR: rgb(241, 235, 235);
   --COLUMNS-BCKGND-CLR: rgb(245, 245, 245);
   --BCKGND-GRADIENT: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
+  /* --BCKGND-GRADIENT: linear-gradient(to right,rgb(184, 192, 218),rgb(96, 98, 248)); */
+  --SIDE-COLUMN-WIDTH: 20%;
+  --MAIN-COMPONENT-WIDTH: 80%;
+  --LOGO-COLOR: rgb(124, 172, 124);
+  /* --LOGO-COLOR: rgb(95, 116, 175); */
 }
 
 body {
@@ -15,7 +20,7 @@ body {
 }
 
 #app {
-  width: 80%;
+  width: var(--MAIN-COMPONENT-WIDTH);
 }
 
 .central-container {
@@ -42,7 +47,7 @@ body {
 }
 
 .register-form {
-  width: 80%;
+  width: var(--MAIN-COMPONENT-WIDTH);
   padding: 10px;
   background-color: var(--MAIN-BCKGND-CLR);
 }
@@ -52,7 +57,7 @@ body {
   flex-direction: column;
   gap: 15px;;
   align-items: center;
-  width: 80%;
+  width: var(--MAIN-COMPONENT-WIDTH);
   padding-bottom: 10px;
   background-color: var(--MAIN-BCKGND-CLR);
 }
@@ -74,7 +79,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 80%;
+  width: var(--MAIN-COMPONENT-WIDTH);
   padding: 10px;
   background-color: var(--MAIN-BCKGND-CLR);
   min-height: 470px;
@@ -88,7 +93,7 @@ body {
 }
 
 .login-inputs button {
-  height: 22px;;
+  height: 22px;
 }
 
 /** Spinning Wheel */

@@ -32,7 +32,7 @@ onMounted(async () => {
         cookieManager.cookies.set(coockieName, localCookies);
     }    
 
-    const response = await axios.get(`${baseUrl.value}/authorization/cookiecredentials`);
+    const response = await axios.get(`${baseUrl.value}/authentication/cookiecredentials`);
 
     if(response.data.isAuthenticated === true && response.data.nickname) {
         nickname.value = response.data.nickname;
@@ -53,7 +53,7 @@ const handleLogin = () => {
     const emailValue = validateEmail(loginRequestForm.value.nicknameOrEmail) ? loginRequestForm.value.nicknameOrEmail : null;
 
     axios.defaults.withCredentials = true;
-    axios.post(`${baseUrl.value}/authorization/login?nickname=${nicknameValue}&remember=${remember.value}`, null,
+    axios.post(`${baseUrl.value}/authentication/login?nickname=${nicknameValue}&remember=${remember.value}`, null,
     {
         headers: 
         {
@@ -105,7 +105,7 @@ const handleLogin = () => {
 const handleLogout = () => {
     if(window.confirm('Вы уверены, что хотите выйти?'))
     {
-        axios.post(`${baseUrl.value}/authorization/logout/`, {
+        axios.post(`${baseUrl.value}/authentication/logout/`, {
         headers: {
             'Content-Type': 'application/json'
         }})
@@ -210,12 +210,12 @@ const handleLogout = () => {
 
     .logo a {
         text-decoration: none;
-        color: rgb(124, 172, 124);
+        color: var(--LOGO-COLOR);
         font-size: 18px;
     }
 
     .logo a:hover {
-        color: rgb(124, 172, 124);
+        color: var(--LOGO-COLOR);
     }
 
     a {
