@@ -193,7 +193,7 @@ const handleLogout = () => {
       justify-content: space-between;
       padding-top: 1rem;
       padding-bottom: 1rem;
-      background-image: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
+      background-image: var(--BCKGND-GRADIENT);
       align-content: center;
       box-shadow: 0 7px 15px -3px black;
       border-radius: 0 0 5px 5px;
@@ -224,7 +224,7 @@ const handleLogout = () => {
     }
 
     a:hover {
-        color: whitesmoke;
+        color: var(--COLUMNS-BCKGND-CLR);;
     }
 
     label {

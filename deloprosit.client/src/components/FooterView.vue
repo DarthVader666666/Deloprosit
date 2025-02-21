@@ -17,7 +17,7 @@ onMounted(() =>  {
 
 <style scoped>
     .footer-container {
-        background-image: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
+        background-image: var(--BCKGND-GRADIENT);
         height: 4rem;
         align-content: center;
         padding-right: 1rem;        

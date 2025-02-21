@@ -1,5 +1,7 @@
 :root {
   --MAIN-BCKGND-CLR: rgb(241, 235, 235);
+  --COLUMNS-BCKGND-CLR: rgb(245, 245, 245);
+  --BCKGND-GRADIENT: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
 }
 
 body {
@@ -35,7 +37,7 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  background-color: white;
+  background-color: var(--COLUMNS-BCKGND-CLR);
   box-shadow: 0 7px 15px -3px black;
 }
 

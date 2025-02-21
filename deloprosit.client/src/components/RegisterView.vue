@@ -35,7 +35,7 @@ const handlePending = async (promise) => {
 </script>
 
 <template>
-    <h2 v-if="!showEmailNotification">Заполните форму регистрации</h2>
+    <h2 v-if="!showEmailNotification && !pending">Заполните форму регистрации</h2>
     <div class="register-container">
         <LeftColumnView/>
         <div class="email-sent-notification" v-if="showEmailNotification">

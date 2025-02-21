@@ -13,7 +13,7 @@
         flex-direction: row;
         text-align: center;
         align-content: center;
-        background-color: white;
+        background-color: var(--COLUMNS-BCKGND-CLR);;
         margin-top: 1rem;
         margin-bottom: 1rem;
         box-shadow: 0 7px 15px -3px black;
