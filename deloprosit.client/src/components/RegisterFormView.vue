@@ -1,8 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useToast } from 'vue-toastification';
-import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { useToast } from 'vue-toastification';
 
 const props = defineProps({
     pending: {
@@ -11,13 +10,13 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['email-sent']);
+const emit = defineEmits(['email-sent','show-notification']);
+
+const toast = useToast();
 
 const baseUrl = ref(null);
 const showNicknameError = ref(false);
 const showEmailError = ref(false);
-const toast = useToast();
-const router = useRouter();
 
 const registerModel = ref({
     nickname: '',
@@ -57,8 +56,6 @@ const showPasswordsError = computed(() => {
 });
 
 const handleSend = () => {
-    emit('email-sent', null, true);
-
     const promise = axios.post(`${baseUrl.value}/register/`, null,
     {
         headers: {
@@ -79,40 +76,27 @@ const handleSend = () => {
                 })
         }
     })
-    .then(response => 
-    {
-        if(response.status === 200) {
+    .then(response => {
+        const status = response.status;
+
+        if(status === 200) {
             toast.success('Письмо отправлено');
-
-            registerModel.value.nickname = '';
-            registerModel.value.email = '';
-            registerModel.value.firstName = '';
-            registerModel.value.lastName = '';
-            registerModel.value.password = '';
-            registerModel.value.birthDate = '';
-            registerModel.value.country = '';
-            registerModel.value.city = '';
-            registerModel.value.title = '';
-            registerModel.value.info = '';
-
-            repeatPassword.value = null;
+            return true;
         }
-    })
-    .catch(error => {
-        const status = error.response.status;
 
-        if(status === 400) {
-            toast.error('Не удалось отправить письмо');       
-        }
-        else if (status === 500) {
-            toast.error('Ошибка сервера');
-        }
-    })
+        return false;
+    });
 
-    emit('email-sent', promise, false);
+    emit('email-sent', promise);
+}
+
+function timeoutAsync(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function doesUserExist (nickname, email) {
+    await timeoutAsync(200);
+
     var url = `${baseUrl.value}/register/userExists?` + (nickname ? `nickname=${nickname}` : `email=${email}`);
     var response = await axios.get(url);
 
@@ -158,7 +142,7 @@ const handleEmailMatch = async (event) => {
 }
 </script>
 
-<template>    
+<template>
     <form class="register-form" @submit.prevent="handleSend">
         <div class="register-inputs">
             <div class="spans">

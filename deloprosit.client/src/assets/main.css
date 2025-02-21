@@ -1,3 +1,7 @@
+:root {
+  --MAIN-BCKGND-CLR: rgb(241, 235, 235);
+}
+
 body {
   font-family:"Gill Sans Extrabold", sans-serif;
   font-size: small;
@@ -5,7 +9,7 @@ body {
   flex-direction: row;
   justify-content: center;
   margin: 0;  
-  background-color: rgb(241, 235, 235);
+  background-color: var(--MAIN-BCKGND-CLR);
 }
 
 #app {
@@ -14,7 +18,7 @@ body {
 
 .central-container {
   width: 60%;
-  background-color: rgb(241, 235, 235);
+  background-color: var(--MAIN-BCKGND-CLR);
   white-space: initial;
   word-wrap: break-word;
 }
@@ -38,7 +42,30 @@ body {
 .register-form {
   width: 80%;
   padding: 10px;
-  background-color: rgb(241, 235, 235);
+  background-color: var(--MAIN-BCKGND-CLR);
+}
+
+.email-sent-notification {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;;
+  align-items: center;
+  width: 80%;
+  padding-bottom: 10px;
+  background-color: var(--MAIN-BCKGND-CLR);
+}
+
+.email-sent-notification a {
+  text-decoration: none;
+  color: black;
+}
+
+.email-sent-notification button {
+  width: 80px;
+}
+
+.email-sent-notification img {
+  width: fit-content;
 }
 
 .sending {
@@ -47,7 +74,7 @@ body {
   align-items: center;
   width: 80%;
   padding: 10px;
-  background-color: rgb(241, 235, 235);
+  background-color: var(--MAIN-BCKGND-CLR);
   min-height: 470px;
 }
 
@@ -55,8 +82,12 @@ body {
   display: flex;
   flex-direction: row;
   gap: 10px;
+  align-items: end;
 }
 
+.login-inputs button {
+  height: 22px;;
+}
 
 /** Spinning Wheel */
 #wrapper{
@@ -209,6 +240,14 @@ body {
 
   .sending {
     width: 100%;
+  }
+
+  .email-sent-notification {
+    width: 100%;
+  }
+
+  .email-sent-notification img {
+    width: 320px;
   }
 
   .register-container .left-container {

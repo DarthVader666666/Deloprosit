@@ -159,16 +159,21 @@ const handleLogout = () => {
         flex-direction: column;
         justify-content: start;
         padding-right: 15px;
+        max-width: 430px;
+        gap: 8px;
     }
 
     .login-anchors {
         align-content: center;
         padding-top: 5px;
+        width: 289px;
     }
 
     .login-anchors input {
         height: 15px;
         width: 15px;
+        position:absolute;
+        margin-top:0px;
     }
 
     .message {
