@@ -78,7 +78,7 @@ namespace Deloprosit.Server.Controllers
                 return Problem("Ошибка подтверждения", statusCode: 500);
             }
 
-            var r = await _userManager.LogIn(confirmedUser, HttpContext);
+            await _userManager.LogIn(confirmedUser, HttpContext);
 
             return Redirect($"{_configuration["ClientUrl"]}");
         }
