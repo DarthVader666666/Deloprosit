@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
+var azureEnvironment = "Production";
 var jsonFileCreated = false;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,7 +46,7 @@ if (builder.Environment.IsDevelopment())
 {
     connectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
 }
-else if (builder.Environment.EnvironmentName.Equals("Azure", StringComparison.OrdinalIgnoreCase))
+else if (builder.Environment.EnvironmentName.Equals(azureEnvironment, StringComparison.OrdinalIgnoreCase))
 {
     connectionString = builder.Configuration.GetConnectionString("PostgresDeloprositDb");
 }
@@ -63,7 +64,7 @@ if (builder.Environment.IsDevelopment()){
     builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<MssqlDeloprositDbContext, UserRepository>);
     builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<MssqlDeloprositDbContext, RoleRepository>);
 }
-else if(builder.Environment.EnvironmentName.Equals("Azure", StringComparison.OrdinalIgnoreCase))
+else if(builder.Environment.EnvironmentName.Equals(azureEnvironment, StringComparison.OrdinalIgnoreCase))
 {
     builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<PostgresDeloprositDbContext, UserRepository>);
     builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<PostgresDeloprositDbContext, RoleRepository>);
@@ -136,7 +137,7 @@ async Task MigrateSeedDatabase(IServiceScope? scope, bool jsonFileCreated)
         var dbContext = scope?.ServiceProvider.GetRequiredService<MssqlDeloprositDbContext>();
         dbContext?.Database.Migrate();
     }
-    else if (builder!.Environment.EnvironmentName.Equals("Azure", StringComparison.OrdinalIgnoreCase))
+    else if (builder!.Environment.EnvironmentName.Equals(azureEnvironment, StringComparison.OrdinalIgnoreCase))
     {
         var dbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloprositDbContext>();
 
