@@ -2,8 +2,6 @@
 using Deloprosit.Data.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Extensions.Configuration;
 
 using System.Security.Claims;
 using System.Text;

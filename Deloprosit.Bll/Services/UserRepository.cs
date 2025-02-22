@@ -46,7 +46,7 @@ namespace Deloprosit.Bll.Services
                 return Task.FromResult<User?>(null);
             }
 
-            var user = _dbContext.Users.FirstOrDefault(user => user.Email == (parameter as string));
+            var user = _dbContext.Users.FirstOrDefault(user => user.Email == parameter as string);
             user ??= _dbContext.Users.FirstOrDefault(user => user.Nickname == parameter as string);
 
             return Task.FromResult(user);
