@@ -5,7 +5,7 @@ using AutoMapper;
 using Deloprosit.Bll.Services;
 using Deloprosit.Data.Entities;
 using Deloprosit.Server.Models;
-
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 
 namespace Deloprosit.Server.Controllers
 {
+    [EnableCors("AllowClient")]
     [Route("[controller]")]
     [ApiController]
     public class RegisterController : ControllerBase

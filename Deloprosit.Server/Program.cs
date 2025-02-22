@@ -58,6 +58,7 @@ if (connectionString == null)
 
 builder.Services.AddDbContext<MssqlDeloprositDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(connectionString));
 builder.Services.AddDbContext<PostgresDeloprositDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 if (builder.Environment.IsDevelopment()){
 
