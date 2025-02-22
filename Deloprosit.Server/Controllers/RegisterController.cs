@@ -22,7 +22,7 @@ namespace Deloprosit.Server.Controllers
         private readonly IMapper _automapper;
         private readonly IConfiguration _configuration;
 
-        public RegisterController(UserManager userManager, EmailSender emailSender, IMapper automaper, IConfiguration configuration)
+        public RegisterController(UserManager userManager, IMapper automaper, IConfiguration configuration)
         {
             _userManager = userManager;
             _automapper = automaper;

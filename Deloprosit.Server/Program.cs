@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
-var azureEnvironment = "Production";
+const string azureEnvironment = "Production";
 var jsonFileCreated = false;
 var builder = WebApplication.CreateBuilder(args);
 

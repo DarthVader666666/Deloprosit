@@ -19,6 +19,7 @@ namespace Deloprosit.Bll.Services
         private const string authorizationScheme = "Cookies";
         private const string key1 = "key1";
         private const string key2 = "key2";
+        private const string and = "&amp;";
 
         public UserManager(IRepository<User> userRepository, IRepository<Role> roleRepository, CryptoService cryptoService, EmailSender emailSender)
         {
@@ -87,7 +88,7 @@ namespace Deloprosit.Bll.Services
 
             var url = 
                 $"<button type=\"button\" style=\"border: black; border-width: 1px\">" +
-                $"<a href='{serverUrl}confirm?{key1}={nicknameByteString}&amp;{key2}={emailByteString}'" +
+                $"<a href='{serverUrl}confirm?{key1}={nicknameByteString}{and}{key2}={emailByteString}'" +
                 $"style=\"text-decoration: none; color: black\">" +
                 $"Подтвердить регистрацию" +
                 $"</a>" +
@@ -170,7 +171,7 @@ namespace Deloprosit.Bll.Services
 
         private string? GetByteString(string? keyName, string? text, bool doEncrypt = true)
         {
-            return string.Join($"&amp;{keyName}=", Encoding.UTF8.GetBytes(doEncrypt ? _cryptoService.Encrypt(text) ?? "" : text ?? "").Select(x => x.ToString()));
+            return string.Join($"{and}{keyName}=", Encoding.UTF8.GetBytes(doEncrypt ? _cryptoService.Encrypt(text) ?? "" : text ?? "").Select(x => x.ToString()));
         }
 
 
