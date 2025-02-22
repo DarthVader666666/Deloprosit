@@ -1,8 +1,6 @@
-﻿using Azure.Communication.Email;
-using Deloprosit.Bll.Interfaces;
+﻿using Deloprosit.Bll.Interfaces;
 using Deloprosit.Data;
 using Deloprosit.Data.Entities;
-using System.Net.Mail;
 
 namespace Deloprosit.Bll.Services
 {

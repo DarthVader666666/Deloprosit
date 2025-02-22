@@ -1,27 +1,22 @@
 ﻿using Deloprosit.Data.Entities;
 using Deloprosit.Data.Enums;
-
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Deloprosit.Data
 {
     public class DeloprositDbContext: DbContext
     {
-        private readonly IConfiguration _configuration;
         const int maxRoleNameLength = 50;
         const int maxNameLength = 100;
         const int maxInfoLength = 1000;
         const int maxBytesLength = 8000;
 
-        public DeloprositDbContext(DbContextOptions<DeloprositDbContext> options, IConfiguration configuration) : base(options)
+        public DeloprositDbContext(DbContextOptions options) : base(options)
         {
-            _configuration = configuration;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected DeloprositDbContext(DbContextOptions<DeloprositDbContext> options) : base(options)
         {
-            optionsBuilder.UseSqlServer(_configuration["ConnectionStrings:DeloprositDb"]);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -80,7 +75,7 @@ namespace Deloprosit.Data
                 chapter.Property(x => x.DateCreated).IsRequired();
                 chapter.Property(x => x.ChapterTitle).HasMaxLength(maxInfoLength).IsRequired();
             });
-            modelBuilder.Entity<Theme>(theme => 
+            modelBuilder.Entity<Theme>(theme =>
             {
                 theme.HasKey(x => x.ThemeId);
                 theme.Property(x => x.Description).HasMaxLength(maxInfoLength).IsRequired();
@@ -98,11 +93,11 @@ namespace Deloprosit.Data
             });
         }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
-        public DbSet<Chapter> Chapters { get; set; }
-        public DbSet<Theme> Themes { get; set; }
-        public DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<UserRole> UserRoles { get; set; }
+        public virtual DbSet<Chapter> Chapters { get; set; }
+        public virtual DbSet<Theme> Themes { get; set; }
+        public virtual DbSet<Comment> Comments { get; set; }
     }
 }

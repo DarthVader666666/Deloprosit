@@ -2,8 +2,6 @@
   "profiles": {
     "http": {
       "commandName": "Project",
-      "launchBrowser": false,
-      //"launchUrl": "home",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
@@ -13,8 +11,6 @@
     },
     "https": {
       "commandName": "Project",
-      "launchBrowser": false,
-      //"launchUrl": "home",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
@@ -24,8 +20,6 @@
     },
     "IIS Express": {
       "commandName": "IISExpress",
-      //"launchBrowser": true,
-      //"launchUrl": "home",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
@@ -33,7 +27,6 @@
     },
     "Container (Dockerfile)": {
       "commandName": "Docker",
-      "launchBrowser": false,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/home",
       "environmentVariables": {
         "ASPNETCORE_HTTPS_PORTS": "8081",

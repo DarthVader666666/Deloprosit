@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using Deloprosit.Bll.Interfaces;
-using Deloprosit.Bll.Services;
-using Deloprosit.Data.Entities;
+﻿using Deloprosit.Bll.Services;
 using Deloprosit.Server.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -18,22 +15,10 @@ namespace Deloprosit.Server.Controllers
     [Route("[controller]")]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IRepository<User> _userRepository;
-        private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
-        private readonly CryptoService _cryptoService;
-        private readonly EmailSender _emailSender;
         private readonly UserManager _userManager;
 
-        public AuthenticationController(
-            IRepository<User> userRepository, IMapper mapper, IConfiguration configuration, CryptoService cryptoService, 
-            EmailSender emailSender, UserManager userManager)
+        public AuthenticationController(UserManager userManager)
         {
-            _userRepository = userRepository;
-            _mapper = mapper;
-            _configuration = configuration;
-            _cryptoService = cryptoService;
-            _emailSender = emailSender;
             _userManager = userManager;
         }
 

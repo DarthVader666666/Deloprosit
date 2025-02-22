@@ -2,8 +2,6 @@
 using Deloprosit.Data;
 using Deloprosit.Data.Entities;
 
-using Microsoft.EntityFrameworkCore;
-
 namespace Deloprosit.Bll.Services
 {
     public class RoleRepository : IRepository<Role>

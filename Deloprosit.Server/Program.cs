@@ -36,15 +36,37 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options => options.AddPolicy("AllowClient",
-    new CorsPolicyBuilder().WithOrigins("http://localhost:5173", "https://localhost:5173")
+    new CorsPolicyBuilder().WithOrigins("http://localhost:5173", "https://localhost:5173", "https://deloprosit.azurewebsites.net")
     .AllowAnyHeader().AllowAnyMethod().AllowCredentials().Build()));
+
+string? connectionString = null;
 
 if (builder.Environment.IsDevelopment())
 {
-    var connectionString = builder.Configuration.GetConnectionString("DeloprositDb");
-    builder.Services.AddDbContext<DeloprositDbContext>(options => options.UseSqlServer(connectionString));
-    builder.Services.AddScoped<IRepository<User>, UserRepository>();
-    builder.Services.AddScoped<IRepository<Role>, RoleRepository>();
+    connectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
+}
+else if (builder.Environment.EnvironmentName.Equals("Azure", StringComparison.OrdinalIgnoreCase))
+{
+    connectionString = builder.Configuration.GetConnectionString("PostgresDeloprositDb");
+}
+
+if (connectionString == null)
+{
+    throw new NullReferenceException();
+}
+
+builder.Services.AddDbContext<MssqlDeloprositDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(connectionString));
+builder.Services.AddDbContext<PostgresDeloprositDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
+
+if (builder.Environment.IsDevelopment()){
+
+    builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<MssqlDeloprositDbContext, UserRepository>);
+    builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<MssqlDeloprositDbContext, RoleRepository>);
+}
+else if(builder.Environment.EnvironmentName.Equals("Azure", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<PostgresDeloprositDbContext, UserRepository>);
+    builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<PostgresDeloprositDbContext, RoleRepository>);
 }
 else
 {
@@ -102,12 +124,26 @@ app.MapControllerRoute(
 
 app.Run();
 
+TRepository ConfigureRepository<TDbContext, TRepository>(IServiceProvider provider) where TDbContext: DeloprositDbContext where TRepository: class
+{
+    return Activator.CreateInstance(typeof(TRepository), provider.GetRequiredService<TDbContext>()) as TRepository ?? throw new NullReferenceException();
+}
+
 async Task MigrateSeedDatabase(IServiceScope? scope, bool jsonFileCreated)
 {
     if (builder!.Environment.IsDevelopment())
     {
-        var dbContext = scope?.ServiceProvider.GetRequiredService<DeloprositDbContext>();
+        var dbContext = scope?.ServiceProvider.GetRequiredService<MssqlDeloprositDbContext>();
         dbContext?.Database.Migrate();
+    }
+    else if (builder!.Environment.EnvironmentName.Equals("Azure", StringComparison.OrdinalIgnoreCase))
+    {
+        var dbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloprositDbContext>();
+
+        if (dbContext != null && dbContext.Database.EnsureCreated())
+        { 
+            dbContext?.Database.Migrate();
+        }
     }
     else if (jsonFileCreated)
     {

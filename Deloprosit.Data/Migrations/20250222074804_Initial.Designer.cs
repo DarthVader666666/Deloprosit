@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Deloprosit.Data.Migrations
 {
-    [DbContext(typeof(DeloprositDbContext))]
-    [Migration("20250218200718_Added IsConfirmed to User")]
-    partial class AddedIsConfirmedtoUser
+    [DbContext(typeof(MssqlDeloprositDbContext))]
+    [Migration("20250222074804_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -14,7 +14,6 @@ namespace Deloprosit.Bll.Services
     {
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Role> _roleRepository;
-        private readonly IConfiguration _configuration;
         private readonly CryptoService _cryptoService;
         private readonly EmailSender _emailSender;
 
@@ -23,12 +22,11 @@ namespace Deloprosit.Bll.Services
         private const string key1 = "key1";
         private const string key2 = "key2";
 
-        public UserManager(IRepository<User> userRepository, IRepository<Role> roleRepository, IConfiguration configuration, CryptoService cryptoService, EmailSender emailSender)
+        public UserManager(IRepository<User> userRepository, IRepository<Role> roleRepository, CryptoService cryptoService, EmailSender emailSender)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _cryptoService = cryptoService;
-            _configuration = configuration;
             _emailSender = emailSender;
         }
 
