@@ -16,7 +16,7 @@ namespace Deloprosit.Bll.Services
         public async Task<bool> SendEmailAsync(string email, string subject, string message)
         {
             var sender = _configuration["AzureEmailSender"];
-            var connectionString = _configuration.GetConnectionString("AzureCommunicationService");
+            var connectionString = _configuration["AzureCommunicationService"];
 
             var client = new EmailClient(connectionString);
 
