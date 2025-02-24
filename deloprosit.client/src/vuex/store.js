@@ -13,7 +13,6 @@ const store = createStore({
             return state.environment;
         },
         roles() {
-
         }
     },
     mutations: {

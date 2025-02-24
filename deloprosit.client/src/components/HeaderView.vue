@@ -109,8 +109,9 @@ const handleLogout = () => {
         })
         .catch(error => {
             toast.error(error.response.message);
-        });
-    }    
+        })
+        .finally(() => sessionStorage.clear());
+    }
 }
 
 </script>

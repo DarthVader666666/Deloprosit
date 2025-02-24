@@ -1,10 +1,17 @@
-<script>
+<script setup>
+function isInRole(role) {
+    const roles = sessionStorage.getItem('roles');
+    console.log(roles);
+
+    return roles === role;
+}
+
 </script>
 <template>
     <div class="left-container">
         <div class="chapters">
             <div class="chapters-header">
-                <strong>Разделы:</strong><a href="#"><i class="pi pi-plus-circle"></i> Создать</a>
+                <strong>Разделы:</strong><a v-if="isInRole('Admin')" href="#"><i class="pi pi-plus-circle"></i> Создать</a>
             </div>
             <hr/>
             <ul>
@@ -36,8 +43,6 @@
 
     .chapters-header a:hover{
         text-decoration: underline;
-        color: black;
-
     }
 
     ul {
