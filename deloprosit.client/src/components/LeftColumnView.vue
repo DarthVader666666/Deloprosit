@@ -1,17 +1,16 @@
 <script setup>
-function isInRole(role) {
-    const roles = sessionStorage.getItem('roles');
-    console.log(roles);
+import { useStore } from 'vuex';
+import { computed } from 'vue';
 
-    return roles === role;
-}
+const store = useStore();
+const isInRole = computed(() => store.state.roles.includes('Admin'));
 
 </script>
 <template>
     <div class="left-container">
         <div class="chapters">
             <div class="chapters-header">
-                <strong>Разделы:</strong><a v-if="isInRole('Admin')" href="#"><i class="pi pi-plus-circle"></i> Создать</a>
+                <strong>Разделы:</strong><a v-if="isInRole" href="#"><i class="pi pi-plus-circle"></i> Создать</a>
             </div>
             <hr/>
             <ul>

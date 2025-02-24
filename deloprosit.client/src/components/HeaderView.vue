@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useCookies } from 'vue3-cookies';
 import { helper } from '@/helper';
@@ -14,11 +14,11 @@ const loginRequestForm = ref({
 
 const coockieName = 'Deloprosit_Cookies';
 
-const toast = useToast();
 const cookieManager = useCookies();
 const store = useStore();
+const toast = useToast();
 
-const nickname = ref(null);
+const nickname = computed(() => store.state.nickname);
 const remember = ref (false);
 
 onMounted(async () => {
@@ -69,6 +69,8 @@ const handleLogin = () => {
                 }  
             }
 
+            store.commit('setRoles', response.data.roles);
+            store.commit('setNickname', response.data.nickname);
             toast.success(`Вы вошли, как ${response.data.nickname}`);
         }
     })
@@ -103,14 +105,14 @@ const handleLogout = () => {
         .then(response => {
             if(response.status === 200) {
                 nickname.value = null;
-
                 localStorage.removeItem('Deloprosit_Cookies');
+                store.commit('setRoles', []);
+                store.commit('setNickname', null);
             }
         })
         .catch(error => {
             toast.error(error.response.message);
-        })
-        .finally(() => sessionStorage.clear());
+        });
     }
 }
 
