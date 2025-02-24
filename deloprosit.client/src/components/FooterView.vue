@@ -1,17 +1,12 @@
 <script setup>
-import { ref } from 'vue';
-import { onMounted } from 'vue';
+import { useStore } from 'vuex';
 
-const environment = ref(null);
-
-onMounted(() =>  {
-    environment.value = import.meta.env.VITE_API_ENVIRONMENT;
-});
+const store = useStore();
 
 </script>
 <template>
     <div class="footer-container">
-        <h1>{{ environment }}</h1>
+        <h1>{{ store.getters.environment }}</h1>
     </div>
 </template>
 

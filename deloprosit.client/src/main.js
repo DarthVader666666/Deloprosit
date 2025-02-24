@@ -5,7 +5,7 @@ import App from './App.vue'
 import VueCookies from 'vue3-cookies'
 import Toast, { POSITION } from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
-import store from './vuex'
+import store from './vuex/store.js'
 
 createApp(App)
 .use(VueCookies)

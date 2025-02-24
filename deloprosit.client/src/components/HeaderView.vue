@@ -5,6 +5,7 @@ import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useCookies } from 'vue3-cookies';
 import { helper } from '@/helper';
+import { useStore } from 'vuex';
 
 const loginRequestForm = ref({
     nicknameOrEmail: null,
@@ -15,16 +16,13 @@ const coockieName = 'Deloprosit_Cookies';
 
 const toast = useToast();
 const cookieManager = useCookies();
+const store = useStore();
 
 const nickname = ref(null);
 const remember = ref (false);
-const baseUrl = ref(null);
-const environment = ref(null);
 
 onMounted(async () => {
     axios.defaults.withCredentials = true;
-    baseUrl.value = import.meta.env.VITE_API_SERVER_URL;
-    environment.value = import.meta.env.VITE_API_ENVIRONMENT;
 
     const activeCookies = cookieManager.cookies.get(coockieName);
     const localCookies = localStorage.getItem(coockieName);
@@ -33,7 +31,7 @@ onMounted(async () => {
         cookieManager.cookies.set(coockieName, localCookies);
     }    
 
-    const response = await axios.get(`${baseUrl.value}/authentication/cookiecredentials`);
+    const response = await axios.get(`${store.getters.serverUrl}/authentication/cookiecredentials`);
 
     if(response.data.isAuthenticated === true && response.data.nickname) {
         nickname.value = response.data.nickname;
@@ -45,7 +43,7 @@ const handleLogin = () => {
     const emailValue = helper.validateEmail(loginRequestForm.value.nicknameOrEmail) ? loginRequestForm.value.nicknameOrEmail : null;
 
     axios.defaults.withCredentials = true;
-    axios.post(`${baseUrl.value}/authentication/login?nickname=${nicknameValue}&remember=${remember.value}`, null,
+    axios.post(`${store.getters.serverUrl}/authentication/login?nickname=${nicknameValue}&remember=${remember.value}`, null,
     {
         headers: 
         {
@@ -97,7 +95,7 @@ const handleLogin = () => {
 const handleLogout = () => {
     if(window.confirm('Вы уверены, что хотите выйти?'))
     {
-        axios.post(`${baseUrl.value}/authentication/logout/`, {
+        axios.post(`${store.getters.serverUrl}/authentication/logout/`, {
         headers: {
             'Content-Type': 'application/json'
         }})

@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
 import { helper } from '@/helper';
+import { useStore } from 'vuex';
 
 const props = defineProps({
     pending: {
@@ -12,13 +13,12 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['email-sent']);
-
+const store = useStore();
 const toast = useToast();
 
-const baseUrl = ref(null);
 const showNicknameError = ref(false);
 const showEmailError = ref(false);
-
+const repeatPassword = ref(null);
 const registerModel = ref({
     nickname: '',
     email: '',
@@ -30,12 +30,6 @@ const registerModel = ref({
     city: '',
     title: '',
     info: ''
-});
-
-const repeatPassword = ref(null);
-
-onMounted(() => {
-    baseUrl.value = import.meta.env.VITE_API_SERVER_URL;
 });
 
 const isDisabledSendButton = computed(() => {    
@@ -57,7 +51,7 @@ const showPasswordsError = computed(() => {
 });
 
 const handleSend = () => {
-    const promise = axios.post(`${baseUrl.value}/register/`, null,
+    const promise = axios.post(`${store.getters.serverUrl}/register/`, null,
     {
         headers: {
             'Content-Type': 'application/json',
@@ -94,10 +88,10 @@ const handleSend = () => {
 async function doesUserExist (nickname, email) {
     await helper.timeoutAsync(500);
 
-    var url = `${baseUrl.value}/register/userExists?` + (nickname ? `nickname=${nickname}` : `email=${email}`);
+    var url = `${store.getters.serverUrl}/register/userExists?` + (nickname ? `nickname=${nickname}` : `email=${email}`);
     var response = await axios.get(url);
 
-    if(response.status == 200) {
+    if(response.status === 200) {
         return response.data.userExists;
     }
 
