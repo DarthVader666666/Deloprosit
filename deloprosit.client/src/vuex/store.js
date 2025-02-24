@@ -3,7 +3,7 @@ import { createStore } from "vuex";
 const store = createStore({
     state: {
         serverUrl: import.meta.env.VITE_API_SERVER_URL,
-        environment: import.meta.env.VITE_API_ENVIRONMENT
+        environment: import.meta.env.VITE_API_ENVIRONMENT,
     },
     getters: {
         serverUrl(state) {
@@ -11,6 +11,9 @@ const store = createStore({
         },
         environment(state) {
             return state.environment;
+        },
+        roles() {
+
         }
     },
     mutations: {

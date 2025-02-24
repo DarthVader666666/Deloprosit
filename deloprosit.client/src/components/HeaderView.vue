@@ -35,6 +35,7 @@ onMounted(async () => {
 
     if(response.data.isAuthenticated === true && response.data.nickname) {
         nickname.value = response.data.nickname;
+        sessionStorage.setItem('roles', response.data.roles);
     }
 })
 
