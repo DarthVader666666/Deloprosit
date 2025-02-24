@@ -4,6 +4,7 @@ import { useToast } from 'vue-toastification';
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useCookies } from 'vue3-cookies';
+import { helper } from '@/helper';
 
 const loginRequestForm = ref({
     nicknameOrEmail: null,
@@ -39,18 +40,9 @@ onMounted(async () => {
     }
 })
 
-function getUnicodeByteArray(text) {
-    const utf8Encode = new TextEncoder();
-    return Object.values(utf8Encode.encode(text));
-}
-
-function validateEmail (email) {
-    return email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
-}
-
 const handleLogin = () => {
-    const nicknameValue = validateEmail(loginRequestForm.value.nicknameOrEmail) ? '' : loginRequestForm.value.nicknameOrEmail
-    const emailValue = validateEmail(loginRequestForm.value.nicknameOrEmail) ? loginRequestForm.value.nicknameOrEmail : null;
+    const nicknameValue = helper.validateEmail(loginRequestForm.value.nicknameOrEmail) ? '' : loginRequestForm.value.nicknameOrEmail
+    const emailValue = helper.validateEmail(loginRequestForm.value.nicknameOrEmail) ? loginRequestForm.value.nicknameOrEmail : null;
 
     axios.defaults.withCredentials = true;
     axios.post(`${baseUrl.value}/authentication/login?nickname=${nicknameValue}&remember=${remember.value}`, null,
@@ -60,7 +52,7 @@ const handleLogin = () => {
             'Content-Type': 'application/json',
             'Authentication': JSON.stringify({
                 email: emailValue,
-                password: getUnicodeByteArray(loginRequestForm.value.password)
+                password: helper.getUnicodeByteArray(loginRequestForm.value.password)
             })
         }
     })

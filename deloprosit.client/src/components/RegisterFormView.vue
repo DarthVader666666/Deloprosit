@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
+import { helper } from '@/helper';
 
 const props = defineProps({
     pending: {
@@ -10,7 +11,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['email-sent','show-notification']);
+const emit = defineEmits(['email-sent']);
 
 const toast = useToast();
 
@@ -62,17 +63,17 @@ const handleSend = () => {
             'Content-Type': 'application/json',
             'Registration': JSON.stringify(
                 {
-                    nickname: getUnicodeByteArray(registerModel.value.nickname),
+                    nickname: helper.getUnicodeByteArray(registerModel.value.nickname),
                     email: registerModel.value.email,
-                    firstName: getUnicodeByteArray(registerModel.value.firstName),
-                    lastName: getUnicodeByteArray(registerModel.value.lastName),
-                    password: getUnicodeByteArray(registerModel.value.password),
+                    firstName: helper.getUnicodeByteArray(registerModel.value.firstName),
+                    lastName: helper.getUnicodeByteArray(registerModel.value.lastName),
+                    password: helper.getUnicodeByteArray(registerModel.value.password),
                     birthDate: registerModel.value.birthDate,
-                    registerDate: getCurrentDate(),
-                    country: getUnicodeByteArray(registerModel.value.country),
-                    city: getUnicodeByteArray(registerModel.value.city),
-                    title: getUnicodeByteArray(registerModel.value.title),
-                    info: getUnicodeByteArray(registerModel.value.info)
+                    registerDate: helper.getCurrentDate(),
+                    country: helper.getUnicodeByteArray(registerModel.value.country),
+                    city: helper.getUnicodeByteArray(registerModel.value.city),
+                    title: helper.getUnicodeByteArray(registerModel.value.title),
+                    info: helper.getUnicodeByteArray(registerModel.value.info)
                 })
         }
     })
@@ -90,12 +91,8 @@ const handleSend = () => {
     emit('email-sent', promise);
 }
 
-function timeoutAsync(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function doesUserExist (nickname, email) {
-    await timeoutAsync(500);
+    await helper.timeoutAsync(500);
 
     var url = `${baseUrl.value}/register/userExists?` + (nickname ? `nickname=${nickname}` : `email=${email}`);
     var response = await axios.get(url);
@@ -107,27 +104,6 @@ async function doesUserExist (nickname, email) {
     return false;
 }
 
-function validateEmail (email) {
-    return email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
-}
-
-function getUnicodeByteArray(text) {
-    const utf8Encode = new TextEncoder();
-    return Object.values(utf8Encode.encode(text));
-}
-
-function getCurrentDate() {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
-    const hours = today.getHours();
-    const minutes = today.getMinutes();
-    const seconds = today.getSeconds();
-
-    return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
-}
-
 const handleNicknameMatch = async (event) => {
     const nickname = event.target.value;
     showNicknameError.value = await doesUserExist(nickname, null);
@@ -136,7 +112,7 @@ const handleNicknameMatch = async (event) => {
 const handleEmailMatch = async (event) => {
     const email = event.target.value;
 
-    if(validateEmail(email)) {
+    if(helper.validateEmail(email)) {
         showEmailError.value = await doesUserExist(null, email);
     }
 }
