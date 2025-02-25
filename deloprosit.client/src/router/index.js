@@ -3,7 +3,6 @@ import HomeView from "@/components/HomeView.vue";
 import ChapterCreateView from "@/components/ChapterCreateView.vue";
 import ChapterDetailsView from "@/components/ChapterDetailsView.vue";
 import { createRouter, createWebHistory } from "vue-router";
-import store from '@/vuex/store.js'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -19,8 +18,8 @@ const router = createRouter({
             component: RegisterView
         },
         {
-            path: '/chapters/create',
-            name: 'chapters-create',
+            path: '/create-chapter',
+            name: 'create-chapter',
             component: ChapterCreateView            
         },
         {

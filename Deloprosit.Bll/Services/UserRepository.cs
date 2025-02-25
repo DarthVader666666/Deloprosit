@@ -57,7 +57,7 @@ namespace Deloprosit.Bll.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<User?>> GetListAsync(int? id)
+        public Task<IEnumerable<User?>> GetListAsync(int? id = null)
         {
             throw new NotImplementedException();
         }

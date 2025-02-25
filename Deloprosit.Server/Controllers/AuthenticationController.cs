@@ -12,7 +12,7 @@ namespace Deloprosit.Server.Controllers
 {
     [EnableCors("AllowClient")]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class AuthenticationController : ControllerBase
     {
         private readonly UserManager _userManager;

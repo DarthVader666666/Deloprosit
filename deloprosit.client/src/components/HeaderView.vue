@@ -50,6 +50,7 @@ const handleLogin = () => {
             store.commit('setRoles', response.data.roles);
             store.commit('setNickname', response.data.nickname);
             toast.success(`Вы вошли, как ${response.data.nickname}`);
+            router.push('/');
         }
     })
     .catch(error => {

@@ -1,6 +1,7 @@
 <script setup>
 import { useStore } from 'vuex';
 import { computed, onMounted } from 'vue';
+import { RouterLink } from 'vue-router';
 
 onMounted(() => {
     store.commit('setChapters');
@@ -16,7 +17,8 @@ const chapters = computed(() => store.state.chapters);
     <div class="left-container">
         <div class="chapters">
             <div class="chapters-header">
-                <strong>Разделы:</strong><a v-if="isAdmin" href="/chapters/create"><i class="pi pi-plus-circle"></i> Создать</a>
+                <strong>Разделы:</strong>
+                <RouterLink v-if="isAdmin" to="/create-chapter"><i class="pi pi-plus-circle"></i> Создать </RouterLink>
             </div>
             <hr/>
             <ul v-for="(chapter, index) in chapters" :key="index">

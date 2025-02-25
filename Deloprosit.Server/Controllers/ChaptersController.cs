@@ -11,19 +11,17 @@ using Microsoft.IdentityModel.Tokens;
 namespace Deloprosit.Server.Controllers
 {
     [EnableCors("AllowClient")]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class ChaptersController : ControllerBase
     {
         private readonly IRepository<Chapter> _chapterRepository;
-        private readonly IConfiguration _configuration;
         private readonly UserManager _userManager;
 
-        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository, IConfiguration configuration)
+        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository)
         {
             _userManager = userManager;
             _chapterRepository = chapterRepository;
-            _configuration = configuration;
         }
 
         [HttpPost]

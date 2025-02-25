@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 namespace Deloprosit.Server.Controllers
 {
     [EnableCors("AllowClient")]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class RegisterController : ControllerBase
     {

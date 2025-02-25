@@ -46,7 +46,7 @@ namespace Deloprosit.Bll.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Chapter?>> GetListAsync(int? id)
+        public Task<IEnumerable<Chapter?>> GetListAsync(int? id = null)
         {
             return Task.FromResult<IEnumerable<Chapter?>>(_dbContext.Chapters.AsEnumerable());
         }
