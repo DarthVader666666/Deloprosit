@@ -11,7 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Deloprosit.Server.Controllers
 {
     [EnableCors("AllowClient")]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ChaptersController : ControllerBase
     {
@@ -24,14 +24,6 @@ namespace Deloprosit.Server.Controllers
             _userManager = userManager;
             _chapterRepository = chapterRepository;
             _configuration = configuration;
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Owner, Admin")]
-        [Route("[action]")]
-        public IActionResult Create()
-        {
-            return Redirect($"{_configuration["ClientUrl"]}/chapters/create");
         }
 
         [HttpPost]

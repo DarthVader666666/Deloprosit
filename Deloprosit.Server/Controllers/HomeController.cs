@@ -5,7 +5,7 @@ namespace Deloprosit.Server.Controllers
 {
     [EnableCors("AllowClient")]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class HomeController : ControllerBase
     {
         [HttpGet]

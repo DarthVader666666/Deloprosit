@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
 import { ref, computed } from 'vue';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 import { helper } from '@/helper';
 import { useStore } from 'vuex';
 
@@ -13,6 +13,7 @@ const loginRequestForm = ref({
 
 const store = useStore();
 const toast = useToast();
+const router = useRouter();
 
 const nickname = computed(() => store.state.nickname);
 const remember = ref (false);
@@ -85,6 +86,7 @@ const handleLogout = () => {
                 localStorage.removeItem('Deloprosit_Cookies');
                 store.commit('setRoles', []);
                 store.commit('setNickname', null);
+                router.push('/');
             }
         })
         .catch(error => {
