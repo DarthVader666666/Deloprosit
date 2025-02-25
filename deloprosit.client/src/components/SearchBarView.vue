@@ -3,7 +3,7 @@
     <div class="search-bar">
         <label>Поиск на форуме:  </label>
         <input class="search-input" type="text" placeholder="Введите, что хотите найти...">
-        <button>Искать</button>
+        <button><i class="pi pi-search"></i>Искать</button>
     </div>
 </template>
 
@@ -20,7 +20,16 @@
         border-radius: 5px;
     }
 
+    .search-bar button {
+        height: 50%;
+    }
+
+    .search-bar button i {
+        margin-right: 5px;
+    }
+
     input {
+        height: 38%;
         width: 40%;
         margin-right: 5px;
     }
