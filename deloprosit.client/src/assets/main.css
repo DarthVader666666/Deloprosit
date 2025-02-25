@@ -42,18 +42,25 @@ body {
   min-width: var(--RIGHT-COLUMN-WIDTH);
 }
 
-.register-container {
+.create-form-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   background-color: var(--COLUMNS-BCKGND-CLR);
   box-shadow: 0 7px 15px -3px black;
+  min-height: 90%;
 }
 
-.register-form {
+.create-form {
   width: var(--MAIN-COMPONENT-WIDTH);
   padding: 10px;
   background-color: var(--MAIN-BCKGND-CLR);
+}
+
+.title {
+  text-align: center;
+  align-content: center;
+  height: 3rem;
 }
 
 .email-sent-notification {
@@ -108,15 +115,15 @@ body {
 
 @media(max-width: 800px) {
   .central-container {
-    display: none;
+    width: 100%;
   }
 
   .left-container {
-    width: 50%;
+    display: none;
   }
 
   .right-container {
-    width: 50%;
+    display: none;
   }
 
   .register-form {
@@ -135,7 +142,7 @@ body {
     width: 320px;
   }
 
-  .register-container .left-container {
+  .form-container .left-container {
     display: none;
   }
 

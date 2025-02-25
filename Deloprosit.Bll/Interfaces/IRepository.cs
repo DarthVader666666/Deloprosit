@@ -2,7 +2,7 @@
 {
     public interface IRepository<TEntity> where TEntity : class
     {
-        Task<IEnumerable<TEntity?>> GetListAsync(int? id);
+        Task<IEnumerable<TEntity?>> GetListAsync(int? id = null);
         Task<TEntity?> GetAsync(int? id);
         Task<TEntity?> FindByAsync(object? parameter);
         Task<TEntity?> CreateAsync(TEntity? item);

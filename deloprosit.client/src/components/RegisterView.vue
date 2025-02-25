@@ -35,8 +35,8 @@ const handlePending = async (promise) => {
 </script>
 
 <template>
-    <h2 v-if="!showEmailNotification && !pending">Заполните форму регистрации</h2>
-    <div class="register-container">
+    <h2 class="title" v-if="!showEmailNotification && !pending">Заполните форму регистрации</h2>
+    <div class="create-form-container">
         <LeftColumnView/>
         <div class="email-sent-notification" v-if="showEmailNotification">
             <h3>Письмо успешно отправлено</h3>
@@ -52,9 +52,5 @@ const handlePending = async (promise) => {
 <style scoped>
 .left-container {
     width: var(--SIDE-COLUMN-WIDTH);
-}
-
-h2 {
-    text-align: center;
 }
 </style>

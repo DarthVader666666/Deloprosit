@@ -17,6 +17,7 @@ import MainView from './MainView.vue';
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        min-height: 70%;
         background-color: var(--COLUMNS-BCKGND-CLR);;
         box-shadow: 0 7px 15px -3px black;
     }

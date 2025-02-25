@@ -29,6 +29,13 @@ namespace Deloprosit.Bll.Services
             _emailSender = emailSender;
         }
 
+        public async Task<User?> GetCurrentUserAsync(HttpContext httpContext)
+        {
+            var nickname = httpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimsIdentity.DefaultNameClaimType)?.Value;
+
+            return await GetUserByAsync(nickname);
+        }
+
         public async Task<User?> GetUserByAsync(string? nickname = null, string? email = null)
         {
             if (nickname == null)

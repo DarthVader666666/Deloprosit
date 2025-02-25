@@ -1,25 +1,28 @@
 <script setup>
 import { useStore } from 'vuex';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
+
+onMounted(() => {
+    store.commit('setChapters');
+})
 
 const store = useStore();
-const isInRole = computed(() => store.state.roles.includes('Admin'));
+
+const isAdmin = computed(() => store.getters.isAdmin);
+const chapters = computed(() => store.state.chapters);
 
 </script>
 <template>
     <div class="left-container">
         <div class="chapters">
             <div class="chapters-header">
-                <strong>Разделы:</strong><a v-if="isInRole" href="#"><i class="pi pi-plus-circle"></i> Создать</a>
+                <strong>Разделы:</strong><a v-if="isAdmin" href="/chapters/create"><i class="pi pi-plus-circle"></i> Создать</a>
             </div>
             <hr/>
-            <ul>
-                <li><a href="">SDFSDF</a></li>
-                <li><a href="">SFGSFHGDGH</a></li>
-                <li><a href="">SFGSFSGFSGF</a></li>
+            <ul v-for="(chapter, index) in chapters" :key="index">
+                <li><i class="pi pi-bookmark-fill"></i><a :href="`/chaters/get/${chapter.chapterId}`">{{ chapter.chapterTitle }}</a></li>
             </ul>
-        </div>
-        
+        </div>        
     </div>
 </template>
 
@@ -35,22 +38,33 @@ const isInRole = computed(() => store.state.roles.includes('Admin'));
         justify-content: space-between;
     }
 
-    .chapters-header a{
+    .chapters-header a {
         text-decoration: none;
         color: black;
     }
 
-    .chapters-header a:hover{
+    .chapters-header a:hover {
         text-decoration: underline;
     }
 
     ul {
         list-style-type: none;
         padding: 0;
+        margin: 2px 0 0 0;
     }
 
     li {
-        padding: 0 0 6px 0;
         font-size: x-small;
+    }
+
+    li a {
+        margin-left: 3px;
+        text-decoration: none;
+        color: black;
+        font-size: small;
+    }
+
+    li a:hover {
+        text-decoration: underline;
     }
 </style>

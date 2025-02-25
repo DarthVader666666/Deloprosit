@@ -34,8 +34,8 @@ onMounted(async () => {
     const response = await axios.get(`${store.getters.serverUrl}/authentication/cookiecredentials`);
 
     if(response.data.isAuthenticated === true && response.data.nickname) {
-        nickname.value = response.data.nickname;
-        sessionStorage.setItem('roles', response.data.roles);
+        store.commit('setNickname', response.data.nickname);
+        store.commit('setRoles', response.data.roles);
     }
 })
 
@@ -59,7 +59,6 @@ const handleLogin = () => {
         if(response.status === 200) {
             loginRequestForm.value.nicknameOrEmail = null;
             loginRequestForm.value.password = null;
-            nickname.value = response.data.nickname;
 
             if(response.data.remember === true) {
                 const cookie = document.cookie.split('=');
@@ -126,7 +125,7 @@ const handleLogout = () => {
         <div v-if="nickname" class="message"><span>{{ nickname }}</span>
             <button @click="handleLogout">Выйти</button>
         </div>
-        <form v-else class="form-container" @submit.prevent="handleLogin">
+        <form v-else class="authentication-form" @submit.prevent="handleLogin">
             <div class="login-inputs" @keydown.enter.prevent="handleLogin">
                 <div>
                     <label>Логин: </label>
@@ -148,7 +147,20 @@ const handleLogout = () => {
 </template>
 
 <style scoped>
-    .form-container {
+    .header-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      background-image: var(--BCKGND-GRADIENT);
+      align-content: center;
+      box-shadow: 0 7px 15px -3px black;
+      border-radius: 0 0 5px 5px;
+      min-height: 64px;
+    }
+
+    .authentication-form {
         display: flex;
         flex-direction: column;
         justify-content: start;
@@ -179,19 +191,6 @@ const handleLogout = () => {
     .message span {
       font-weight: bold;
       padding-right: 15px;
-    }
-
-    .header-container {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-      background-image: var(--BCKGND-GRADIENT);
-      align-content: center;
-      box-shadow: 0 7px 15px -3px black;
-      border-radius: 0 0 5px 5px;
-      min-height: 45px;
     }
 
     .logo {

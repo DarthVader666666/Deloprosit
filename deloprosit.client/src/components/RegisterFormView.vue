@@ -113,7 +113,7 @@ const handleEmailMatch = async (event) => {
 </script>
 
 <template>
-    <form class="register-form" @submit.prevent="handleSend">
+    <form class="create-form" @submit.prevent="handleSend">
         <div class="register-inputs">
             <div class="spans">
                 <span>Никнэйм: <span class="red-star">*</span></span>
