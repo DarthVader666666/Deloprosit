@@ -1,12 +1,18 @@
 <script setup>
 import ChapterCreateFormView from './ChapterCreateFormView.vue';
-import LeftColumnView from './LeftColumnView.vue'
+import { useStore } from 'vuex';
+import { onMounted } from 'vue';
+
+const store = useStore();
+
+onMounted(() => {
+    store.commit('setTitle', 'Создание нового раздела');
+});
+
 </script>
 
 <template>
-    <h2 class="title">Создание нового раздела</h2>
     <div class="create-form-container">
-        <LeftColumnView/>
         <ChapterCreateFormView/>
     </div>
 </template>

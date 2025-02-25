@@ -85,6 +85,5 @@ namespace Deloprosit.Server.Controllers
 
             return Ok(chapter);
         }
-
     }
 }

@@ -14,8 +14,8 @@
         text-align: center;
         align-content: center;
         background-color: var(--COLUMNS-BCKGND-CLR);;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
         box-shadow: 0 7px 15px -3px black;
         border-radius: 5px;
     }

@@ -36,31 +36,27 @@ body {
 
 .right-container {
   min-width: var(--LEFT-COLUMN-WIDTH);
+  background-color: var(--COLUMNS-BCKGND-CLR);
 }
 
 .left-container {
   min-width: var(--RIGHT-COLUMN-WIDTH);
+  background-color: var(--COLUMNS-BCKGND-CLR);
 }
 
 .create-form-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  background-color: var(--COLUMNS-BCKGND-CLR);
-  box-shadow: 0 7px 15px -3px black;
-  min-height: 90%;
+  background-color: var(--MAIN-BCKGND-CLR);
+  width: 100%;
 }
 
 .create-form {
   width: var(--MAIN-COMPONENT-WIDTH);
   padding: 10px;
+  width: 100%;
   background-color: var(--MAIN-BCKGND-CLR);
-}
-
-.title {
-  text-align: center;
-  align-content: center;
-  height: 3rem;
 }
 
 .email-sent-notification {

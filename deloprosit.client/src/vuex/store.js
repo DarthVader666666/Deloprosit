@@ -7,7 +7,9 @@ const store = createStore({
         environment: import.meta.env.VITE_API_ENVIRONMENT,
         roles: [],
         nickname: null,
-        chapters: []
+        chapters: [],
+        showSearchBar: true,
+        title: null
     },
     getters: {
         serverUrl(state) {
@@ -32,6 +34,14 @@ const store = createStore({
         },
         async setChapters(state) {
             state.chapters = (await axios.get(`${state.serverUrl}/chapters/getall`).then(response => response).then(data => data)).data;
+        },
+        renderSearchBar(state) {
+            state.title = null;
+            state.showSearchBar = true;
+        },
+        setTitle(state, value) {
+            state.title = value;
+            state.showSearchBar = false;
         }
     }
 });

@@ -1,10 +1,16 @@
 <script setup>
-import LeftColumnView from './LeftColumnView.vue'
 import RegisterFormView from './RegisterFormView.vue';
 import SpinningCircleView from './SpinningCircleView.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import { RouterLink } from 'vue-router';
+import { useStore } from 'vuex';
+
+const store = useStore();
+
+onMounted(() => {
+    store.commit('setTitle', 'Заполните форму регистрации')
+});
 
 const toast = useToast();
 
@@ -14,6 +20,7 @@ const showEmailNotification = ref(false);
 const handlePending = async (promise) => {
     if(promise) {
         pending.value = true
+        store.commit('setTitle', null)
 
         showEmailNotification.value = await promise
             .catch(error => {
@@ -26,6 +33,8 @@ const handlePending = async (promise) => {
                 if (status === 500) {
                     toast.error('Ошибка сервера');
                 }
+
+                store.commit('setTitle', 'Заполните форму регистрации')
         });
     }
 
@@ -35,9 +44,7 @@ const handlePending = async (promise) => {
 </script>
 
 <template>
-    <h2 class="title" v-if="!showEmailNotification && !pending">Заполните форму регистрации</h2>
     <div class="create-form-container">
-        <LeftColumnView/>
         <div class="email-sent-notification" v-if="showEmailNotification">
             <h3>Письмо успешно отправлено</h3>
             <h3>Проверьте свой Email</h3>
@@ -49,8 +56,3 @@ const handlePending = async (promise) => {
     </div>
 </template>
 
-<style scoped>
-.left-container {
-    width: var(--SIDE-COLUMN-WIDTH);
-}
-</style>
