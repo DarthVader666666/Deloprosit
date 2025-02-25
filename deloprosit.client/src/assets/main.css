@@ -24,7 +24,7 @@ body {
 }
 
 #app {
-  width: var(--MAIN-COMPONENT-WIDTH);
+  width: var(--MAIN-COMPONENT-WIDTH);  
 }
 
 .central-container {
@@ -55,7 +55,6 @@ body {
 .create-form {
   width: var(--MAIN-COMPONENT-WIDTH);
   padding: 10px;
-  width: 100%;
   background-color: var(--MAIN-BCKGND-CLR);
 }
 

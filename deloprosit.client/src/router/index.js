@@ -3,7 +3,7 @@ import HomeView from "@/components/HomeView.vue";
 import ChapterCreateView from "@/components/ChapterCreateView.vue";
 import ChapterDetailsView from "@/components/ChapterDetailsView.vue";
 import { createRouter, createWebHistory } from "vue-router";
-import store from "@/vuex/store";
+//import store from "@/vuex/store";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -22,7 +22,7 @@ const router = createRouter({
             path: '/chapters/create',
             name: 'chapters-create',
             component: ChapterCreateView,
-            meta:{ conditionalRoute: store.getters.isOwner || store.getters.isAdmin }
+            //meta:{ conditionalRoute: store.getters.isOwner || store.getters.isAdmin }
         },
         {
             path: '/chapters/:chapterId',

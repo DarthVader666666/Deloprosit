@@ -1,9 +1,8 @@
 <script setup>
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { RouterLink } from 'vue-router';
-import { useCookies } from 'vue3-cookies';
 import { helper } from '@/helper';
 import { useStore } from 'vuex';
 
@@ -12,32 +11,11 @@ const loginRequestForm = ref({
     password: null
 });
 
-const coockieName = 'Deloprosit_Cookies';
-
-const cookieManager = useCookies();
 const store = useStore();
 const toast = useToast();
 
 const nickname = computed(() => store.state.nickname);
 const remember = ref (false);
-
-onMounted(async () => {
-    axios.defaults.withCredentials = true;
-
-    const activeCookies = cookieManager.cookies.get(coockieName);
-    const localCookies = localStorage.getItem(coockieName);
-
-    if (!activeCookies && localCookies) {
-        cookieManager.cookies.set(coockieName, localCookies);
-    }    
-
-    const response = await axios.get(`${store.getters.serverUrl}/authentication/cookiecredentials`);
-
-    if(response.data.isAuthenticated === true && response.data.nickname) {
-        store.commit('setNickname', response.data.nickname);
-        store.commit('setRoles', response.data.roles);
-    }
-})
 
 const handleLogin = () => {
     const nicknameValue = helper.validateEmail(loginRequestForm.value.nicknameOrEmail) ? '' : loginRequestForm.value.nicknameOrEmail

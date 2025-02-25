@@ -55,7 +55,7 @@ const handleCreate = async () => {
 <template>
     <form class="create-form" @submit.prevent="handleCreate">
         <div class="chapter-create-inputs">
-            <span>Заголовок: <span class="red-star">*</span></span>
+            <span class="chapterTitle">Заголовок: <span class="red-star">*</span></span>
             <input v-model="chapterTitle" type="text" maxlength="120" required>
         </div>            
         <hr/>
@@ -74,7 +74,7 @@ const handleCreate = async () => {
 }
 
 .chapter-create-inputs input {
-    width: 80%;
+    min-width: 68%;
 }
 
 .chapter-create-inputs span {

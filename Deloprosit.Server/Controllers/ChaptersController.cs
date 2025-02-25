@@ -16,12 +16,22 @@ namespace Deloprosit.Server.Controllers
     public class ChaptersController : ControllerBase
     {
         private readonly IRepository<Chapter> _chapterRepository;
+        private readonly IConfiguration _configuration;
         private readonly UserManager _userManager;
 
-        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository)
+        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository, IConfiguration configuration)
         {
             _userManager = userManager;
             _chapterRepository = chapterRepository;
+            _configuration = configuration;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Owner, Admin")]
+        [Route("[action]")]
+        public IActionResult Create()
+        {
+            return Redirect($"{_configuration["ClientUrl"]}/chapters/create");
         }
 
         [HttpPost]
