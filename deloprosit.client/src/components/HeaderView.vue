@@ -83,8 +83,8 @@ const handleLogout = () => {
         }})
         .then(response => {
             if(response.status === 200) {
-                nickname.value = null;
                 localStorage.removeItem('Deloprosit_Cookies');
+                store.commit('setNickname', null);
                 store.commit('setRoles', []);
                 store.commit('setNickname', null);
                 router.push('/');

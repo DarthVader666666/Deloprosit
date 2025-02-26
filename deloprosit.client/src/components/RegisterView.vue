@@ -55,4 +55,3 @@ const handlePending = async (promise) => {
         <RegisterFormView v-else :pending="pending" @email-sent="handlePending"/>
     </div>
 </template>
-

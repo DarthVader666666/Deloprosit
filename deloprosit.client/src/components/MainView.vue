@@ -23,7 +23,7 @@ const title = computed(() =>
 .main-container {
     display: flex;
     flex-direction: row;
-    min-height: 100%;
+    height: 100%;
     box-shadow: 0 7px 15px -3px black;
 }
     

@@ -70,6 +70,7 @@ const chapters = computed(() => store.state.chapters);
     }
 
     li a:hover {
+        color: var(--TEXT-GLOW-COLOR);
         text-decoration: underline;
     }
 </style>

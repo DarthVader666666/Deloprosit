@@ -1,16 +1,17 @@
 @import 'primeicons/primeicons.css';
 
 :root {
-  --MAIN-BCKGND-CLR: rgb(241, 235, 235);
+  --CENTRAL-BCKGND-CLR: rgb(226, 219, 219);
   --COLUMNS-BCKGND-CLR: rgb(245, 245, 245);
   --BCKGND-GRADIENT: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
-  /* --BCKGND-GRADIENT: linear-gradient(to right,rgb(184, 192, 218),rgb(96, 98, 248)); */
-  --LEFT-COLUMN-WIDTH: 21%;
-  --RIGHT-COLUMN-WIDTH: 17%;
+  --LEFT-COLUMN-WIDTH: 17%;
+  --RIGHT-COLUMN-WIDTH: 21%;
   --CENTRAL-COLUMN_WIDTH: 62%;
-  --MAIN-COMPONENT-WIDTH: 90%;
+  --MAIN-COMPONENT-WIDTH: 83%;
+  --APP-COMPONENT-WIDTH: 90%;
+  --APP-COMPONENT-MIN-HEIGHT: 520px;
   --LOGO-COLOR: rgb(124, 172, 124);
-  /* --LOGO-COLOR: rgb(95, 116, 175); */
+  --TEXT-GLOW-COLOR: rgb(36, 141, 17);
 }
 
 body {
@@ -20,42 +21,44 @@ body {
   flex-direction: row;
   justify-content: center;
   margin: 0;
-  background-color: var(--MAIN-BCKGND-CLR);
+  background-color: var(--CENTRAL-BCKGND-CLR);
 }
 
 #app {
-  width: var(--MAIN-COMPONENT-WIDTH);  
+  width: var(--APP-COMPONENT-WIDTH);
+  min-height: var(--APP-COMPONENT-MIN-HEIGHT);
 }
 
 .central-container {
   width: var(--CENTRAL-COLUMN_WIDTH);
-  background-color: var(--MAIN-BCKGND-CLR);
+  background-color: var(--CENTRAL-BCKGND-CLR);
   white-space: initial;
   word-wrap: break-word;
 }
 
 .right-container {
-  min-width: var(--LEFT-COLUMN-WIDTH);
+  width: var(--RIGHT-COLUMN-WIDTH);
   background-color: var(--COLUMNS-BCKGND-CLR);
 }
 
 .left-container {
-  min-width: var(--RIGHT-COLUMN-WIDTH);
+  width: var(--LEFT-COLUMN-WIDTH);
   background-color: var(--COLUMNS-BCKGND-CLR);
+  word-break: break-word;
 }
 
 .create-form-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  background-color: var(--MAIN-BCKGND-CLR);
-  width: 100%;
+  background-color: var(--CENTRAL-BCKGND-CLR);
+  width: var(--MAIN-COMPONENT-WIDTH);
 }
 
 .create-form {
-  width: var(--MAIN-COMPONENT-WIDTH);
+  width: var(--APP-COMPONENT-WIDTH);
   padding: 10px;
-  background-color: var(--MAIN-BCKGND-CLR);
+  background-color: var(--CENTRAL-BCKGND-CLR);
 }
 
 .email-sent-notification {
@@ -63,9 +66,9 @@ body {
   flex-direction: column;
   gap: 15px;;
   align-items: center;
-  width: var(--MAIN-COMPONENT-WIDTH);
+  width: var(--APP-COMPONENT-WIDTH);
   padding-bottom: 10px;
-  background-color: var(--MAIN-BCKGND-CLR);
+  background-color: var(--CENTRAL-BCKGND-CLR);
 }
 
 .email-sent-notification a {
@@ -85,9 +88,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: var(--MAIN-COMPONENT-WIDTH);
+  width: var(--APP-COMPONENT-WIDTH);
   padding: 10px;
-  background-color: var(--MAIN-BCKGND-CLR);
+  background-color: var(--CENTRAL-BCKGND-CLR);
   min-height: 470px;
 }
 
