@@ -9,6 +9,7 @@ const store = useStore();
 onMounted(() => {
     store.commit('renderSearchBar', true);
 });
+
 </script>
 
 <template>

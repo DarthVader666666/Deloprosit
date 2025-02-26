@@ -2,6 +2,8 @@
 using Deloprosit.Data;
 using Deloprosit.Data.Entities;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Deloprosit.Bll.Services
 {
     public class ChapterRepository : IRepository<Chapter>
@@ -43,7 +45,7 @@ namespace Deloprosit.Bll.Services
 
         public Task<Chapter?> GetAsync(int? id)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(_dbContext.Chapters.Include(x => x.Themes).FirstOrDefault(x => x.ChapterId == id));
         }
 
         public Task<IEnumerable<Chapter?>> GetListAsync(int? id = null)

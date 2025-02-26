@@ -1,7 +1,6 @@
 import RegisterView from "@/components/RegisterView.vue";
 import HomeView from "@/components/HomeView.vue";
 import ChapterCreateView from "@/components/ChapterCreateView.vue";
-import ChapterDetailsView from "@/components/ChapterDetailsView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -21,11 +20,6 @@ const router = createRouter({
             path: '/create-chapter',
             name: 'create-chapter',
             component: ChapterCreateView            
-        },
-        {
-            path: '/chapters/:chapterId',
-            name: 'chapter-details',
-            component: ChapterDetailsView,
         },
         {
             path: '/:catchAll(.*)', // any resource which doesn't exist

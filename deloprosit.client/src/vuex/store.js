@@ -8,6 +8,8 @@ const store = createStore({
         roles: [],
         nickname: null,
         chapters: [],
+        themes: [],
+        chapter: null,
         showSearchBar: true,
         title: null
     },
@@ -32,9 +34,6 @@ const store = createStore({
         setNickname(state, userNickname) {
             state.nickname = userNickname;
         },
-        async setChapters(state) {
-            state.chapters = (await axios.get(`${state.serverUrl}/chapters/getall`).then(response => response).then(data => data)).data;
-        },
         renderSearchBar(state) {
             state.title = null;
             state.showSearchBar = true;
@@ -42,6 +41,18 @@ const store = createStore({
         setTitle(state, value) {
             state.title = value;
             state.showSearchBar = false;
+        },
+        async downloadChapters(state) {
+            state.chapters = (await axios.get(`${state.serverUrl}/chapters/getlist`).then(response => response).then(data => data)).data;
+        },
+        async downloadChapter(state, chapterId) {
+            const url = `${state.serverUrl}/chapters/get/${chapterId}`;
+            const data = (await axios.get(url).then(response => response).then(data => data)).data;
+            state.chapter = data;
+            state.themes = data.themes;
+        },
+        async downloadThemes(state) {
+            state.themes = (await axios.get(`${state.serverUrl}/themes/getlist`).then(response => response).then(data => data)).data;
         }
     }
 });

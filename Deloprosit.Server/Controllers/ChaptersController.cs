@@ -1,4 +1,6 @@
-﻿using Deloprosit.Bll.Interfaces;
+﻿using AutoMapper;
+
+using Deloprosit.Bll.Interfaces;
 using Deloprosit.Bll.Services;
 using Deloprosit.Data.Entities;
 using Deloprosit.Server.Models;
@@ -15,13 +17,15 @@ namespace Deloprosit.Server.Controllers
     [ApiController]
     public class ChaptersController : ControllerBase
     {
-        private readonly IRepository<Chapter> _chapterRepository;
         private readonly UserManager _userManager;
+        private readonly IRepository<Chapter> _chapterRepository;
+        private readonly IMapper _mapper;
 
-        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository)
+        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository, IMapper mapper)
         {
             _userManager = userManager;
             _chapterRepository = chapterRepository;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -60,7 +64,7 @@ namespace Deloprosit.Server.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        public async Task<IActionResult> GetAll() 
+        public async Task<IActionResult> GetList() 
         {
             var chapters = await _chapterRepository.GetListAsync();
 
@@ -69,13 +73,18 @@ namespace Deloprosit.Server.Controllers
                 return Problem(statusCode: 500, detail: "Ошибка сервера");
             }
 
-            return Ok(chapters);
+            return Ok(_mapper.Map<IEnumerable<ChapterResponseModel>>(chapters));
         }
 
         [HttpGet]
         [Route("[action]/{chapterId:int}")]
-        public async Task<IActionResult> Get(int chapterId)
+        public async Task<IActionResult> Get(int? chapterId)
         {
+            if (chapterId == null)
+            {
+                return BadRequest();
+            }
+
             var chapter = await _chapterRepository.GetAsync(chapterId);
 
             if (chapter == null)
@@ -83,7 +92,9 @@ namespace Deloprosit.Server.Controllers
                 return Problem(statusCode: 500, detail: "Ошибка сервера");
             }
 
-            return Ok(chapter);
+            var chapterResponseModel = _mapper.Map<ChapterResponseModel>(chapter);
+
+            return Ok(chapterResponseModel);
         }
     }
 }

@@ -20,16 +20,5 @@ const title = computed(() =>
 </template>
 
 <style scoped>
-.main-container {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    box-shadow: 0 7px 15px -3px black;
-}
-    
-.title {
-  text-align: center;
-  align-content: center;
-  height: 2rem;
-}
+
 </style>

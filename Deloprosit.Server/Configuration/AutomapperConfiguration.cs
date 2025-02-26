@@ -24,6 +24,9 @@ namespace Deloprosit.Server.Configurations
                         .ForMember(dest => dest.City, opts => opts.MapFrom(src => EncodeUTF8(src.City)))
                         .ForMember(dest => dest.Info, opts => opts.MapFrom(src => EncodeUTF8(src.Info)))
                         .ForMember(dest => dest.IsConfirmed, opts => opts.Ignore());
+
+                    autoMapperConfig.CreateMap<Chapter, ChapterResponseModel>()
+                        .ForMember(dest => dest.Themes, opts => opts.MapFrom(src => src.Themes == null ? Array.Empty<Theme>() : src.Themes.ToArray()));
                 });
 
                 return config.CreateMapper();

@@ -4,13 +4,18 @@ import { computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 
 onMounted(() => {
-    store.commit('setChapters');
+    store.commit('downloadChapters');
 })
 
 const store = useStore();
 
 const isAdmin = computed(() => store.getters.isAdmin);
 const chapters = computed(() => store.state.chapters);
+
+function handleChapterClick(event) {
+    const chapterId = event.target.value;
+    store.commit('downloadChapter', chapterId);
+}
 
 </script>
 <template>
@@ -22,9 +27,9 @@ const chapters = computed(() => store.state.chapters);
             </div>
             <hr/>
             <ul v-for="(chapter, index) in chapters" :key="index">
-                <li>
+                <li :value="chapter.chapterId" @click.prevent="handleChapterClick">
                     <i class="pi pi-bookmark-fill"></i>
-                    <RouterLink :to="`/get-chapters/${chapter.chapterId}`">{{ chapter.chapterTitle }}</RouterLink>
+                    {{ chapter.chapterTitle }}
                 </li>
             </ul>
         </div>        
@@ -49,7 +54,8 @@ const chapters = computed(() => store.state.chapters);
     }
 
     .chapters-header a:hover {
-        text-decoration: underline;
+        box-shadow: rgba(158, 158, 158, 0.8) 0 0 15px 7px;
+        background-color:rgba(192, 188, 188, 0.98);
     }
 
     ul {
@@ -59,18 +65,13 @@ const chapters = computed(() => store.state.chapters);
     }
 
     li {
-        font-size: x-small;
-    }
-
-    li a {
-        margin-left: 3px;
-        text-decoration: none;
-        color: black;
         font-size: small;
+        margin-bottom: 8px;
     }
 
-    li a:hover {
+    li:hover {
         color: var(--TEXT-GLOW-COLOR);
         text-decoration: underline;
+        cursor: pointer;
     }
 </style>
