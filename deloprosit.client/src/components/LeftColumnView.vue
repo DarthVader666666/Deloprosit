@@ -12,11 +12,6 @@ const store = useStore();
 const isAdmin = computed(() => store.getters.isAdmin);
 const chapters = computed(() => store.state.chapters);
 
-function handleChapterClick(event) {
-    const chapterId = event.target.value;
-    store.commit('downloadChapter', chapterId);
-}
-
 </script>
 <template>
     <div class="left-container">
@@ -27,9 +22,10 @@ function handleChapterClick(event) {
             </div>
             <hr/>
             <ul v-for="(chapter, index) in chapters" :key="index">
-                <li :value="chapter.chapterId" @click.prevent="handleChapterClick">
-                    <i class="pi pi-bookmark-fill"></i>
-                    {{ chapter.chapterTitle }}
+                <li>
+                    <RouterLink :to="`/chapter-details/${chapter.chapterId}`">
+                        <i class="pi pi-bookmark-fill"></i>{{ chapter.chapterTitle }}
+                    </RouterLink>
                 </li>
             </ul>
         </div>        
@@ -54,7 +50,7 @@ function handleChapterClick(event) {
     }
 
     .chapters-header a:hover {
-        box-shadow: rgba(158, 158, 158, 0.8) 0 0 15px 7px;
+        box-shadow: var(--GLOW-BOX-SHADOW);
         background-color:rgba(192, 188, 188, 0.98);
     }
 
@@ -69,7 +65,12 @@ function handleChapterClick(event) {
         margin-bottom: 8px;
     }
 
-    li:hover {
+    li a {
+        text-decoration: none;
+        color:black;
+    }
+
+    li a:hover {
         color: var(--TEXT-GLOW-COLOR);
         text-decoration: underline;
         cursor: pointer;

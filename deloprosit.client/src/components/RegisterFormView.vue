@@ -2,8 +2,9 @@
 import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
-import { helper } from '@/helper';
+import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
+import { RouterLink } from 'vue-router';
 
 const props = defineProps({
     pending: {
@@ -113,7 +114,7 @@ const handleEmailMatch = async (event) => {
 </script>
 
 <template>
-    <form class="create-form" @submit.prevent="handleSend">
+    <form class="form-container" @submit.prevent="handleSend">
         <div class="register-inputs">
             <div class="spans">
                 <span>Никнэйм: <span class="red-star">*</span></span>
@@ -157,7 +158,7 @@ const handleEmailMatch = async (event) => {
         <hr/>
         <div class="buttons">
             <button type="submit" :disabled="isDisabledSendButton">Отправить</button>
-            <button type="button"><a href="/">Отменить</a></button>
+            <button type="button"><RouterLink to="/">Отменить</RouterLink></button>
         </div>
     </form>
 </template>
@@ -206,10 +207,6 @@ const handleEmailMatch = async (event) => {
     flex-direction: row;
     gap: 5px;
     padding-left: 15px;
-}
-
-.red-star {
-    color: red;
 }
 
 .error-message {

@@ -12,6 +12,7 @@
   --APP-COMPONENT-MIN-HEIGHT: 520px;
   --LOGO-COLOR: rgb(124, 172, 124);
   --TEXT-GLOW-COLOR: rgb(36, 141, 17);
+  --GLOW-BOX-SHADOW: rgba(158, 158, 158, 0.8) 0 0 15px 7px;
 }
 
 body {
@@ -62,14 +63,13 @@ body {
   height: 2rem;
 }
 
-.create-form-container {
-  background-color: var(--CENTRAL-BCKGND-CLR);
-  width: var(--MAIN-COMPONENT-WIDTH);
-}
-
-.create-form {
+.form-container {
   padding: 10px;
   background-color: var(--CENTRAL-BCKGND-CLR);
+}
+
+.red-star {
+  color: red;
 }
 
 .email-sent-notification {

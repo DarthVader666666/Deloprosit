@@ -44,7 +44,7 @@ const handlePending = async (promise) => {
 </script>
 
 <template>
-    <div class="create-form-container">
+    <div class="central-container">
         <div class="email-sent-notification" v-if="showEmailNotification">
             <h3>Письмо успешно отправлено</h3>
             <h3>Проверьте свой Email</h3>

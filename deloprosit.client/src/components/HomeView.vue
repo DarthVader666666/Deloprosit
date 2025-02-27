@@ -1,10 +1,9 @@
 <script setup>
-import RightColumnView from './RightColumnView.vue';
-import CentralColumnView from './CentralColumnView.vue';
 import { useStore } from 'vuex';
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 
 const store = useStore();
+const themes = computed(() => store.state.themes);
 
 onMounted(() => {
     store.commit('renderSearchBar', true);
@@ -13,8 +12,11 @@ onMounted(() => {
 </script>
 
 <template>
-    <CentralColumnView/>
-    <RightColumnView/>
+    <div class="central-container">
+        <ul v-for="(theme, index) in themes" :key="index">
+            <li>{{theme.description}}</li>
+        </ul>
+    </div>
 </template>
 
 <style scoped>

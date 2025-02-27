@@ -9,6 +9,6 @@ namespace Deloprosit.Server.Models
         public string? ChapterTitle { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateDeleted { get; set; }
-        public Theme[]? Themes { get; set; } = [];
+        public ThemeResponseModel[]? Themes { get; set; } = [];
     }
 }

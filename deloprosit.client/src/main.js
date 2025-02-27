@@ -1,7 +1,7 @@
 import './assets/main.css'
 import 'primeicons/primeicons.css'
 import 'vue-toastification/dist/index.css';
-import router from './router';
+import router from './router/router.js';
 import App from './App.vue'
 import VueCookies from 'vue3-cookies'
 import store from './vuex/store.js'

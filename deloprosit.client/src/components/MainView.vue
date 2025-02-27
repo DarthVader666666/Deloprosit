@@ -1,5 +1,6 @@
 <script setup>
 import LeftColumnView from './LeftColumnView.vue';
+import RightColumnView from './RightColumnView.vue'
 import { RouterView } from 'vue-router';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
@@ -16,6 +17,7 @@ const title = computed(() =>
     <div class="main-container">
         <LeftColumnView/>
         <RouterView/>
+        <RightColumnView/>
     </div>
 </template>
 

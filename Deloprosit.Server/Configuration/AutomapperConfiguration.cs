@@ -26,7 +26,19 @@ namespace Deloprosit.Server.Configurations
                         .ForMember(dest => dest.IsConfirmed, opts => opts.Ignore());
 
                     autoMapperConfig.CreateMap<Chapter, ChapterResponseModel>()
-                        .ForMember(dest => dest.Themes, opts => opts.MapFrom(src => src.Themes == null ? Array.Empty<Theme>() : src.Themes.ToArray()));
+                        .ForMember(dest => dest.Themes, opts => opts.MapFrom(src => 
+                            src.Themes == null 
+                            ? Array.Empty<ThemeResponseModel>() 
+                            : src.Themes.Select(x => new ThemeResponseModel
+                            {
+                                ThemeId = x.ThemeId,
+                                UserId = x.UserId,
+                                ChapterId = x.ChapterId,
+                                Description = x.Description,
+                                DateCreated = x.DateCreated,
+                                DateDeleted = x.DateDeleted
+                            }
+                        ).ToArray()));
                 });
 
                 return config.CreateMapper();

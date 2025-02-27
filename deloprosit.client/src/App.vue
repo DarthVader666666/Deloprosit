@@ -30,6 +30,8 @@ onMounted(async () => {
         store.commit('setNickname', response.data.nickname);
         store.commit('setRoles', response.data.roles);
     }
+
+    store.commit('downloadThemes');
 })
 
 </script>

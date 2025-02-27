@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useToast } from 'vue-toastification';
 import { ref, computed } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
-import { helper } from '@/helper';
+import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
 
 const loginRequestForm = ref({

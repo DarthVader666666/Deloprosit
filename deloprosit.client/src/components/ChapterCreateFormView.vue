@@ -2,8 +2,9 @@
 import axios from 'axios';
 import { ref, computed } from 'vue';
 import { useToast } from 'vue-toastification';
-import { helper } from '@/helper';
+import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
+import { RouterLink } from 'vue-router';
 
 const store = useStore();
 const toast = useToast();
@@ -53,7 +54,7 @@ const handleCreate = async () => {
 </script>
 
 <template>
-    <form class="create-form" @submit.prevent="handleCreate">
+    <form class="form-container" @submit.prevent="handleCreate">
         <div class="chapter-create-inputs">
             <span class="chapterTitle">Заголовок: <span class="red-star">*</span></span>
             <input v-model="chapterTitle" type="text" maxlength="120" required>
@@ -61,7 +62,7 @@ const handleCreate = async () => {
         <hr/>
         <div class="buttons">
             <button type="submit" :disabled="isDisabledCreateButton">Создать</button>
-            <button type="button"><a href="/">Отменить</a></button>
+            <button type="button"><RouterLink to='/'>Отменить</RouterLink></button>
         </div>
     </form>
 </template>

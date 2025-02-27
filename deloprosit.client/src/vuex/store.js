@@ -52,7 +52,9 @@ const store = createStore({
             state.themes = data.themes;
         },
         async downloadThemes(state) {
-            state.themes = (await axios.get(`${state.serverUrl}/themes/getlist`).then(response => response).then(data => data)).data;
+            const data = (await axios.get(`${state.serverUrl}/themes/getlist`).then(response => response).then(data => data)).data;
+            state.themes = data;
+            state.chapter = null;
         }
     }
 });
