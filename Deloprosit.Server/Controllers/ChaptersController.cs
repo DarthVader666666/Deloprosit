@@ -19,12 +19,15 @@ namespace Deloprosit.Server.Controllers
     {
         private readonly UserManager _userManager;
         private readonly IRepository<Chapter> _chapterRepository;
+        private readonly IRepository<Theme> _themeRepository;
         private readonly IMapper _mapper;
 
-        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository, IMapper mapper)
+        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository, 
+            IRepository<Theme> themeRepository, IMapper mapper)
         {
             _userManager = userManager;
             _chapterRepository = chapterRepository;
+            _themeRepository = themeRepository;
             _mapper = mapper;
         }
 
@@ -95,6 +98,17 @@ namespace Deloprosit.Server.Controllers
             var chapterResponseModel = _mapper.Map<ChapterResponseModel>(chapter);
 
             return Ok(chapterResponseModel);
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        [Authorize(Roles = "Owner, Admin")]
+        public async Task<IActionResult> Update([FromForm] ChapterUpdateModel chapterUpdateModel)
+        {   
+            var chapter = _mapper.Map<Chapter>(chapterUpdateModel);
+            await _chapterRepository.UpdateAsync(chapter);
+
+            return Ok(chapter);
         }
     }
 }

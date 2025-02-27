@@ -39,6 +39,8 @@ namespace Deloprosit.Server.Configurations
                                 DateDeleted = x.DateDeleted
                             }
                         ).ToArray()));
+
+                    autoMapperConfig.CreateMap<ChapterUpdateModel, Chapter>();
                 });
 
                 return config.CreateMapper();

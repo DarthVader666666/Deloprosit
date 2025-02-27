@@ -16,12 +16,12 @@ const isDisabledCreateButton = computed(() => {
 });
 
 const handleCreate = async () => {
-    let data = new FormData();
+    let formData = new FormData();
 
-    data.append('chapterTitle', chapterTitle.value);
-    data.append('dateCreated', helper.getCurrentDate());
+    formData.append('chapterTitle', chapterTitle.value);
+    formData.append('dateCreated', helper.getCurrentDate());
 
-    await axios.post(`${store.getters.serverUrl}/chapters/create`, data,
+    await axios.post(`${store.getters.serverUrl}/chapters/create`, formData,
         {
             headers:
             {

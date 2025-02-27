@@ -47,9 +47,17 @@ namespace Deloprosit.Bll.Services
             return Task.FromResult(themes ?? []);
         }
 
-        public Task<Theme?> UpdateAsync(Theme? item)
+        public async Task<Theme?> UpdateAsync(Theme? item)
         {
-            throw new NotImplementedException();
+            if (item == null)
+            {
+                return null;
+            }
+
+            var updatedChapter = _dbContext.Update(item).Entity;
+            await _dbContext.SaveChangesAsync();
+
+            return updatedChapter;
         }
     }
 }

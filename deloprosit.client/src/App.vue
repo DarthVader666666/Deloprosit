@@ -31,6 +31,7 @@ onMounted(async () => {
         store.commit('setRoles', response.data.roles);
     }
 
+    store.commit('downloadChapters');
     store.commit('downloadThemes');
 })
 
