@@ -166,7 +166,7 @@ function handleCancel() {
     padding-left: 15px;
     display: flex;
     flex-direction: row;
-    gap: 125px;
+    gap: 90px;
     align-items: center;
     height: 25px;
 }
@@ -183,12 +183,17 @@ function handleCancel() {
     padding: 5px;
     align-items: center;
     gap: 5px;
-    width: 92%;
+    width: 90%;
     height: 100%;
 }
 
 .new-theme-inputs input {
     width: 70%;
+}
+
+.new-theme-inputs button {
+    width: 85px;
+    height: 24px;
 }
 
 .edit-chapter-button:hover {
