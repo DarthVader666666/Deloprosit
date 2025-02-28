@@ -10,6 +10,7 @@ const toast = useToast();
 
 const chapter = computed(() => store.state.chapter);
 const isButtonDisabled = computed(() => !editedChapter.chapterTitle || newThemes.value.find(x => x.description === '' || x.description === null));
+const isEditMode = computed(() => store.state.isEditMode);
 
 const newThemes = ref([]);
 
@@ -19,8 +20,6 @@ let editedChapter = reactive({
     themes: reactive([])
 });
 
-const isEdit = ref(false);
-
 function initializeEditMode() {
     editedChapter.chapterId = chapter.value.chapterId;    
     editedChapter.chapterTitle = chapter.value.chapterTitle;
@@ -29,7 +28,7 @@ function initializeEditMode() {
     editedChapter.dateDeleted = chapter.value.dateDeleted;
     editedChapter.themes = [];
 
-    isEdit.value = true;
+    store.commit('setIsEditMode', true);
 };
 
 function handleAddTheme() {
@@ -48,7 +47,7 @@ function handleDeleteNewTheme(index) {
 }
 
 async function handleSave() {
-    isEdit.value = false;
+    store.commit('setIsEditMode', false);
     const currentDate = helper.getCurrentDate();
 
     newThemes.value.forEach(theme => {
@@ -88,7 +87,7 @@ async function handleSave() {
 }
 
 function handleCancel() {
-    isEdit.value = false;
+    store.commit('setIsEditMode', false);
     newThemes.value = [];
 }
 
@@ -96,7 +95,7 @@ function handleCancel() {
 <template>
     <div class="central-container">
         <div v-if="chapter">
-            <div v-if="!isEdit">
+            <div v-if="!isEditMode">
                 <div class="title">
                     <h3>{{chapter.chapterTitle}}
                         <i v-if="store.getters.isAdmin || store.getters.isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>

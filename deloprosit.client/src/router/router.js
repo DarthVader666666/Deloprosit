@@ -44,6 +44,9 @@ router.afterEach((to) => {
     if(to.name === 'chapter-details') {
         store.commit('downloadChapter', to.params.chapterId);
     }
+
+    store.commit('setIsEditMode', false);
+
 });
 
 export default router;

@@ -11,7 +11,8 @@ const store = createStore({
         themes: [],
         chapter: null,
         showSearchBar: true,
-        title: null
+        title: null,
+        isEditMode: false
     },
     getters: {
         serverUrl(state) {
@@ -55,6 +56,9 @@ const store = createStore({
             const data = (await axios.get(`${state.serverUrl}/themes/getlist`).then(response => response).then(data => data)).data;
             state.themes = data;
             state.chapter = null;
+        },
+        setIsEditMode(state, value) {
+            state.isEditMode = value;
         }
     }
 });
