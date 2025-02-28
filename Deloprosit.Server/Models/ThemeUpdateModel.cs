@@ -1,6 +1,6 @@
 ﻿namespace Deloprosit.Server.Models
 {
-    public class ThemeResponseModel
+    public class ThemeUpdateModel
     {
         public int? ThemeId { get; set; }
         public int? UserId { get; set; }

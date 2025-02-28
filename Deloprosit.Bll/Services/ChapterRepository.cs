@@ -22,7 +22,7 @@ namespace Deloprosit.Bll.Services
                 return null;
             }
 
-            var createdChapter = _dbContext.Add(item).Entity;
+            var createdChapter = _dbContext.Chapters.Add(item).Entity;
             await _dbContext.SaveChangesAsync();
 
             return createdChapter;
@@ -53,9 +53,17 @@ namespace Deloprosit.Bll.Services
             return Task.FromResult<IEnumerable<Chapter?>>(_dbContext.Chapters.AsEnumerable());
         }
 
-        public Task<Chapter?> UpdateAsync(Chapter? item)
+        public async Task<Chapter?> UpdateAsync(Chapter? item)
         {
-            throw new NotImplementedException();
+            if (item == null)
+            {
+                return null;
+            }
+
+            var updatedChapter = _dbContext.Chapters.Update(item).Entity;
+            await _dbContext.SaveChangesAsync();
+
+            return updatedChapter;
         }
     }
 }

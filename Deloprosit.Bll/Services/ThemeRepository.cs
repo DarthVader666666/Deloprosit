@@ -15,9 +15,17 @@ namespace Deloprosit.Bll.Services
             _dbContext = dbContext;
         }
 
-        public Task<Theme?> CreateAsync(Theme? item)
+        public async Task<Theme?> CreateAsync(Theme? item)
         {
-            throw new NotImplementedException();
+            if (item == null)
+            {
+                return null;
+            }
+
+            var createdTheme = _dbContext.Themes.Add(item).Entity;
+            await _dbContext.SaveChangesAsync();
+
+            return createdTheme;
         }
 
         public Task<Theme?> DeleteAsync(int? id)
@@ -54,10 +62,10 @@ namespace Deloprosit.Bll.Services
                 return null;
             }
 
-            var updatedChapter = _dbContext.Update(item).Entity;
+            var updatedTheme = _dbContext.Themes.Update(item).Entity;
             await _dbContext.SaveChangesAsync();
 
-            return updatedChapter;
+            return updatedTheme;
         }
     }
 }

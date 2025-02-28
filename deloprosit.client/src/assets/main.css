@@ -32,7 +32,6 @@ body {
 
 .central-container {
   width: var(--CENTRAL-COLUMN_WIDTH);
-  text-align: center;
   background-color: var(--CENTRAL-BCKGND-CLR);
   white-space: initial;
   word-wrap: break-word;

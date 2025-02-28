@@ -17,6 +17,8 @@ const coockieName ='Deloprosit_Cookies';
 onMounted(async () => {
     store.commit('downloadChapters');
     store.commit('downloadThemes');
+
+    //setTimeout(() => {}, 500);
     
     axios.defaults.withCredentials = true;
 

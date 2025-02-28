@@ -2,24 +2,32 @@
 import axios from 'axios';
 import { computed, reactive, ref } from 'vue';
 import { useStore } from 'vuex';
+import { helper } from '@/helper/helper';
+import { useToast } from 'vue-toastification';
 
 const store = useStore();
+const toast = useToast();
+
 const chapter = computed(() => store.state.chapter);
+const isButtonDisabled = computed(() => !editedChapter.chapterTitle || newThemes.value.find(x => x.description === '' || x.description === null));
+
 const newThemes = ref([]);
 
-const editedChapter = reactive({
+let editedChapter = reactive({
     chapterId: null,
     chapterTitle: null,
-    themes: []
+    themes: reactive([])
 });
 
 const isEdit = ref(false);
 
 function initializeEditMode() {
-    editedChapter.chapterId = chapter.value.chapterId;
+    editedChapter.chapterId = chapter.value.chapterId;    
     editedChapter.chapterTitle = chapter.value.chapterTitle;
+    editedChapter.userId = chapter.value.userId;
     editedChapter.dateCreated = chapter.value.dateCreated;
-    editedChapter.themes = chapter.value.themes;
+    editedChapter.dateDeleted = chapter.value.dateDeleted;
+    editedChapter.themes = [];
 
     isEdit.value = true;
 };
@@ -30,7 +38,8 @@ function handleAddTheme() {
         userId: null,
         chapterId: editedChapter.chapterId,
         description: null,
-        dateCreated: null
+        dateCreated: null,
+        dateDeleted: null,
     })
 }
 
@@ -38,29 +47,44 @@ function handleDeleteNewTheme(index) {
     newThemes.value.splice(index, 1);
 }
 
-function handleSave() {
+async function handleSave() {
     isEdit.value = false;
+    const currentDate = helper.getCurrentDate();
 
-    if(editedChapter.themes.length > 0) {
-        editedChapter.themes.push(newThemes);
-    }
-    else {
+    newThemes.value.forEach(theme => {
+        theme.dateCreated = currentDate;
+    });
+
+    if(newThemes.value.length > 0) {
         editedChapter.themes = newThemes;
     }
 
-    let formData = new FormData();
-
-    formData.append('chapterId', editedChapter.chapterId );
-    formData.append('chapterTitle', editedChapter.chapterTitle );
-    formData.append('themes', editedChapter.themes);
-
     const url = store.state.serverUrl;
-    axios.post(`${url}/chapters/update`, formData,
+    await axios.post(`${url}/chapters/update`, editedChapter,
     {
         headers: {
-            'Content': 'multipart/form-data'
+            'Content': 'application/json',
+            'Accept': '*/*'
         }
-    });
+    })
+    .then(response => {
+        if(response.status === 200) {
+            toast.success('Раздел успешно обновлен');
+            store.commit('downloadChapters');
+            store.commit('downloadChapter', editedChapter.chapterId);
+            editedChapter.themes = [];
+        }
+    })
+    .catch(error => {
+        const data = error.response.data;
+
+        if(data) {
+            toast.error(data.detail);
+        }
+        else {
+            toast.error('Ошибка обновления раздела')
+        }
+    });    
 }
 
 function handleCancel() {
@@ -73,105 +97,137 @@ function handleCancel() {
     <div class="central-container">
         <div v-if="chapter">
             <div v-if="!isEdit">
-                <h3>Темы раздела:</h3>
-                <h4>"{{chapter.chapterTitle}}"
-                    <i v-if="store.getters.isAdmin || store.getters.isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>
-                </h4>
+                <div class="title">
+                    <h3>{{chapter.chapterTitle}}
+                        <i v-if="store.getters.isAdmin || store.getters.isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>
+                    </h3>
+                </div>
+                <hr/>
+                <div v-for="(theme, index) in chapter.themes" :key="index" class="theme">
+                    <span class="date">{{ helper.getDateString(theme.dateCreated) }}</span>
+                    <RouterLink :to="`/themes/details/${theme.themeId}`"><i class="pi pi-question-circle"></i>{{ theme.description }}</RouterLink>
+                </div>
             </div>
             <div v-else>
-                <h2>Редактирование раздела:</h2>
-                <hr/>
-                <form  class="form-container" @submit.prevent="handleSave">
-                    <div class="chapter-inputs">
-                        <div class="spans">
-                            <span>Заголовок: <span class="red-star">*</span></span>
-                        </div>
-                        <div class="inputs">
-                            <textarea v-model="editedChapter.chapterTitle" type="text"></textarea>
-                        </div>
-                    </div>
-                    <h3 class="themes-header">Темы раздела:</h3>
-                    <hr/>
-                    <div v-for="(theme, index) in editedChapter.themes" :key="index" class="chapter-inputs">
-                    </div>
-                    <div v-for="(newTheme, index) in newThemes" :key="index" class="new-theme">
-                        <span>Тема:<span class="red-star">*</span></span>
-                        <textarea v-model="newTheme.description" type="text"></textarea>
-                        <button @click.prevent="handleDeleteNewTheme(index)"><i class="pi pi-times"></i>Удалить</button>
-                    </div>
-                    <hr/>
-                    <button @click.prevent="handleAddTheme"><i class="pi pi-file-plus"></i>Добавить</button>
+                <div class="title">
+                    <input v-model="editedChapter.chapterTitle" type="text" autofocus>
                     <div class="buttons">
-                        <button type="submit" :disabled="!editedChapter.chapterTitle || newThemes.find(x => x.description === '' || x.description === null)">Сохранить</button>
+                        <button type="button" @click.prevent="handleSave" :disabled="isButtonDisabled">Сохранить</button>
                         <button type="button" @click.prevent="handleCancel">Отменить</button>
                     </div>
-                </form>
+                </div>
+                <hr/>
+                <div class="new-themes-header">
+                    <h3>Темы:</h3>
+                    <button @click.prevent="handleAddTheme"><i class="pi pi-file-plus"></i>Добавить</button>
+                </div>
+                <hr/>
+
+                <div v-for="(newTheme, index) in newThemes" :key="index" class="new-theme-inputs">
+                    <input v-model="newTheme.description" type="text">
+                    <button @click.prevent="handleDeleteNewTheme(index)"><i class="pi pi-times"></i>Удалить</button>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.edit-chapter-button:hover {
-    box-shadow: var(--GLOW-BOX-SHADOW);
-    cursor: pointer;
-}
-
-.chapter-inputs {
+.title {
     display: flex;
     flex-direction: row;
+    padding-left: 15px;
+    padding-right: 15px;
+    justify-content: space-between;
+}
+
+.title input {
+    margin-top: 10px;
+    height: 16px;
+    font-size: 15px;
     font-weight: bold;
-    align-items: center;
-}
-
-.spans {
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-    text-align: end;
-    gap: 20px;
-    margin: 3px;
-}
-
-.new-theme {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-    padding: 5px;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-}
-
-button {
-    height: 25px;
-}
-
-.new-theme textarea {
-    width: 55%;
-}
-
-.inputs {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin: 1px;
-    width: 70%;
+    width: 66%;
 }
 
 .buttons {
     display: flex;
     flex-direction: row;
     gap: 5px;
+    align-items: end;
+    padding-left: 5px;
+}
+
+.buttons button {
+    height: 25px;
+}
+
+.date {
+    font-size: x-small;
+    text-align: end;
+    color: rgb(63, 62, 62);
+    background: linear-gradient(to top,rgb(180, 231, 180),rgb(148, 216, 148));
+    padding: 3px;
+}
+
+.theme {
+    text-align: start;    
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    margin: 15px;
+}
+
+.theme a {    
+    color: black;
+    background: lightgray;
+    padding: 8px;
+}
+
+.theme i {
+    color: var(--TEXT-GLOW-COLOR);
+    margin-right: 5px;
+}
+
+.new-themes-header {
     padding-left: 15px;
+    display: flex;
+    flex-direction: row;
+    gap: 125px;
+    align-items: center;
+    height: 25px;
 }
 
-.themes-header {
-    text-align: left;
+.new-themes-header button {
+    height: 25px;
 }
 
-h4 i {
+.new-theme-inputs {
+    margin-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    align-items: center;
+    gap: 5px;
+    width: 92%;
+    height: 100%;
+}
+
+.new-theme-inputs input {
+    width: 70%;
+}
+
+.edit-chapter-button:hover {
+    box-shadow: var(--GLOW-BOX-SHADOW);
+    cursor: pointer;
+}
+
+h3 i {
     margin-left: 8px;
+}
+
+h3 {
+    text-align: start;
 }
 
 button i {

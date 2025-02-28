@@ -8,6 +8,7 @@ using Deloprosit.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Deloprosit.Server.Controllers
@@ -103,12 +104,33 @@ namespace Deloprosit.Server.Controllers
         [HttpPost]
         [Route("[action]")]
         [Authorize(Roles = "Owner, Admin")]
-        public async Task<IActionResult> Update([FromForm] ChapterUpdateModel chapterUpdateModel)
+        public async Task<IActionResult> Update([FromBody] ChapterUpdateModel chapterUpdateModel)
         {   
-            var chapter = _mapper.Map<Chapter>(chapterUpdateModel);
-            await _chapterRepository.UpdateAsync(chapter);
+            var userId = (await _userManager.GetCurrentUserAsync(HttpContext))?.UserId;
 
-            return Ok(chapter);
+            if (userId == null) {
+                return Problem(statusCode: 500, detail: "Пользователь не найден");
+            }
+
+            var chapter = _mapper.Map<Chapter>(chapterUpdateModel);
+
+            try
+            {
+                await _chapterRepository.UpdateAsync(chapter);
+
+                foreach (var updatedTheme in chapterUpdateModel.Themes ?? [])
+                {
+                    var theme = _mapper.Map<Theme>(updatedTheme);
+                    theme.UserId = (int)userId;
+                    await _themeRepository.CreateAsync(theme);
+                }
+            }
+            catch (SqlException)
+            { 
+                return Problem(statusCode: 500, detail: "Ошибка базы данных");
+            }
+
+            return Ok();
         }
     }
 }
