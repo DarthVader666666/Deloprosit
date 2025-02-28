@@ -34,7 +34,7 @@ const handleCreate = async () => {
             if(status === 200) {
                 toast.success('Раздел создан');
                 chapterTitle.value = '';
-                store.commit('setChapters');
+                store.commit('downloadChapters');
             }
         })
         .catch(error => {

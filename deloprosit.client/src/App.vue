@@ -15,6 +15,9 @@ const showSearchBar = computed(() => store.state.showSearchBar);
 const coockieName ='Deloprosit_Cookies';
 
 onMounted(async () => {
+    store.commit('downloadChapters');
+    store.commit('downloadThemes');
+    
     axios.defaults.withCredentials = true;
 
     const activeCookies = cookieManager.cookies.get(coockieName);
@@ -30,9 +33,6 @@ onMounted(async () => {
         store.commit('setNickname', response.data.nickname);
         store.commit('setRoles', response.data.roles);
     }
-
-    store.commit('downloadChapters');
-    store.commit('downloadThemes');
 })
 
 </script>
