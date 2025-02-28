@@ -50,7 +50,7 @@ namespace Deloprosit.Bll.Services
 
         public Task<IEnumerable<Chapter?>> GetListAsync(int? id = null)
         {
-            return Task.FromResult<IEnumerable<Chapter?>>(_dbContext.Chapters.AsEnumerable());
+            return Task.FromResult<IEnumerable<Chapter?>>(_dbContext.Chapters.Include(x => x.Themes).AsEnumerable());
         }
 
         public async Task<Chapter?> UpdateAsync(Chapter? item)

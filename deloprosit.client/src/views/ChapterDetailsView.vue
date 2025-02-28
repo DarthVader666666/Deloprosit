@@ -1,6 +1,7 @@
 <script setup>
+import ThemeList from '@/components/ThemeList.vue';
 import axios from 'axios';
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { helper } from '@/helper/helper';
 import { useToast } from 'vue-toastification';
@@ -18,6 +19,10 @@ let editedChapter = reactive({
     chapterId: null,
     chapterTitle: null,
     themes: reactive([])
+});
+
+onMounted(() => {
+    store.commit('renderSearchBar', true);
 });
 
 function initializeEditMode() {
@@ -102,10 +107,7 @@ function handleCancel() {
                     </h3>
                 </div>
                 <hr/>
-                <div v-for="(theme, index) in chapter.themes" :key="index" class="theme">
-                    <span class="date">{{ helper.getDateString(theme.dateCreated) }}</span>
-                    <RouterLink :to="`/themes/details/${theme.themeId}`"><i class="pi pi-question-circle"></i>{{ theme.description }}</RouterLink>
-                </div>
+                <ThemeList :chapter="chapter"></ThemeList>
             </div>
             <div v-else>
                 <div class="title">
@@ -158,33 +160,6 @@ function handleCancel() {
 
 .buttons button {
     height: 25px;
-}
-
-.date {
-    font-size: x-small;
-    text-align: end;
-    color: rgb(63, 62, 62);
-    background: linear-gradient(to top,rgb(180, 231, 180),rgb(148, 216, 148));
-    padding: 3px;
-}
-
-.theme {
-    text-align: start;    
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    margin: 15px;
-}
-
-.theme a {    
-    color: black;
-    background: lightgray;
-    padding: 8px;
-}
-
-.theme i {
-    color: var(--TEXT-GLOW-COLOR);
-    margin-right: 5px;
 }
 
 .new-themes-header {

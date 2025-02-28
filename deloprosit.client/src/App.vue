@@ -1,8 +1,8 @@
 <script setup>
-import HeaderView from './components/HeaderView.vue';
-import FooterView from './components/FooterView.vue';
-import SearchBarView from './components/SearchBarView.vue';
-import MainView from './components/MainView.vue';
+import HeaderView from './components/HeaderComponent.vue';
+import FooterView from './components/FooterComponent.vue';
+import SearchBarView from './components/SearchBar.vue';
+import MainView from './components/MainComponent.vue';
 import axios from 'axios';
 import { useStore } from 'vuex';
 import { computed, onMounted } from 'vue';
@@ -15,11 +15,6 @@ const showSearchBar = computed(() => store.state.showSearchBar);
 const coockieName ='Deloprosit_Cookies';
 
 onMounted(async () => {
-    store.commit('downloadChapters');
-    store.commit('downloadThemes');
-
-    //setTimeout(() => {}, 500);
-    
     axios.defaults.withCredentials = true;
 
     const activeCookies = cookieManager.cookies.get(coockieName);

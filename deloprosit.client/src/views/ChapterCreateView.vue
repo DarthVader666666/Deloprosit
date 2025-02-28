@@ -1,5 +1,5 @@
 <script setup>
-import ChapterCreateFormView from './ChapterCreateFormView.vue';
+import ChapterCreateFormView from '@/components/ChapterCreateForm.vue';
 import { useStore } from 'vuex';
 import { onMounted } from 'vue';
 

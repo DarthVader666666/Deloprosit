@@ -7,9 +7,8 @@ const store = createStore({
         environment: import.meta.env.VITE_API_ENVIRONMENT,
         roles: [],
         nickname: null,
-        chapters: [],
-        themes: [],
         chapter: null,
+        chapters: [],
         showSearchBar: true,
         title: null,
         isEditMode: false
@@ -51,11 +50,6 @@ const store = createStore({
             const data = (await axios.get(url).then(response => response).then(data => data)).data;
             state.chapter = data;
             state.themes = data.themes;
-        },
-        async downloadThemes(state) {
-            const data = (await axios.get(`${state.serverUrl}/themes/getlist`).then(response => response).then(data => data)).data;
-            state.themes = data;
-            state.chapter = null;
         },
         setIsEditMode(state, value) {
             state.isEditMode = value;

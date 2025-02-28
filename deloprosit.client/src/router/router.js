@@ -1,7 +1,7 @@
-import RegisterView from "@/components/RegisterView.vue";
-import HomeView from "@/components/HomeView.vue";
-import ChapterCreateView from "@/components/ChapterCreateView.vue";
-import ChapterDetailsView from "@/components/ChapterDetailsView.vue";
+import RegisterView from "@/views/RegisterView.vue";
+import HomeView from "@/views/HomeView.vue";
+import ChapterCreateView from "@/views/ChapterCreateView.vue";
+import ChapterDetailsView from "@/views/ChapterDetailsView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import store from '@/vuex/store.js';
 
@@ -38,7 +38,7 @@ const router = createRouter({
 
 router.afterEach((to) => {
     if(to.name === 'home') {
-        store.commit('downloadThemes');
+        store.commit('downloadChapters');
     }
 
     if(to.name === 'chapter-details') {
@@ -46,7 +46,6 @@ router.afterEach((to) => {
     }
 
     store.commit('setIsEditMode', false);
-
 });
 
 export default router;

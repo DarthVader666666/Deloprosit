@@ -1,15 +1,13 @@
 <script setup>
-import LeftColumnView from './LeftColumnView.vue';
-import RightColumnView from './RightColumnView.vue'
+import LeftColumnView from './LeftColumn.vue';
+import RightColumnView from './RightColumn.vue'
 import { RouterView } from 'vue-router';
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 
 const store = useStore();
 
-const title = computed(() => 
-    store.state.title
-);
+const title = computed(() => store.state.title);
 </script>
 
 <template>

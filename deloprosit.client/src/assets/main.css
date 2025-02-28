@@ -13,6 +13,8 @@
   --LOGO-COLOR: rgb(124, 172, 124);
   --TEXT-GLOW-COLOR: rgb(36, 141, 17);
   --GLOW-BOX-SHADOW: rgba(158, 158, 158, 0.8) 0 0 15px 7px;
+  --THEME-HEADER-COLOR: rgb(63, 62, 62);;
+  --THEME-HEADER-BCKGND-GRADIENT: linear-gradient(to top,rgb(180, 231, 180),rgb(148, 216, 148));
 }
 
 body {

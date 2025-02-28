@@ -66,6 +66,10 @@ const chapters = computed(() => store.state.chapters);
         color:black;
     }
 
+    li a i {
+        margin-right: 3px;
+    }
+
     li a:hover {
         color: var(--TEXT-GLOW-COLOR);
         text-decoration: underline;
