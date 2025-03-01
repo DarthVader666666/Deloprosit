@@ -6,6 +6,7 @@ import { RouterLink } from 'vue-router';
 const store = useStore();
 
 const isAdmin = computed(() => store.getters.isAdmin);
+const isOwner = computed(() => store.getters.isOwner);
 const chapters = computed(() => store.state.chapters);
 
 </script>
@@ -14,7 +15,7 @@ const chapters = computed(() => store.state.chapters);
         <div class="chapters">
             <div class="chapters-header">
                 <strong>Разделы:</strong>
-                <RouterLink v-if="isAdmin" to="/create-chapter"><i class="pi pi-folder-plus"></i> Создать </RouterLink>
+                <RouterLink v-if="isAdmin || isOwner" to="/create-chapter"><i class="pi pi-folder-plus"></i> Создать </RouterLink>
             </div>
             <hr/>
             <ul v-for="(chapter, index) in chapters" :key="index">

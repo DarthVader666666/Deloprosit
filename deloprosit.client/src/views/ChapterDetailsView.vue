@@ -9,6 +9,8 @@ import { useToast } from 'vue-toastification';
 const store = useStore();
 const toast = useToast();
 
+const isAdmin = computed(() => store.getters.isAdmin);
+const isOwner = computed(() => store.getters.isOwner);
 const chapter = computed(() => store.state.chapter);
 const isButtonDisabled = computed(() => !editedChapter.chapterTitle || newThemes.value.find(x => x.description === '' || x.description === null));
 const isEditMode = computed(() => store.state.isEditMode);
@@ -139,7 +141,7 @@ async function handleDeleteThemes() {
             <div v-if="!isEditMode">
                 <div class="title">
                     <h3>{{chapter.chapterTitle}}
-                        <i v-if="store.getters.isAdmin || store.getters.isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>
+                        <i v-if="isAdmin || isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>
                     </h3>
                     <div class="delete-button">
                         <i :class="'pi pi-trash' + ` ${isDeleteButtonActive ? 'active' : 'inactive'}`" @click.prevent="handleDeleteThemes"></i>
