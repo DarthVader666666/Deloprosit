@@ -143,7 +143,7 @@ async function handleDeleteThemes() {
                     <h3>{{chapter.chapterTitle}}
                         <i v-if="isAdmin || isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>
                     </h3>
-                    <div class="delete-button">
+                    <div v-if="isAdmin || isOwner" class="delete-button">
                         <i :class="'pi pi-trash' + ` ${isDeleteButtonActive ? 'active' : 'inactive'}`" @click.prevent="handleDeleteThemes"></i>
                     </div>            
                 </div>
