@@ -47,7 +47,7 @@ const chapters = computed(() => store.state.chapters);
 
     .chapters-header a:hover {
         box-shadow: var(--GLOW-BOX-SHADOW);
-        background-color:rgba(192, 188, 188, 0.98);
+        background-color:rgba(204, 204, 204, 0.98);
     }
 
     ul {

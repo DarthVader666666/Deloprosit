@@ -1,14 +1,44 @@
 <script setup>
-import { defineProps } from 'vue';
 import { helper } from '@/helper/helper';
+import { useStore } from 'vuex';
+import { onUpdated, ref } from 'vue';
+
+const store = useStore();
+
+const emit = defineEmits(['deleteButtonStatusChanged']);
+
+const selectedThemeIds = ref([]);
 
 const props = defineProps({
     chapter: {
         typeof: Object,
         default: null,
         required: true
+    },
+    useCheckboxes: {
+        typeof: Boolean,
+        default: false
     }
 });
+
+onUpdated(() => {
+    const checkBoxes = document.querySelectorAll('input[type=checkbox]');
+    checkBoxes.forEach(x => x.checked = false);
+})
+
+function handleCheckboxChange(event, themeId) {
+    const isChecked = event.target.checked;
+
+    if(isChecked) {
+        selectedThemeIds.value.push(themeId);
+    }
+    else {
+        const index = selectedThemeIds.value.indexOf(themeId);
+        selectedThemeIds.value.splice(index, 1);
+    }
+
+    emit('deleteButtonStatusChanged', selectedThemeIds.value.length > 0, selectedThemeIds.value)
+}
 
 </script>
 <template>
@@ -20,6 +50,8 @@ const props = defineProps({
         </div>
         <div class="theme-content">
             <RouterLink :to="`/themes/details/${theme.themeId}`"><i class="pi pi-question-circle"></i>{{ theme.description }}</RouterLink>
+            <input v-if="useCheckboxes && (store.getters.isAdmin || store.getters.isOwner)" type="checkbox"
+                @change.prevent="handleCheckboxChange($event, theme.themeId)">
         </div>
     </div>
 </div>
@@ -63,6 +95,11 @@ const props = defineProps({
 .theme-content a {
     color: black;
     padding: 8px;
+}
+
+.theme-content input {
+    float: inline-end;
+    margin: 0 8px 8px 0;
 }
 
 .theme i {

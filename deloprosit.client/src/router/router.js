@@ -37,10 +37,6 @@ const router = createRouter({
 });
 
 router.afterEach((to) => {
-    if(to.name === 'home') {
-        store.commit('downloadChapters');
-    }
-
     if(to.name === 'chapter-details') {
         store.commit('downloadChapter', to.params.chapterId);
     }

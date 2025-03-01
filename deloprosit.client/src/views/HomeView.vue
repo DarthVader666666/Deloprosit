@@ -7,6 +7,7 @@ const store = useStore();
 const chapters = computed(() => store.state.chapters);
 
 onMounted(() => {
+    store.commit('downloadChapters');
     store.commit('renderSearchBar', true);
 });
 

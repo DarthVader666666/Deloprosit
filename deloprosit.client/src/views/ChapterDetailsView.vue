@@ -14,6 +14,8 @@ const isButtonDisabled = computed(() => !editedChapter.chapterTitle || newThemes
 const isEditMode = computed(() => store.state.isEditMode);
 
 const newThemes = ref([]);
+const isDeleteButtonActive = ref(false);
+const selectedThemeIds = ref([]);
 
 let editedChapter = reactive({
     chapterId: null,
@@ -96,6 +98,40 @@ function handleCancel() {
     newThemes.value = [];
 }
 
+function handleDeleteButtonStatusChange(isActive, selectedIds) {
+    isDeleteButtonActive.value = isActive;
+    selectedThemeIds.value = selectedIds;
+}
+
+async function handleDeleteThemes() {
+    if(isDeleteButtonActive.value) {
+        const themeIdsQuery = selectedThemeIds.value.map(id => `themeIds=${id}&`).join('').slice(0, -1);
+        const url = `${store.state.serverUrl}/themes/deletelist?` + themeIdsQuery;
+
+        await axios.delete(url, null)
+            .then(response => {
+                const status = response.status;
+
+                if(status === 200) {
+                    toast.success('Темы успешно удалены');
+                    isDeleteButtonActive.value = false;
+                    store.commit('downloadChapter', chapter.value.chapterId);
+                }
+            })
+            .catch(error => {
+                const response =  error.response;
+
+                if(response.status === 500) {
+                    toast.error('Ошибка базы данных')
+                }
+
+                if(response.status === 400) {
+                    toast.error(response.data.errorText);
+                }
+            });
+    }
+}
+
 </script>
 <template>
     <div class="central-container">
@@ -105,9 +141,12 @@ function handleCancel() {
                     <h3>{{chapter.chapterTitle}}
                         <i v-if="store.getters.isAdmin || store.getters.isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>
                     </h3>
+                    <div class="delete-button">
+                        <i :class="'pi pi-trash' + ` ${isDeleteButtonActive ? 'active' : 'inactive'}`" @click.prevent="handleDeleteThemes"></i>
+                    </div>            
                 </div>
                 <hr/>
-                <ThemeList :chapter="chapter"></ThemeList>
+                <ThemeList @deleteButtonStatusChanged="handleDeleteButtonStatusChange" :useCheckboxes="true" :chapter="chapter"></ThemeList>
             </div>
             <div v-else>
                 <div class="title">
@@ -139,7 +178,29 @@ function handleCancel() {
     flex-direction: row;
     padding-left: 15px;
     padding-right: 15px;
+    align-items: center;
     justify-content: space-between;
+}
+
+.delete-button {
+    margin: 5px 10px 0 0;
+}
+
+.delete-button i {
+    font-size: medium;
+}
+
+.active {
+    color: black;
+}
+
+.active:hover {
+    cursor: pointer;
+    background: var(--GLOW-BOX-SHADOW);
+}
+
+.inactive {
+    color: gray;
 }
 
 .title input {
@@ -154,8 +215,7 @@ function handleCancel() {
     display: flex;
     flex-direction: row;
     gap: 5px;
-    align-items: end;
-    padding-left: 5px;
+    padding: 7px 0 0 5px;
 }
 
 .buttons button {
@@ -206,6 +266,7 @@ h3 i {
 }
 
 h3 {
+    padding-top: 5px;
     text-align: start;
 }
 

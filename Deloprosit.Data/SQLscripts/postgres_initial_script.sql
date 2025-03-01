@@ -1,6 +1,6 @@
 INSERT INTO vader."Users"(
 	"Nickname", "FirstName", "LastName", "BirthDate", "RegisterDate", "Country", "City", "UserTitle", "Info", "Avatar", "Email", "Password", "IsConfirmed")
-	VALUES ('owner', null, null, null, null, null, null, null, null, null,'efavXKTzRTFnR7w69A7OJA==','JtfP1IxKgKVGB4ADFXFnvA==','1');
+	VALUES ('alex', null, null, null, null, null, null, null, null, null,'s9SovJPImunbRTz8OKtuwQ==','s9SovJPImunbRTz8OKtuwQ==','1');
 
 INSERT INTO vader."Users"(
 	"Nickname", "FirstName", "LastName", "BirthDate", "RegisterDate", "Country", "City", "UserTitle", "Info", "Avatar", "Email", "Password", "IsConfirmed")
