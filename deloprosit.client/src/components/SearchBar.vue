@@ -28,9 +28,10 @@
         margin-right: 5px;
     }
 
-    input {
+    .search-bar input {
         height: 38%;
         width: 40%;
         margin-right: 5px;
+        box-shadow: var(--INPUT-BOX-SHADOW);
     }
 </style>

@@ -136,7 +136,7 @@ const handleLogout = () => {
       padding-bottom: 1rem;
       background-image: var(--BCKGND-GRADIENT);
       align-content: center;
-      box-shadow: 0 7px 15px -3px black;
+      box-shadow: var(--COMPONENT-BOX-SHADOW);
       border-radius: 0 0 5px 5px;
       min-height: 64px;
     }
