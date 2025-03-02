@@ -106,6 +106,10 @@ function handleDeleteButtonStatusChange(isActive, selectedIds) {
 }
 
 async function handleDeleteThemes() {
+    if(!window.confirm('Эти темы и комментарии к ним будут удалены. Вы уверены?')) {
+        return;
+    }
+
     if(isDeleteButtonActive.value) {
         const themeIdsQuery = selectedThemeIds.value.map(id => `themeIds=${id}&`).join('').slice(0, -1);
         const url = `${store.state.serverUrl}/themes/deletelist?` + themeIdsQuery;
