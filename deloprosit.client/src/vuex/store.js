@@ -11,7 +11,15 @@ const store = createStore({
         chapters: [],
         showSearchBar: true,
         title: null,
-        isEditMode: false
+        isEditMode: false,
+        imagePaths:
+        [
+            '/src/assets/images/archive-1.png',
+            '/src/assets/images/case-files-1.png',
+            '/src/assets/images/folders-1.png',
+            '/src/assets/images/laptop-1.png',
+            '/src/assets/images/laptop-2.png',
+        ]
     },
     getters: {
         serverUrl(state) {

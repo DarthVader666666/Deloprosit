@@ -1,6 +1,6 @@
 <script setup>
 import { useStore } from 'vuex';
-import { onMounted, computed, ref, onUpdated } from 'vue';
+import { onMounted, computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import axios from 'axios';
 import { helper } from '@/helper/helper';
@@ -21,10 +21,11 @@ onMounted(() => {
     store.commit('renderSearchBar', true);
 });
 
-onUpdated(() => {
+function ClearForm() {
+    chapterIds.value = [];
     const checkBoxes = document.querySelectorAll('input[type=checkbox]');
     checkBoxes.forEach(x => {x.checked = false});
-})
+}
 
 function handleCheckboxChange(event) {
     const chapterId = event.target.value;
@@ -53,6 +54,8 @@ function handleDeleteChapters() {
                 toast.success('Разделы успешно удалены');
                 isDeleteButtonActive.value = false;
                 store.commit('downloadChapters');
+
+                ClearForm();
             }
         })
         .catch(error => {

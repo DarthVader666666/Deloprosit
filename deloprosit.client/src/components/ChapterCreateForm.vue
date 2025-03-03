@@ -10,15 +10,6 @@ const store = useStore();
 const toast = useToast();
 const router = useRouter();
 
-const options = 
-[
-    '/src/assets/images/archive-1.png',
-    '/src/assets/images/case-files-1.png',
-    '/src/assets/images/folders-1.png',
-    '/src/assets/images/laptop-1.png',
-    '/src/assets/images/laptop-2.png',
-];
-
 const chapterTitle = ref('');
 const imagePath = ref('');
 
@@ -73,13 +64,13 @@ const handleCreate = async () => {
             <input v-model="chapterTitle" type="text" maxlength="120" required>
             <span class="chapterTitle">Путь к картинкe: </span>
 
-            <v3-select v-model="imagePath" maxlength="120" :options="options">
-                <template v-slot="option">
-                    <img :src="option">
-                </template>
+            <select v-model="imagePath" height="50px">
+                <option v-for="(path, index) in store.state.imagePaths" :key="index">
+                    {{ path }}
+                </option> 
+            </select>
 
-            </v3-select>
-
+            <img :src="imagePath" width="150px" height="120px">
         </div>            
         <hr/>
         <div class="buttons">
@@ -130,7 +121,4 @@ button a {
     color: black;
 }
 
-.chapter-option {
-
-}
 </style>
