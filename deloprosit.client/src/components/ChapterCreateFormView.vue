@@ -4,12 +4,14 @@ import { ref, computed } from 'vue';
 import { useToast } from 'vue-toastification';
 import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 
 const store = useStore();
 const toast = useToast();
+const router = useRouter();
 
 const chapterTitle = ref('');
+const imagePath = ref('');
 
 const isDisabledCreateButton = computed(() => {    
     return chapterTitle.value.length === 0;
@@ -19,6 +21,7 @@ const handleCreate = async () => {
     let formData = new FormData();
 
     formData.append('chapterTitle', chapterTitle.value);
+    formData.append('imagePath', imagePath.value);
     formData.append('dateCreated', helper.getCurrentDate());
 
     await axios.post(`${store.getters.serverUrl}/chapters/create`, formData,
@@ -35,6 +38,7 @@ const handleCreate = async () => {
                 toast.success('Раздел создан');
                 chapterTitle.value = '';
                 store.commit('downloadChapters');
+                router.push('/');
             }
         })
         .catch(error => {
@@ -58,6 +62,8 @@ const handleCreate = async () => {
         <div class="chapter-create-inputs">
             <span class="chapterTitle">Заголовок: <span class="red-star">*</span></span>
             <input v-model="chapterTitle" type="text" maxlength="120" required>
+            <span class="chapterTitle">Путь к картинкe: </span>
+            <input v-model="imagePath" type="text" maxlength="120" required>
         </div>            
         <hr/>
         <div class="buttons">
@@ -70,7 +76,7 @@ const handleCreate = async () => {
 <style scoped>
 .chapter-create-inputs {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     font-weight: bold;
 }
 

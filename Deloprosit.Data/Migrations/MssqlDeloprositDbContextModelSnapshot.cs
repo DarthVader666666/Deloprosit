@@ -41,6 +41,9 @@ namespace Deloprosit.Data.Migrations
                     b.Property<DateTime?>("DateDeleted")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -128,11 +131,11 @@ namespace Deloprosit.Data.Migrations
 
             modelBuilder.Entity("Deloprosit.Data.Entities.Theme", b =>
                 {
-                    b.Property<int>("ThemeId")
+                    b.Property<int?>("ThemeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ThemeId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("ThemeId"));
 
                     b.Property<int>("ChapterId")
                         .HasColumnType("int");

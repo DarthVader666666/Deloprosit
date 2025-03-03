@@ -52,6 +52,7 @@ namespace Deloprosit.Server.Controllers
             var chapter = new Chapter
             {
                 ChapterTitle = chapterCreateModel.ChapterTitle,
+                ImagePath = chapterCreateModel.ImagePath,
                 DateCreated = chapterCreateModel.DateCreated ?? DateTime.Now,
                 UserId = user.UserId
             };
@@ -77,7 +78,9 @@ namespace Deloprosit.Server.Controllers
                 return Problem(statusCode: 500, detail: "Ошибка сервера");
             }
 
-            return Ok(_mapper.Map<IEnumerable<ChapterResponseModel>>(chapters));
+            var response = _mapper.Map<IEnumerable<ChapterResponseModel>>(chapters);
+
+            return Ok(response);
         }
 
         [HttpGet]

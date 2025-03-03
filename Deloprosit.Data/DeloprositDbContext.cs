@@ -74,6 +74,7 @@ namespace Deloprosit.Data
                 chapter.Property(x => x.UserId).IsRequired();
                 chapter.Property(x => x.DateCreated).IsRequired();
                 chapter.Property(x => x.ChapterTitle).HasMaxLength(maxInfoLength).IsRequired();
+                chapter.Property(x => x.ImagePath).IsRequired(false);
             });
             modelBuilder.Entity<Theme>(theme =>
             {
