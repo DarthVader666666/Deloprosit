@@ -28,9 +28,19 @@ namespace Deloprosit.Bll.Services
             return createdTheme;
         }
 
-        public Task<Theme?> DeleteAsync(int? id)
+        public async Task<Theme?> DeleteAsync(int? id)
         {
-            throw new NotImplementedException();
+            var theme = await GetAsync(id);
+
+            if (theme == null)
+            {
+                return null;
+            }
+
+            var deletedTheme = _dbContext.Themes.Remove(theme).Entity;
+            await _dbContext.SaveChangesAsync();
+
+            return deletedTheme;
         }
 
         public Task<bool> ExistsAsync(Theme? item)
@@ -45,7 +55,7 @@ namespace Deloprosit.Bll.Services
 
         public Task<Theme?> GetAsync(int? id)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(_dbContext.Themes.FirstOrDefault(x => x.ThemeId == id));
         }
 
         public Task<IEnumerable<Theme?>> GetListAsync(int? id = null)

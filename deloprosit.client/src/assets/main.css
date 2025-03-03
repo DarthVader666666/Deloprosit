@@ -12,7 +12,11 @@
   --APP-COMPONENT-MIN-HEIGHT: 520px;
   --LOGO-COLOR: rgb(124, 172, 124);
   --TEXT-GLOW-COLOR: rgb(36, 141, 17);
-  --GLOW-BOX-SHADOW: rgba(158, 158, 158, 0.8) 0 0 15px 7px;
+  --GLOW-BOX-SHADOW: rgba(158, 158, 158, 0.8) 0 0 10px 2px;
+  --COMPONENT-BOX-SHADOW: 0 7px 15px -3px black;
+  --INPUT-BOX-SHADOW: 4px 3px 4px -1px black;
+  --THEME-HEADER-COLOR: rgb(63, 62, 62);;
+  --THEME-HEADER-BCKGND-GRADIENT: linear-gradient(to top,rgb(180, 231, 180),rgb(148, 216, 148));
   --PNG-IMAGE-SHADOW: 5px 5px 5px #222;
 }
 
@@ -54,7 +58,7 @@ body {
   flex-direction: row;
   background-color: var(--CENTRAL-BCKGND-CLR);
   height: 90%;
-  box-shadow: 0 7px 15px -3px black;
+  box-shadow: var(--COMPONENT-BOX-SHADOW);
 }
   
 .title {

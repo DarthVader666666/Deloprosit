@@ -1,6 +1,6 @@
 <script setup>
-import RegisterFormView from './RegisterFormView.vue';
-import SpinningCircleView from './SpinningCircleView.vue';
+import RegisterFormView from '@/components/RegisterComponent.vue';
+import SpinningCircleView from '@/components/SpinningCircle.vue';
 import { ref, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import { RouterLink } from 'vue-router';

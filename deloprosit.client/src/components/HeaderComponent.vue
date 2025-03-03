@@ -136,7 +136,7 @@ const handleLogout = () => {
       padding-bottom: 1rem;
       background-image: var(--BCKGND-GRADIENT);
       align-content: center;
-      box-shadow: 0 7px 15px -3px black;
+      box-shadow: var(--COMPONENT-BOX-SHADOW);
       border-radius: 0 0 5px 5px;
       min-height: 64px;
     }
@@ -156,11 +156,26 @@ const handleLogout = () => {
         width: 289px;
     }
 
+    .login-anchors a {
+        color: black;
+        text-decoration: none;
+        font-size: small;
+    }
+
+    .login-anchors a:hover {
+        cursor: pointer;
+        color: var(--COLUMNS-BCKGND-CLR);;
+    }
+
     .login-anchors input {
         height: 15px;
         width: 15px;
         position:absolute;
         margin-top:0px;
+    }
+
+    .login-anchors input, label {
+        cursor: pointer;
     }
 
     .message {
@@ -190,15 +205,6 @@ const handleLogout = () => {
 
     .logo a:hover {
         color: var(--LOGO-COLOR);
-    }
-
-    a {
-        color: black;
-        font-size: small;
-    }
-
-    a:hover {
-        color: var(--COLUMNS-BCKGND-CLR);;
     }
 
     label {
