@@ -64,12 +64,7 @@ const handleCreate = async () => {
             <input v-model="chapterTitle" type="text" maxlength="120" required>
             <span class="chapterTitle">Путь к картинкe: </span>
 
-            <select v-model="imagePath" height="50px">
-                <option v-for="(path, index) in store.state.imagePaths" :key="index">
-                    {{ path }}
-                </option> 
-            </select>
-
+            <v3-select v-model="imagePath" :options="store.state.imagePaths"/>
             <img :src="imagePath" width="150px" height="120px">
         </div>            
         <hr/>
