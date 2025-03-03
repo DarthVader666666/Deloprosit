@@ -63,7 +63,7 @@ const handleCreate = async () => {
             <span class="chapterTitle">Заголовок: <span class="red-star">*</span></span>
             <input v-model="chapterTitle" type="text" maxlength="120" required>
             <span class="chapterTitle">Путь к картинкe: </span>
-            <input v-model="imagePath" type="text" maxlength="120" required>
+            <input v-model="imagePath" type="text" maxlength="120">
         </div>            
         <hr/>
         <div class="buttons">
