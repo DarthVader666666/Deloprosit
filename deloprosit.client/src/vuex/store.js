@@ -12,14 +12,25 @@ const store = createStore({
         showSearchBar: true,
         title: null,
         isEditMode: false,
-        imagePaths:
-        [
-            '/src/assets/images/archive-1.png',
-            '/src/assets/images/case-files-1.png',
-            '/src/assets/images/folders-1.png',
-            '/src/assets/images/laptop-1.png',
-            '/src/assets/images/laptop-2.png',
-        ]
+        imagePaths: (
+            import.meta.env.VITE_API_ENVIRONMENT === 'development' 
+            ? 
+            [
+                '/src/assets/images/archive-1.png',
+                '/src/assets/images/case-files-1.png',
+                '/src/assets/images/folders-1.png',
+                '/src/assets/images/laptop-1.png',
+                '/src/assets/images/laptop-2.png',
+            ]
+            :
+            [
+                'archive-1.png',
+                'case-files-1.png',
+                'folders-1.png',
+                'laptop-1.png',
+                'laptop-2.png',
+            ])
+        
     },
     getters: {
         serverUrl(state) {
