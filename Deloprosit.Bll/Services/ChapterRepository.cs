@@ -28,9 +28,19 @@ namespace Deloprosit.Bll.Services
             return createdChapter;
         }
 
-        public Task<Chapter?> DeleteAsync(int? id)
+        public async Task<Chapter?> DeleteAsync(int? id)
         {
-            throw new NotImplementedException();
+            var chapter = await GetAsync(id);
+
+            if (chapter == null)
+            {
+                return null;
+            }
+
+            var deletedTheme = _dbContext.Chapters.Remove(chapter).Entity;
+            await _dbContext.SaveChangesAsync();
+
+            return deletedTheme;
         }
 
         public Task<bool> ExistsAsync(Chapter? item)

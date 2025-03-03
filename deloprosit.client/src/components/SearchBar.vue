@@ -1,7 +1,7 @@
 <script></script>
 <template>
     <div class="search-bar">
-        <label>Поиск на форуме:  </label>
+        <label>Поиск в разделах:  </label>
         <input class="search-input" type="text" placeholder="Введите, что хотите найти...">
         <button><i class="pi pi-search"></i>Искать</button>
     </div>

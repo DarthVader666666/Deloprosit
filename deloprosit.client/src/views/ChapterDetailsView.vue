@@ -111,8 +111,8 @@ async function handleDeleteThemes() {
     }
 
     if(isDeleteButtonActive.value) {
-        const themeIdsQuery = selectedThemeIds.value.map(id => `themeIds=${id}&`).join('').slice(0, -1);
-        const url = `${store.state.serverUrl}/themes/deletelist?` + themeIdsQuery;
+        const themeIdsQuery = helper.getQueryString(selectedThemeIds.value, 'themeIds');
+        const url = `${store.state.serverUrl}/themes/deletelist` + themeIdsQuery;
 
         await axios.delete(url, null)
             .then(response => {
@@ -140,52 +140,61 @@ async function handleDeleteThemes() {
 
 </script>
 <template>
-    <div class="central-container">
-        <div v-if="chapter">
-            <div v-if="!isEditMode">
-                <div class="title">
-                    <h3>{{chapter.chapterTitle}}
-                        <i v-if="isAdmin || isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>
-                    </h3>
-                    <div v-if="isAdmin || isOwner" class="delete-button">
-                        <i :class="'pi pi-trash' + ` ${isDeleteButtonActive ? 'active' : 'inactive'}`" @click.prevent="handleDeleteThemes"></i>
-                    </div>            
-                </div>
-                <hr/>
-                <ThemeList @deleteButtonStatusChanged="handleDeleteButtonStatusChange" :useCheckboxes="true" :chapter="chapter"></ThemeList>
-            </div>
-            <div v-else>
-                <div class="title">
-                    <input v-model="editedChapter.chapterTitle" type="text" autofocus>
-                    <div class="buttons">
-                        <button type="button" @click.prevent="handleSave" :disabled="isButtonDisabled">Сохранить</button>
-                        <button type="button" @click.prevent="handleCancel">Отменить</button>
-                    </div>
-                </div>
-                <hr/>
-                <div class="new-themes-header">
-                    <h3>Темы:</h3>
-                    <button @click.prevent="handleAddTheme"><i class="pi pi-file-plus"></i>Добавить</button>
-                </div>
-                <hr/>
-
-                <div v-for="(newTheme, index) in newThemes" :key="index" class="new-theme-inputs">
-                    <input v-model="newTheme.description" type="text">
-                    <button @click.prevent="handleDeleteNewTheme(index)"><i class="pi pi-times"></i>Удалить</button>
-                </div>
+<div v-if="chapter">
+    <div v-if="!isEditMode">
+        <div class="title">
+            <h3>
+                <RouterLink to="/"><i class="pi pi-arrow-left"></i></RouterLink>
+                {{chapter.chapterTitle}}
+                <i v-if="isAdmin || isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>
+            </h3>
+            <div v-if="isAdmin || isOwner" class="delete-button">
+                <i :class="'pi pi-trash' + ` ${isDeleteButtonActive ? 'active' : 'inactive'}`" @click.prevent="handleDeleteThemes"></i>
+            </div>            
+        </div>
+        <hr/>
+        <ThemeList @deleteButtonStatusChanged="handleDeleteButtonStatusChange" :useCheckboxes="true" :chapter="chapter"></ThemeList>
+    </div>
+    <div v-else>
+        <div class="title">
+            <input v-model="editedChapter.chapterTitle" type="text" autofocus>
+            <div class="buttons">
+                <button type="button" @click.prevent="handleSave" :disabled="isButtonDisabled">Сохранить</button>
+                <button type="button" @click.prevent="handleCancel">Отменить</button>
             </div>
         </div>
+        <hr/>
+        <div class="new-themes-header">
+            <h3>Темы:</h3>
+            <button @click.prevent="handleAddTheme"><i class="pi pi-file-plus"></i>Добавить</button>
+        </div>
+        <hr/>
+        <div v-for="(newTheme, index) in newThemes" :key="index" class="new-theme-inputs">
+            <input v-model="newTheme.description" type="text">
+            <button @click.prevent="handleDeleteNewTheme(index)"><i class="pi pi-times"></i>Удалить</button>
+        </div>
     </div>
+</div>
 </template>
 
 <style scoped>
 .title {
     display: flex;
     flex-direction: row;
-    padding-left: 15px;
+    padding-left: 5px;
     padding-right: 15px;
     align-items: center;
     justify-content: space-between;
+}
+
+.title a i {
+    color: black;
+    margin-right: 10px;
+}
+
+.title i:hover {
+    background-color: var(--TEXT-BCKGND-CLR);
+    box-shadow: var(--GLOW-BOX-SHADOW);
 }
 
 .delete-button {

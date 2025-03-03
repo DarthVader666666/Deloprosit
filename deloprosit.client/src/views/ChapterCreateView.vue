@@ -12,9 +12,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="central-container">
-        <ChapterCreateFormView/>
-    </div>
+    <ChapterCreateFormView/>
 </template>
 
 <style scoped>

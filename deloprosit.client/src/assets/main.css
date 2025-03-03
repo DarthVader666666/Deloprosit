@@ -18,6 +18,7 @@
   --THEME-HEADER-COLOR: rgb(63, 62, 62);;
   --THEME-HEADER-BCKGND-GRADIENT: linear-gradient(to top,rgb(180, 231, 180),rgb(148, 216, 148));
   --PNG-IMAGE-SHADOW: 5px 5px 5px #222;
+  --TEXT-BCKGND-CLR: rgba(204, 204, 204, 0.98);
 }
 
 body {
@@ -38,8 +39,8 @@ body {
 .central-container {
   width: var(--CENTRAL-COLUMN_WIDTH);
   background-color: var(--CENTRAL-BCKGND-CLR);
-  white-space: initial;
-  word-wrap: break-word;
+  /* white-space: initial;
+  word-wrap: break-word; */
 }
 
 .right-container {

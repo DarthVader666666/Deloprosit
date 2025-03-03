@@ -67,6 +67,32 @@ namespace Deloprosit.Server.Controllers
             return Ok();
         }
 
+
+        [HttpDelete]
+        [Route("[action]")]
+        [Authorize(Roles = "Admin, Owner")]
+        public async Task<IActionResult> DeleteList([FromQuery] int[] chapterIds)
+        {
+            if (chapterIds == null || !chapterIds.Any())
+            {
+                return BadRequest(new { errorText = "Нет выбранных разделов" });
+            }
+
+            try
+            {
+                foreach (var chapterId in chapterIds ?? [])
+                {
+                    await _chapterRepository.DeleteAsync(chapterId);
+                }
+            }
+            catch (SqlException)
+            {
+                return Problem(statusCode: 500);
+            }
+
+            return Ok();
+        }
+
         [HttpGet]
         [Route("[action]")]
         public async Task<IActionResult> GetList() 

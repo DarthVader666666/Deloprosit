@@ -104,7 +104,7 @@ builder.Services.ConfigureAutomapper();
 
 var provider = builder?.Services?.BuildServiceProvider();
 using var scope = provider?.CreateScope();
-//await MigrateSeedDatabase(scope, jsonFileCreated);
+await MigrateSeedDatabase(scope, jsonFileCreated);
 
 var app = builder.Build();
 

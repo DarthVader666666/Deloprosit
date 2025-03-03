@@ -14,7 +14,7 @@ const title = computed(() => store.state.title);
     <h2 v-if="title" class="title">{{ title }}</h2>
     <div class="main-container">
         <LeftColumnView/>
-        <RouterView/>
+        <RouterView class="central-container"/>
         <RightColumnView/>
     </div>
 </template>

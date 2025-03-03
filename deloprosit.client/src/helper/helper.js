@@ -27,5 +27,9 @@ export const helper = {
     getDateString(dateValue) {
         const date = new Date(dateValue);
         return date.toLocaleDateString('ru-RU', {day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'});
+    },
+    getQueryString(array, key) {
+        const queryString = array.map(value => `${key}=${value}&`).join('').slice(0, -1);
+        return '?' + queryString;
     }
 }
