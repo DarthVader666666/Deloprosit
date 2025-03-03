@@ -1,4 +1,5 @@
 @import 'primeicons/primeicons.css';
+@import 'vue3-select/dist/vue3-select.css';
 
 :root {
   --CENTRAL-BCKGND-CLR: rgb(226, 219, 219);

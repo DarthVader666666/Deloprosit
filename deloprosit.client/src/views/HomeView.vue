@@ -23,7 +23,7 @@ onMounted(() => {
 
 onUpdated(() => {
     const checkBoxes = document.querySelectorAll('input[type=checkbox]');
-    checkBoxes.forEach(x => x.checked = false);
+    checkBoxes.forEach(x => {x.checked = false});
 })
 
 function handleCheckboxChange(event) {

@@ -10,6 +10,15 @@ const store = useStore();
 const toast = useToast();
 const router = useRouter();
 
+const options = 
+[
+    '/src/assets/images/archive-1.png',
+    '/src/assets/images/case-files-1.png',
+    '/src/assets/images/folders-1.png',
+    '/src/assets/images/laptop-1.png',
+    '/src/assets/images/laptop-2.png',
+];
+
 const chapterTitle = ref('');
 const imagePath = ref('');
 
@@ -63,7 +72,14 @@ const handleCreate = async () => {
             <span class="chapterTitle">Заголовок: <span class="red-star">*</span></span>
             <input v-model="chapterTitle" type="text" maxlength="120" required>
             <span class="chapterTitle">Путь к картинкe: </span>
-            <input v-model="imagePath" type="text" maxlength="120">
+
+            <v3-select v-model="imagePath" maxlength="120" :options="options">
+                <template v-slot="option">
+                    <img :src="option">
+                </template>
+
+            </v3-select>
+
         </div>            
         <hr/>
         <div class="buttons">
@@ -112,5 +128,9 @@ const handleCreate = async () => {
 button a {
     text-decoration: none;
     color: black;
+}
+
+.chapter-option {
+
 }
 </style>

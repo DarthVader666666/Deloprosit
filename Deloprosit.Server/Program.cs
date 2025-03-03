@@ -9,6 +9,7 @@ using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 const string azureEnvironment = "Production";
 var jsonFileCreated = false;
@@ -146,10 +147,17 @@ async Task MigrateSeedDatabase(IServiceScope? scope, bool jsonFileCreated)
     {
         var dbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloprositDbContext>();
 
-        if (dbContext != null && dbContext.Database.EnsureCreated())
-        { 
-            dbContext?.Database.Migrate();
+        try
+        {
+            if (dbContext != null && dbContext.Database.EnsureCreated())
+            {
+                dbContext?.Database.Migrate();
+            }
         }
+        catch (NpgsqlException ex)
+        { 
+            Console.WriteLine(ex.Message);
+        }        
     }
     else if (jsonFileCreated)
     {
