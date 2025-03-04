@@ -81,7 +81,8 @@ function handleDeleteChapters() {
             <div v-for="(chapter, index) in chapters" :key="index" class="chapter-link">
                 <input v-if="isAdmin || isOwner" type="checkbox" :value="chapter.chapterId" @change.prevent="handleCheckboxChange">
                 <RouterLink :to="`/chapter-details/${chapter.chapterId}`" >
-                    <img :src="chapter.imagePath" width="150px" height="120px">
+                    <img :src="store.state.environment === 'development' ? '/src/assets/images/' + chapter.imagePath :chapter.imagePath 
+                        " width="150px" height="120px">
                     <p>{{ chapter.chapterTitle }}</p>
                 </RouterLink>
             </div>

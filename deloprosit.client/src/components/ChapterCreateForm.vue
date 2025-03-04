@@ -65,7 +65,7 @@ const handleCreate = async () => {
             <span class="chapterTitle">Путь к картинкe: </span>
 
             <v3-select v-model="imagePath" :options="store.state.imagePaths"/>
-            <img :src="imagePath" width="150px" height="120px">
+            <img :src="store.state.environment === 'development' ? '/src/assets/images/' + imagePath : imagePath" width="150px" height="120px">
         </div>            
         <hr/>
         <div class="buttons">

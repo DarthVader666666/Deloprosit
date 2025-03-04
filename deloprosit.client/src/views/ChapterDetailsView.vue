@@ -36,6 +36,7 @@ onMounted(() => {
 function initializeEditMode() {
     editedChapter.chapterId = chapter.value.chapterId;    
     editedChapter.chapterTitle = chapter.value.chapterTitle;
+    editedChapter.imagePath = chapter.value.imagePath;
     editedChapter.userId = chapter.value.userId;
     editedChapter.dateCreated = chapter.value.dateCreated;
     editedChapter.dateDeleted = chapter.value.dateDeleted;

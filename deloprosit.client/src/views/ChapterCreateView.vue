@@ -1,5 +1,5 @@
 <script setup>
-import ChapterCreateFormView from '@/components/ChapterCreateForm.vue';
+import ChapterCreateForm from '@/components/ChapterCreateForm.vue';
 import { useStore } from 'vuex';
 import { onMounted } from 'vue';
 
@@ -12,7 +12,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <ChapterCreateFormView/>
+    <ChapterCreateForm/>
 </template>
 
 <style scoped>
