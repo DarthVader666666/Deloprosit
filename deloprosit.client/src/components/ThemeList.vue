@@ -1,5 +1,4 @@
 <script setup>
-import { helper } from '@/helper/helper';
 import { useStore } from 'vuex';
 import { onUpdated, ref } from 'vue';
 
@@ -45,11 +44,10 @@ function handleCheckboxChange(event, themeId) {
 <div class="theme">
     <div v-for="(theme, index) in props.chapter.themes" :key="index">
         <div class="theme-header">
-            <RouterLink :to="`/chapter-details/${chapter.chapterId}`">{{ chapter.chapterTitle }}</RouterLink>
-            <span>{{ helper.getDateString(theme.dateCreated) }}</span>
+            <span>{{ chapter.chapterTitle }}</span>
         </div>
         <div class="theme-content">
-            <RouterLink :to="`/themes/details/${theme.themeId}`"><i class="pi pi-question-circle"></i>{{ theme.description }}</RouterLink>
+            <span v-html="theme.description"></span>
             <input v-if="useCheckboxes && (store.getters.isAdmin || store.getters.isOwner)" type="checkbox"
                 @change.prevent="handleCheckboxChange($event, theme.themeId)">
         </div>

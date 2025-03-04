@@ -5,6 +5,10 @@ import { computed, reactive, ref, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { helper } from '@/helper/helper';
 import { useToast } from 'vue-toastification';
+import { RouterLink } from 'vue-router';
+import Editor from 'primevue/editor';
+import Button from 'primevue/button';
+import { Form } from '@primevue/forms';
 
 const store = useStore();
 const toast = useToast();
@@ -45,6 +49,7 @@ function handleAddTheme() {
         themeId: null,
         userId: null,
         chapterId: editedChapter.chapterId,
+        themeTitle: null,
         description: null,
         dateCreated: null,
         dateDeleted: null,
@@ -138,42 +143,47 @@ async function handleDeleteThemes() {
     }
 }
 
+function handleFormSubmit() {
+}
 </script>
+
 <template>
-<div v-if="chapter">
-    <div v-if="!isEditMode">
-        <div class="title">
-            <h3>
-                <RouterLink to="/"><i class="pi pi-arrow-left"></i></RouterLink>
-                {{chapter.chapterTitle}}
-                <i v-if="isAdmin || isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>
-            </h3>
-            <div v-if="isAdmin || isOwner" class="delete-button">
-                <i :class="'pi pi-trash' + ` ${isDeleteButtonActive ? 'active' : 'inactive'}`" @click.prevent="handleDeleteThemes"></i>
-            </div>            
-        </div>
-        <hr/>
-        <ThemeList @deleteButtonStatusChanged="handleDeleteButtonStatusChange" :useCheckboxes="true" :chapter="chapter"></ThemeList>
+<div v-if="!isEditMode && chapter">
+    <div class="title">
+        <h3>
+            <RouterLink to="/"><i class="pi pi-arrow-left"></i></RouterLink>
+            {{chapter.chapterTitle}}
+            <i v-if="isAdmin || isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>
+        </h3>
+        <div v-if="isAdmin || isOwner" class="delete-button">
+            <i :class="'pi pi-trash' + ` ${isDeleteButtonActive ? 'active' : 'inactive'}`" @click.prevent="handleDeleteThemes"></i>
+        </div>            
     </div>
-    <div v-else>
-        <div class="title">
-            <input v-model="editedChapter.chapterTitle" type="text" autofocus>
-            <div class="buttons">
-                <button type="button" @click.prevent="handleSave" :disabled="isButtonDisabled">Сохранить</button>
-                <button type="button" @click.prevent="handleCancel">Отменить</button>
-            </div>
+    <hr/>
+    <ThemeList @deleteButtonStatusChanged="handleDeleteButtonStatusChange" :useCheckboxes="true" :chapter="chapter"></ThemeList>
+</div>
+<div v-else-if="chapter">
+    <div class="title">
+        <input v-model="editedChapter.chapterTitle" type="text" autofocus>
+        <div class="buttons">
+            <button type="button" @click.prevent="handleSave" :disabled="isButtonDisabled">Сохранить</button>
+            <button type="button" @click.prevent="handleCancel">Отменить</button>
         </div>
-        <hr/>
-        <div class="new-themes-header">
-            <h3>Темы:</h3>
-            <button @click.prevent="handleAddTheme"><i class="pi pi-file-plus"></i>Добавить</button>
-        </div>
-        <hr/>
-        <div v-for="(newTheme, index) in newThemes" :key="index" class="new-theme-inputs">
-            <input v-model="newTheme.description" type="text">
+    </div>
+    <hr/>
+    <div class="add-new-theme">
+        <h3>Темы:</h3>
+        <button @click.prevent="handleAddTheme"><i class="pi pi-file-plus"></i>Добавить</button>
+    </div>
+    <hr/>
+    <Form v-for="(newTheme, index) in newThemes" :key="index" @submit="handleFormSubmit(index)" class="new-theme-form">
+        <div class="new-theme-title">
+            <input v-model="newTheme.themeTitle" type="text">
             <button @click.prevent="handleDeleteNewTheme(index)"><i class="pi pi-times"></i>Удалить</button>
         </div>
-    </div>
+        <Editor v-model.content="newTheme.description" editorStyle="height: 500px"/>
+        <Button type="submit" severity="primary" label="OK" />
+    </Form>
 </div>
 </template>
 
@@ -181,10 +191,17 @@ async function handleDeleteThemes() {
 .title {
     display: flex;
     flex-direction: row;
-    padding-left: 5px;
     padding-right: 15px;
     align-items: center;
     justify-content: space-between;
+}
+
+.title input {
+    margin-top: 5px;
+    height: 22px;
+    font-size: 15px;
+    font-weight: bold;
+    width: 66%;
 }
 
 .title a i {
@@ -218,14 +235,6 @@ async function handleDeleteThemes() {
     color: gray;
 }
 
-.title input {
-    margin-top: 10px;
-    height: 16px;
-    font-size: 15px;
-    font-weight: bold;
-    width: 66%;
-}
-
 .buttons {
     display: flex;
     flex-direction: row;
@@ -237,7 +246,7 @@ async function handleDeleteThemes() {
     height: 25px;
 }
 
-.new-themes-header {
+.add-new-theme {
     padding-left: 15px;
     display: flex;
     flex-direction: row;
@@ -246,29 +255,33 @@ async function handleDeleteThemes() {
     height: 25px;
 }
 
-.new-themes-header button {
+.add-new-theme button {
     height: 25px;
 }
 
-.new-theme-inputs {
-    margin-left: 10px;
-    padding-right: 10px;
+.new-theme-form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+}
+
+.new-theme-form button {
+    width: 20%;
+}
+
+.new-theme-title {
     display: flex;
     flex-direction: row;
-    padding: 5px;
-    align-items: center;
-    gap: 5px;
-    width: 90%;
-    height: 100%;
+    justify-content: space-between;
 }
 
-.new-theme-inputs input {
-    width: 70%;
+.new-theme-title input {
+    width: 85%;
 }
 
-.new-theme-inputs button {
-    width: 85px;
-    height: 24px;
+.new-theme-title button {
+    width: 90px;
 }
 
 .edit-chapter-button:hover {

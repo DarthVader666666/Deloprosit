@@ -51,6 +51,7 @@ body {
 .central-container {
   width: var(--CENTRAL-COLUMN_WIDTH);
   background-color: var(--CENTRAL-BCKGND-CLR);
+  padding: 10px;
   /* white-space: initial;
   word-wrap: break-word; */
 }

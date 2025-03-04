@@ -7,10 +7,17 @@ import VueCookies from 'vue3-cookies';
 import store from './vuex/store.js';
 import Toast, { POSITION } from 'vue-toastification';
 import { createApp } from 'vue';
-import VueSelect from 'vue3-select'
+import VueSelect from 'vue3-select';
+import PrimeVue from 'primevue/config';
+import Aura from '@primevue/themes/aura'
 
 createApp(App)
 .component('v3-select', VueSelect)
+.use(PrimeVue, {
+    theme: {
+        preset: Aura
+    }
+})
 .use(VueCookies)
 .use(router)
 .use(Toast, { timeout: 2000, position: POSITION.TOP_CENTER })
