@@ -14,7 +14,7 @@ const chapters = computed(() => store.state.chapters);
     <div class="left-container">
         <div class="chapters">
             <div class="chapters-header">
-                <strong>Разделы:</strong>
+                <RouterLink to="/"><strong>Разделы:</strong></RouterLink>                
                 <RouterLink v-if="isAdmin || isOwner" to="/create-chapter"><i class="pi pi-folder-plus"></i> Создать </RouterLink>
             </div>
             <hr/>

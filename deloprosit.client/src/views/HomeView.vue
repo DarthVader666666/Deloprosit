@@ -153,12 +153,13 @@ function handleDeleteChapters() {
 }
 
 .active {
-    color: black;
+    color:var(--DANGER-RED)
 }
 
 .active:hover {
     cursor: pointer;
-    background: var(--GLOW-BOX-SHADOW);
+    box-shadow: var(--GLOW-BOX-SHADOW);
+    background: rgb(190, 190, 190);
 }
 
 .inactive {

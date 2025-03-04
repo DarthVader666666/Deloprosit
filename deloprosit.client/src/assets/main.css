@@ -2,24 +2,35 @@
 @import 'vue3-select/dist/vue3-select.css';
 
 :root {
+  /* COLORS */
+  --THEME-HEADER-COLOR: rgb(63, 62, 62);
+  --DANGER-RED: rgb(220, 0, 0);
+  --LOGO-COLOR: rgb(124, 172, 124);
+  --TEXT-GLOW-COLOR: rgb(36, 141, 17);
+
+  /* BACKGROUNDS */
   --CENTRAL-BCKGND-CLR: rgb(226, 219, 219);
   --COLUMNS-BCKGND-CLR: rgb(245, 245, 245);
+  --TEXT-BCKGND-CLR: rgba(204, 204, 204, 0.98);
+  --BCKGND-COLOR-WHEN-SHADOW: rgb(190, 190, 190);
+
+  /* SHADOWS */
+  --GLOW-BOX-SHADOW: rgba(158, 158, 158, 0.8) 0 0 10px 2px;
+  --COMPONENT-BOX-SHADOW: 0 7px 15px -3px black;
+  --INPUT-BOX-SHADOW: 4px 3px 4px -1px black;
+  --PNG-IMAGE-SHADOW: 5px 5px 5px #222;
+
+  /* GRADIENTS */
   --BCKGND-GRADIENT: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
+  --THEME-HEADER-BCKGND-GRADIENT: linear-gradient(to top,rgb(180, 231, 180),rgb(148, 216, 148));
+
+  /* SIZES */
   --LEFT-COLUMN-WIDTH: 17%;
   --RIGHT-COLUMN-WIDTH: 21%;
   --CENTRAL-COLUMN_WIDTH: 62%;
   --MAIN-COMPONENT-WIDTH: 83%;
   --APP-COMPONENT-WIDTH: 90%;
   --APP-COMPONENT-MIN-HEIGHT: 520px;
-  --LOGO-COLOR: rgb(124, 172, 124);
-  --TEXT-GLOW-COLOR: rgb(36, 141, 17);
-  --GLOW-BOX-SHADOW: rgba(158, 158, 158, 0.8) 0 0 10px 2px;
-  --COMPONENT-BOX-SHADOW: 0 7px 15px -3px black;
-  --INPUT-BOX-SHADOW: 4px 3px 4px -1px black;
-  --THEME-HEADER-COLOR: rgb(63, 62, 62);;
-  --THEME-HEADER-BCKGND-GRADIENT: linear-gradient(to top,rgb(180, 231, 180),rgb(148, 216, 148));
-  --PNG-IMAGE-SHADOW: 5px 5px 5px #222;
-  --TEXT-BCKGND-CLR: rgba(204, 204, 204, 0.98);
 }
 
 body {
