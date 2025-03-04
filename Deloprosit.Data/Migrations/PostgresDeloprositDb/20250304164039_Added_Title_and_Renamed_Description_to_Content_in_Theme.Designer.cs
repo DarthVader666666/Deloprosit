@@ -3,6 +3,7 @@ using System;
 using Deloprosit.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Deloprosit.Data.Migrations.PostgresDeloprositDb
 {
     [DbContext(typeof(PostgresDeloprositDbContext))]
-    partial class PostgresDeloprositDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250304164039_Added_Title_and_Renamed_Description_to_Content_in_Theme")]
+    partial class Added_Title_and_Renamed_Description_to_Content_in_Theme
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

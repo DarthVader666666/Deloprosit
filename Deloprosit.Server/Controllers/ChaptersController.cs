@@ -130,7 +130,7 @@ namespace Deloprosit.Server.Controllers
             return Ok(chapterResponseModel);
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("[action]")]
         [Authorize(Roles = "Owner, Admin")]
         public async Task<IActionResult> Update([FromBody] ChapterUpdateModel chapterUpdateModel)

@@ -79,7 +79,8 @@ namespace Deloprosit.Data
             modelBuilder.Entity<Theme>(theme =>
             {
                 theme.HasKey(x => x.ThemeId);
-                theme.Property(x => x.Description).HasMaxLength(maxInfoLength).IsRequired();
+                theme.Property(x => x.ThemeTitle).HasMaxLength(maxNameLength).IsRequired();
+                theme.Property(x => x.Content).IsRequired(false);
                 theme.Property(x => x.DateCreated).IsRequired();
                 theme.HasOne(x => x.Chapter).WithMany(x => x.Themes).HasForeignKey(x => x.ChapterId);
                 theme.HasOne(x => x.User).WithMany(x => x.Themes).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);

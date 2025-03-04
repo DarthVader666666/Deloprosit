@@ -16,7 +16,7 @@ const toast = useToast();
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const chapter = computed(() => store.state.chapter);
-const isButtonDisabled = computed(() => !editedChapter.chapterTitle || newThemes.value.find(x => x.description === '' || x.description === null));
+const isButtonDisabled = computed(() => !editedChapter.chapterTitle || newThemes.value.find(x => x.content === '' || x.content === null));
 const isEditMode = computed(() => store.state.isEditMode);
 
 const newThemes = ref([]);
@@ -50,7 +50,7 @@ function handleAddTheme() {
         userId: null,
         chapterId: editedChapter.chapterId,
         themeTitle: null,
-        description: null,
+        content: null,
         dateCreated: null,
         dateDeleted: null,
     })
@@ -62,42 +62,7 @@ function handleDeleteNewTheme(index) {
 
 async function handleSave() {
     store.commit('setIsEditMode', false);
-    const currentDate = helper.getCurrentDate();
-
-    newThemes.value.forEach(theme => {
-        theme.dateCreated = currentDate;
-    });
-
-    if(newThemes.value.length > 0) {
-        editedChapter.themes = newThemes;
-    }
-
-    const url = store.state.serverUrl;
-    await axios.post(`${url}/chapters/update`, editedChapter,
-    {
-        headers: {
-            'Content': 'application/json',
-            'Accept': '*/*'
-        }
-    })
-    .then(response => {
-        if(response.status === 200) {
-            toast.success('Раздел успешно обновлен');
-            store.commit('downloadChapters');
-            store.commit('downloadChapter', editedChapter.chapterId);
-            editedChapter.themes = [];
-        }
-    })
-    .catch(error => {
-        const data = error.response.data;
-
-        if(data) {
-            toast.error(data.detail);
-        }
-        else {
-            toast.error('Ошибка обновления раздела')
-        }
-    });    
+    await updateChapter(true);
 }
 
 function handleCancel() {
@@ -143,12 +108,67 @@ async function handleDeleteThemes() {
     }
 }
 
-function handleFormSubmit() {
+async function handleFormSubmit(index) {
+
+    const result = await updateChapter(true);
+
+    if (result) {
+        newThemes.value.splice(index, 1);
+    }
 }
+
+async function updateChapter(doClear) {
+    const currentDate = helper.getCurrentDate();
+
+    newThemes.value.forEach(theme => {
+        theme.dateCreated = currentDate;
+    });
+
+    if(newThemes.value.length > 0) {
+        editedChapter.themes = newThemes;
+    }
+
+    const url = store.state.serverUrl;
+
+    await axios.put(`${url}/chapters/update`, editedChapter,
+    {
+        headers: {
+            'Content': 'application/json',
+            'Accept': '*/*'
+        }
+    })
+    .then(response => {
+        if(response.status === 200) {
+            toast.success('Раздел успешно обновлен');
+            store.commit('downloadChapters');
+            store.commit('downloadChapter', editedChapter.chapterId);
+
+            if(doClear) {
+                editedChapter.themes = [];
+            }
+
+            return true;
+        }
+    })
+    .catch(error => {
+        const data = error.response.data;
+
+        if(data) {
+            toast.error(data.detail);
+        }
+        else {
+            toast.error('Ошибка обновления раздела')
+        }
+    });
+
+    return false;
+}
+
 </script>
 
 <template>
-<div v-if="!isEditMode && chapter">
+<div class="edit-chapter">
+    <div v-if="!isEditMode && chapter">
     <div class="title">
         <h3>
             <RouterLink to="/"><i class="pi pi-arrow-left"></i></RouterLink>
@@ -159,35 +179,48 @@ function handleFormSubmit() {
             <i :class="'pi pi-trash' + ` ${isDeleteButtonActive ? 'active' : 'inactive'}`" @click.prevent="handleDeleteThemes"></i>
         </div>            
     </div>
-    <hr/>
-    <ThemeList @deleteButtonStatusChanged="handleDeleteButtonStatusChange" :useCheckboxes="true" :chapter="chapter"></ThemeList>
-</div>
-<div v-else-if="chapter">
-    <div class="title">
-        <input v-model="editedChapter.chapterTitle" type="text" autofocus>
-        <div class="buttons">
-            <button type="button" @click.prevent="handleSave" :disabled="isButtonDisabled">Сохранить</button>
-            <button type="button" @click.prevent="handleCancel">Отменить</button>
-        </div>
+    <hr/>    
     </div>
-    <hr/>
-    <div class="add-new-theme">
-        <h3>Темы:</h3>
-        <button @click.prevent="handleAddTheme"><i class="pi pi-file-plus"></i>Добавить</button>
-    </div>
-    <hr/>
-    <Form v-for="(newTheme, index) in newThemes" :key="index" @submit="handleFormSubmit(index)" class="new-theme-form">
-        <div class="new-theme-title">
-            <input v-model="newTheme.themeTitle" type="text">
-            <button @click.prevent="handleDeleteNewTheme(index)"><i class="pi pi-times"></i>Удалить</button>
+    <div v-else-if="chapter">
+        <div class="title">
+            <input v-model="editedChapter.chapterTitle" type="text" autofocus>
+            <div class="buttons">
+                <button type="button" @click.prevent="handleSave" :disabled="isButtonDisabled">Сохранить</button>
+                <button type="button" @click.prevent="handleCancel">Отменить</button>
+            </div>
         </div>
-        <Editor v-model.content="newTheme.description" editorStyle="height: 500px"/>
-        <Button type="submit" severity="primary" label="OK" />
-    </Form>
+        <hr/>
+        <div class="add-new-theme">
+            <h3>Темы:</h3>
+            <button @click.prevent="handleAddTheme"><i class="pi pi-file-plus"></i>Добавить</button>
+        </div>
+        <hr/>
+        <Form v-for="(newTheme, index) in newThemes" :key="index" @submit="handleFormSubmit(index)" class="new-theme-form">
+            <div class="new-theme-title">
+                <input v-model="newTheme.themeTitle" type="text">
+                <button @click.prevent="handleDeleteNewTheme(index)"><i class="pi pi-times"></i>Удалить</button>
+            </div>
+            <Editor v-model.content="newTheme.content" editorStyle="height: 500px"/>
+            <Button type="submit" severity="primary" label="OK" />
+        </Form>
+    </div>
+<ThemeList @deleteButtonStatusChanged="handleDeleteButtonStatusChange" :useCheckboxes="true" :chapter="chapter"></ThemeList>
 </div>
+
 </template>
 
 <style scoped>
+
+.edit-chapter {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-chapter-button:hover {
+    box-shadow: var(--GLOW-BOX-SHADOW);
+    cursor: pointer;
+}
+
 .title {
     display: flex;
     flex-direction: row;
@@ -223,7 +256,7 @@ function handleFormSubmit() {
 }
 
 .active {
-    color: black;
+    color: var(--DANGER-RED);
 }
 
 .active:hover {
@@ -282,11 +315,6 @@ function handleFormSubmit() {
 
 .new-theme-title button {
     width: 90px;
-}
-
-.edit-chapter-button:hover {
-    box-shadow: var(--GLOW-BOX-SHADOW);
-    cursor: pointer;
 }
 
 h3 i {

@@ -2,7 +2,7 @@
 import HeaderView from './components/HeaderComponent.vue';
 import FooterView from './components/FooterComponent.vue';
 import SearchBarView from './components/SearchBar.vue';
-import MainView from './components/MainComponent.vue';
+import MainComponent from './components/MainComponent.vue';
 import axios from 'axios';
 import { useStore } from 'vuex';
 import { computed, onMounted } from 'vue';
@@ -39,7 +39,7 @@ onMounted(async () => {
 <template>
   <HeaderView/>
   <SearchBarView v-if="showSearchBar"/>
-  <MainView/>
+  <MainComponent/>
   <FooterView/>
 </template>
 
