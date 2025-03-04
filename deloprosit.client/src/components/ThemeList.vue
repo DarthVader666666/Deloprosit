@@ -44,7 +44,7 @@ function handleCheckboxChange(event, themeId) {
 <div class="theme">
     <div v-for="(theme, index) in props.chapter.themes" :key="index">
         <div class="theme-header">
-            <span>{{ chapter.chapterTitle }}</span>
+            <span>{{ theme.themeTitle }}</span>
 
             <input v-if="useCheckboxes && (store.getters.isAdmin || store.getters.isOwner)" type="checkbox"
                 @change.prevent="handleCheckboxChange($event, theme.themeId)">            
@@ -89,6 +89,10 @@ function handleCheckboxChange(event, themeId) {
 .theme-content {
     padding: 8px 0 8px 0;
     background: lightgray;
+}
+
+.theme-content span{
+    word-break: break-all;
 }
 
 .theme-content a {

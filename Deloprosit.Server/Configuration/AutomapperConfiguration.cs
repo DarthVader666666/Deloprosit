@@ -34,6 +34,7 @@ namespace Deloprosit.Server.Configurations
                                 ThemeId = x.ThemeId,
                                 UserId = x.UserId,
                                 ChapterId = x.ChapterId,
+                                ThemeTitle = x.ThemeTitle,
                                 Content = x.Content,
                                 DateCreated = x.DateCreated,
                                 DateDeleted = x.DateDeleted
