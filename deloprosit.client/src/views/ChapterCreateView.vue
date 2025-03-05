@@ -56,7 +56,7 @@ async function createChapter(newChapter) {
 </script>
 
 <template>
-    <ChapterCreateUpdateForm :doClearChater="true" :handleSave="createChapter"/>
+    <ChapterCreateUpdateForm :doClearChapter="true" :handleSave="createChapter"/>
 </template>
 
 <style scoped>
