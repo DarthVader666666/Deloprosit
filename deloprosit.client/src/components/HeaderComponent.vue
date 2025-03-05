@@ -138,7 +138,7 @@ const handleLogout = () => {
       align-content: center;
       box-shadow: var(--COMPONENT-BOX-SHADOW);
       border-radius: 0 0 5px 5px;
-      min-height: 64px;
+      height: var(--HEADER-HEIGHT);
     }
 
     .authentication-form {

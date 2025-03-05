@@ -1,7 +1,8 @@
 <script setup>
 import ThemeList from '@/components/ThemeList.vue';
+import ChapterCreateUpdateForm from '@/components/ChapterCreateUpdateForm.vue';
 import axios from 'axios';
-import { computed, reactive, ref, onMounted } from 'vue';
+import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { helper } from '@/helper/helper';
 import { useToast } from 'vue-toastification';
@@ -16,40 +17,22 @@ const toast = useToast();
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const chapter = computed(() => store.state.chapter);
-const isButtonDisabled = computed(() => !editedChapter.chapterTitle || newThemes.value.find(x => x.content === '' || x.content === null));
-const isEditMode = computed(() => store.state.isEditMode);
+const isEditMode = ref(false);
 
 const newThemes = ref([]);
 const isDeleteButtonActive = ref(false);
 const selectedThemeIds = ref([]);
 
-let editedChapter = reactive({
-    chapterId: null,
-    chapterTitle: null,
-    themes: reactive([])
-});
-
-onMounted(() => {
-    store.commit('renderSearchBar', true);
-});
-
 function initializeEditMode() {
-    editedChapter.chapterId = chapter.value.chapterId;    
-    editedChapter.chapterTitle = chapter.value.chapterTitle;
-    editedChapter.imagePath = chapter.value.imagePath;
-    editedChapter.userId = chapter.value.userId;
-    editedChapter.dateCreated = chapter.value.dateCreated;
-    editedChapter.dateDeleted = chapter.value.dateDeleted;
-    editedChapter.themes = [];
-
-    store.commit('setIsEditMode', true);
+    isEditMode.value = true;
+    store.commit('setTitle', 'Редактирование раздела');
 };
 
-function handleAddTheme() {
+function addBlankTheme() {
     newThemes.value.push({
         themeId: null,
         userId: null,
-        chapterId: editedChapter.chapterId,
+        chapterId: chapter.value.chapterId,
         themeTitle: null,
         content: null,
         dateCreated: null,
@@ -57,27 +40,17 @@ function handleAddTheme() {
     })
 }
 
-function handleDeleteNewTheme(index) {
+function deleteBlankTheme(index) {
     newThemes.value.splice(index, 1);
 }
 
-async function handleSave() {
-    store.commit('setIsEditMode', false);
-    await updateChapter(true);
-}
-
-function handleCancel() {
-    store.commit('setIsEditMode', false);
-    newThemes.value = [];
-}
-
-function handleDeleteButtonStatusChange(isActive, selectedIds) {
-    isDeleteButtonActive.value = isActive;
-    selectedThemeIds.value = selectedIds;
+function changeDeleteButton(themeIds) {
+    isDeleteButtonActive.value = themeIds != null && themeIds.length > 0;
+    selectedThemeIds.value = themeIds;
 }
 
 async function handleDeleteThemes() {
-    if(!window.confirm('Эти темы и комментарии к ним будут удалены. Вы уверены?')) {
+    if(!window.confirm('Эти темы будут удалены. Вы уверены?')) {
         return;
     }
 
@@ -109,29 +82,23 @@ async function handleDeleteThemes() {
     }
 }
 
-async function handleFormSubmit(index) {
-
-    const result = await updateChapter(true);
-
-    if (result) {
-        newThemes.value.splice(index, 1);
-    }
+async function submitNewTheme(index) {
+    chapter.value.themes.push(newThemes.value[index]);
+    newThemes.value.splice(index, 1);
 }
 
-async function updateChapter(doClear) {
+async function updateChapter(updatedChapter) {
     const currentDate = helper.getCurrentDate();
 
-    newThemes.value.forEach(theme => {
-        theme.dateCreated = currentDate;
+     updatedChapter.themes.forEach(theme => {
+        if(!theme.dateCreated) {
+            theme.dateCreated = currentDate;
+        }        
     });
-
-    if(newThemes.value.length > 0) {
-        editedChapter.themes = newThemes;
-    }
 
     const url = store.state.serverUrl;
 
-    await axios.put(`${url}/chapters/update`, editedChapter,
+    await axios.put(`${url}/chapters/update`,  updatedChapter,
     {
         headers: {
             'Content': 'application/json',
@@ -142,13 +109,13 @@ async function updateChapter(doClear) {
         if(response.status === 200) {
             toast.success('Раздел успешно обновлен');
             store.commit('downloadChapters');
-            store.commit('downloadChapter', editedChapter.chapterId);
+            store.commit('downloadChapter',  updatedChapter.chapterId);
 
-            if(doClear) {
-                editedChapter.themes = [];
+            if( updatedChapter) {
+                 updatedChapter.themes = [];
             }
 
-            return true;
+            isEditMode.value = false;
         }
     })
     .catch(error => {
@@ -161,8 +128,6 @@ async function updateChapter(doClear) {
             toast.error('Ошибка обновления раздела')
         }
     });
-
-    return false;
 }
 
 </script>
@@ -183,29 +148,22 @@ async function updateChapter(doClear) {
     <hr/>    
     </div>
     <div v-else-if="chapter">
-        <div class="title">
-            <input v-model="editedChapter.chapterTitle" type="text" autofocus>
-            <div class="buttons">
-                <button type="button" @click.prevent="handleSave" :disabled="isButtonDisabled">Сохранить</button>
-                <button type="button" @click.prevent="handleCancel">Отменить</button>
-            </div>
-        </div>
+        <ChapterCreateUpdateForm :doClearThemes="true" :chapter="chapter" :handleSave="updateChapter"/>
         <hr/>
         <div class="add-new-theme">
             <h3>Темы:</h3>
-            <button @click.prevent="handleAddTheme"><i class="pi pi-file-plus"></i>Добавить</button>
+            <button @click.prevent="addBlankTheme"><i class="pi pi-file-plus"></i>Добавить</button>
         </div>
-        <hr/>
-        <Form v-for="(newTheme, index) in newThemes" :key="index" @submit="handleFormSubmit(index)" class="new-theme-form">
+        <Form v-for="(newTheme, index) in newThemes" :key="index" @submit="submitNewTheme(index)" class="new-theme-form">
             <div class="new-theme-title">
-                <input v-model="newTheme.themeTitle" type="text">
-                <button @click.prevent="handleDeleteNewTheme(index)"><i class="pi pi-times"></i>Удалить</button>
+                <input v-model="newTheme.themeTitle" type="text" placeholder="Заголовок темы" required>
+                <button @click.prevent="deleteBlankTheme(index)"><i class="pi pi-times"></i>Удалить</button>
             </div>
             <Editor v-model.content="newTheme.content" editorStyle="height: 500px"/>
             <Button type="submit" severity="primary" label="OK" />
         </Form>
     </div>
-<ThemeList @deleteButtonStatusChanged="handleDeleteButtonStatusChange" :useCheckboxes="true" :chapter="chapter"></ThemeList>
+<ThemeList @changeDeleteButton="changeDeleteButton" :useCheckboxes="true" :themes="chapter ? chapter.themes : []"></ThemeList>
 </div>
 
 </template>
@@ -282,6 +240,7 @@ async function updateChapter(doClear) {
 
 .add-new-theme {
     padding-left: 15px;
+    margin-bottom: 10px;
     display: flex;
     flex-direction: row;
     gap: 90px;
@@ -298,6 +257,7 @@ async function updateChapter(doClear) {
     flex-direction: column;
     gap: 5px;
     width: 100%;
+    padding-bottom:10px;
 }
 
 .new-theme-form button {

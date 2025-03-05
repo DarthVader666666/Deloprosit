@@ -1,17 +1,18 @@
 <script setup>
 import { useStore } from 'vuex';
-import { onUpdated, ref } from 'vue';
+import { computed, onUpdated, ref } from 'vue';
 
 const store = useStore();
 
-const emit = defineEmits(['deleteButtonStatusChanged']);
+const emit = defineEmits(['changeDeleteButton']);
 
 const selectedThemeIds = ref([]);
+const themeIds = computed(() => selectedThemeIds.value );
 
 const props = defineProps({
-    chapter: {
-        typeof: Object,
-        default: null,
+    themes: {
+        typeof: Array,
+        default: [],
         required: true
     },
     useCheckboxes: {
@@ -36,22 +37,20 @@ function handleCheckboxChange(event, themeId) {
         selectedThemeIds.value.splice(index, 1);
     }
 
-    emit('deleteButtonStatusChanged', selectedThemeIds.value.length > 0, selectedThemeIds.value)
+    emit('changeDeleteButton', themeIds.value)
 }
 
 </script>
 <template>
 <div class="theme">
-    <div v-for="(theme, index) in props.chapter.themes" :key="index">
+    <div v-for="(theme, index) in props.themes" :key="index">
         <div class="theme-header">
             <span>{{ theme.themeTitle }}</span>
 
             <input v-if="useCheckboxes && (store.getters.isAdmin || store.getters.isOwner)" type="checkbox"
                 @change.prevent="handleCheckboxChange($event, theme.themeId)">            
         </div>
-        <div v-html="theme.content" class="theme-content">
-            
-        </div>
+        <div v-html="theme.content" class="theme-content"></div>
     </div>
 </div>
 </template>
@@ -61,7 +60,6 @@ function handleCheckboxChange(event, themeId) {
     display: flex;
     flex-direction: column;
     justify-content: start;
-    margin: 0 15px 15px 15px;
     gap: 15px;
 }
 
@@ -70,7 +68,7 @@ function handleCheckboxChange(event, themeId) {
     flex: row;
     justify-content: space-between;
     align-items: center;
-    font-size: medium;
+    font-size: large;
     color: black;
     background: var(--THEME-HEADER-BCKGND-GRADIENT);
     padding: 6px;
@@ -85,11 +83,11 @@ function handleCheckboxChange(event, themeId) {
 .theme-content {
     padding: 8px;
     background: lightgray;
+    word-wrap: break-word;
 }
 
-.theme-content:deep(p) {
+.theme-content:deep(*) {
     margin:0px;
-    word-wrap: break-word;
 }
 
 .theme-content a {

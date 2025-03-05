@@ -14,7 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Deloprosit.Server.Controllers
 {
     [EnableCors("AllowClient")]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ChaptersController : ControllerBase
     {

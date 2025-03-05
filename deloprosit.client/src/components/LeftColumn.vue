@@ -15,12 +15,12 @@ const chapters = computed(() => store.state.chapters);
         <div class="chapters">
             <div class="chapters-header">
                 <RouterLink to="/"><strong>Разделы:</strong></RouterLink>                
-                <RouterLink v-if="isAdmin || isOwner" to="/create-chapter"><i class="pi pi-folder-plus"></i> Создать </RouterLink>
+                <RouterLink v-if="isAdmin || isOwner" to="/chapter/create"><i class="pi pi-folder-plus"></i> Создать </RouterLink>
             </div>
             <hr/>
             <ul v-for="(chapter, index) in chapters" :key="index">
                 <li>
-                    <RouterLink :to="`/chapter-details/${chapter.chapterId}`">
+                    <RouterLink :to="`/chapter/${chapter.chapterId}`">
                         <i class="pi pi-bookmark-fill"></i>{{ chapter.chapterTitle }}
                     </RouterLink>
                 </li>

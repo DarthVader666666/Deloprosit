@@ -19,12 +19,12 @@ const router = createRouter({
             component: RegisterView
         },
         {
-            path: '/create-chapter',
+            path: '/chapter/create',
             name: 'create-chapter',
             component: ChapterCreateView            
         },
         {
-            path: '/chapter-details/:chapterId',
+            path: '/chapter/:chapterId',
             name: 'chapter-details',
             component: ChapterDetailsView            
         },
@@ -36,9 +36,13 @@ const router = createRouter({
     ]
 });
 
-router.afterEach((to) => {
+router.afterEach((to, from) => {
+    if(from.name === 'chapter-details' || from.name === 'create-chapter') {
+        store.commit('renderSearchBar', true);
+    }
+
     if(to.name === 'chapter-details') {
-        store.commit('downloadChapter', to.params.chapterId);
+        store.commit('downloadChapter', to.params['chapterId']);
     }
 
     store.commit('setIsEditMode', false);

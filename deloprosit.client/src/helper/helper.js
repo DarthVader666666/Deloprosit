@@ -1,3 +1,5 @@
+import store from "@/vuex/store";
+
 export const helper = {
     getUnicodeByteArray: (text) => {
         const utf8Encode = new TextEncoder();
@@ -31,5 +33,8 @@ export const helper = {
     getQueryString(array, key) {
         const queryString = array.map(value => `${key}=${value}&`).join('').slice(0, -1);
         return '?' + queryString;
+    },
+    getImagePath(imagePath) {
+        return store.state.environment === 'development' ? '/src/assets/images/' + imagePath : imagePath
     }
 }

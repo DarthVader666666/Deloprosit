@@ -8,7 +8,7 @@ using Microsoft.Data.SqlClient;
 namespace Deloprosit.Server.Controllers
 {
     [EnableCors("AllowClient")]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ThemesController : ControllerBase
     {
