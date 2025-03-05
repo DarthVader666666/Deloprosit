@@ -58,9 +58,8 @@ const store = createStore({
             const url = `${state.serverUrl}/chapters/get/${chapterId}`;
             const data = (await axios.get(url).then(response => response).then(data => data)).data;
             state.chapter = data;
-            state.themes = data.themes;
         },
-        setIsEditMode(state, value) {
+        async setIsEditMode(state, value) {
             state.isEditMode = value;
         }
     }

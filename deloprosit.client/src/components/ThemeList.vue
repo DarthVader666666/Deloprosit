@@ -100,8 +100,4 @@ function handleCheckboxChange(event, themeId) {
     margin: 0 8px 8px 0;
 }
 
-.theme i {
-    color: var(--TEXT-GLOW-COLOR);
-    margin-right: 5px;
-}
 </style>

@@ -44,12 +44,12 @@ const handlePending = async (promise) => {
 </script>
 
 <template>
-<div class="email-sent-notification" v-if="showEmailNotification">
-    <h3>Письмо успешно отправлено</h3>
-    <h3>Проверьте свой Email</h3>
-    <img src="/src/assets/images/email-sent.jpg" alt="email-sent.jpg">
-    <button><RouterLink to="/">Понятно</RouterLink></button>
-</div>
-<SpinningCircleView v-else-if="pending"/>
-<RegisterFormView v-else :pending="pending" @email-sent="handlePending"/>
+    <div class="email-sent-notification" v-if="showEmailNotification">
+        <h3>Письмо успешно отправлено</h3>
+        <h3>Проверьте свой Email</h3>
+        <img src="/src/assets/images/email-sent.jpg" alt="email-sent.jpg">
+        <button><RouterLink to="/">Понятно</RouterLink></button>
+    </div>
+    <SpinningCircleView v-else-if="pending"/>
+    <RegisterFormView v-else :pending="pending" @email-sent="handlePending"/>
 </template>

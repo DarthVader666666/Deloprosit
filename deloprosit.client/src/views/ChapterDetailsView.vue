@@ -18,14 +18,14 @@ const router = useRouter();
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const chapter = computed(() => store.state.chapter);
-const isEditMode = ref(false);
+const isEditMode = computed(() => store.state.isEditMode);
 
 const newThemes = ref([]);
 const isDeleteButtonActive = ref(false);
 const selectedThemeIds = ref([]);
 
 function initializeEditMode() {
-    isEditMode.value = true;
+    store.commit('setIsEditMode', true);
     store.commit('setTitle', 'Редактирование раздела');
 };
 
@@ -89,7 +89,7 @@ async function submitNewTheme(index) {
 }
 
 function Cancel() {
-    isEditMode.value = false;
+    store.commit('setIsEditMode', false);
     router.push(`/chapters/${chapter.value.chapterId}`)
 }
 
@@ -117,11 +117,7 @@ async function updateChapter(updatedChapter) {
             store.commit('downloadChapters');
             store.commit('downloadChapter',  updatedChapter.chapterId);
 
-            if( updatedChapter) {
-                 updatedChapter.themes = [];
-            }
-
-            isEditMode.value = false;
+            store.commit('setIsEditMode', false);
         }
     })
     .catch(error => {
@@ -231,17 +227,6 @@ async function updateChapter(updatedChapter) {
 
 .inactive {
     color: gray;
-}
-
-.buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-    padding: 7px 0 0 5px;
-}
-
-.buttons button {
-    height: 25px;
 }
 
 .add-new-theme {

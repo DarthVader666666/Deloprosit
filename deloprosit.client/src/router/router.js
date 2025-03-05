@@ -39,6 +39,7 @@ const router = createRouter({
 router.afterEach((to, from) => {
     if(from.name === 'chapter-details' || from.name === 'create-chapter') {
         store.commit('renderSearchBar', true);
+        store.commit('setIsEditMode', false);
     }
 
     if(to.name === 'chapter-details') {
