@@ -49,8 +49,8 @@ function handleCheckboxChange(event, themeId) {
             <input v-if="useCheckboxes && (store.getters.isAdmin || store.getters.isOwner)" type="checkbox"
                 @change.prevent="handleCheckboxChange($event, theme.themeId)">            
         </div>
-        <div class="theme-content">
-            <span v-html="theme.content"></span>
+        <div v-html="theme.content" class="theme-content">
+            
         </div>
     </div>
 </div>
@@ -71,10 +71,10 @@ function handleCheckboxChange(event, themeId) {
     justify-content: space-between;
     align-items: center;
     font-size: medium;
-    color: var(--THEME-HEADER-COLOR);
+    color: black;
     background: var(--THEME-HEADER-BCKGND-GRADIENT);
-    padding: 3px;
-    height: 20px;
+    padding: 6px;
+    height: 26px;
 }
 
 .theme-header a {
@@ -82,17 +82,14 @@ function handleCheckboxChange(event, themeId) {
     color:  var(--THEME-HEADER-COLOR);
 }
 
-.theme-header span {
-    margin-right: 5px;
-}
-
 .theme-content {
-    padding: 8px 0 8px 0;
+    padding: 8px;
     background: lightgray;
 }
 
-.theme-content span{
-    word-break: break-all;
+.theme-content:deep(p) {
+    margin:0px;
+    word-wrap: break-word;
 }
 
 .theme-content a {

@@ -44,7 +44,8 @@ body {
 }
 
 #app {
-  width: var(--APP-COMPONENT-WIDTH);
+  width: 100%;
+  /* var(--APP-COMPONENT-WIDTH); */
   min-height: var(--APP-COMPONENT-MIN-HEIGHT);
 }
 
