@@ -35,6 +35,6 @@ export const helper = {
         return '?' + queryString;
     },
     getImagePath(imagePath) {
-        return store.state.environment === 'development' ? '/src/assets/images/' + imagePath : imagePath
+        return store.state.environment === 'development' ? '/src/assets/images/' + imagePath : '/' + imagePath
     }
 }

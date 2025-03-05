@@ -9,6 +9,7 @@ import { useRouter } from 'vue-router';
 
 const store = useStore();
 const router = useRouter();
+const emit = defineEmits(['cancel']);
 
 const props = defineProps({
     chapter: {
@@ -72,7 +73,7 @@ function handleCancel() {
     const chapterId = chapter.chapterId;
 
     if(chapterId) {
-        router.push(`/chapters/:${chapterId}`)
+        emit('cancel');
     }
     else {
         router.push('/');

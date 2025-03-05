@@ -20,7 +20,7 @@ const chapters = computed(() => store.state.chapters);
             <hr/>
             <ul v-for="(chapter, index) in chapters" :key="index">
                 <li>
-                    <RouterLink :to="`/chapter/${chapter.chapterId}`">
+                    <RouterLink :to="`/chapters/${chapter.chapterId}`">
                         <i class="pi pi-bookmark-fill"></i>{{ chapter.chapterTitle }}
                     </RouterLink>
                 </li>

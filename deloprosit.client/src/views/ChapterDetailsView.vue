@@ -6,13 +6,14 @@ import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { helper } from '@/helper/helper';
 import { useToast } from 'vue-toastification';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 import Editor from 'primevue/editor';
 import Button from 'primevue/button';
 import { Form } from '@primevue/forms';
 
 const store = useStore();
 const toast = useToast();
+const router = useRouter();
 
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
@@ -87,6 +88,11 @@ async function submitNewTheme(index) {
     newThemes.value.splice(index, 1);
 }
 
+function Cancel() {
+    isEditMode.value = false;
+    router.push(`/chapters/${chapter.value.chapterId}`)
+}
+
 async function updateChapter(updatedChapter) {
     const currentDate = helper.getCurrentDate();
 
@@ -148,7 +154,7 @@ async function updateChapter(updatedChapter) {
     <hr/>    
     </div>
     <div v-else-if="chapter">
-        <ChapterCreateUpdateForm :doClearThemes="true" :chapter="chapter" :handleSave="updateChapter"/>
+        <ChapterCreateUpdateForm :doClearThemes="true" :chapter="chapter" :handleSave="updateChapter" @cancel="Cancel"/>
         <hr/>
         <div class="add-new-theme">
             <h3>Темы:</h3>

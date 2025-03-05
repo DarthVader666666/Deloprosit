@@ -52,7 +52,6 @@ function handleDeleteChapters() {
             const status = response.status
             if(status === 200) {
                 toast.success('Разделы успешно удалены');
-                isDeleteButtonActive.value = false;
                 store.commit('downloadChapters');
 
                 ClearForm();
@@ -80,7 +79,7 @@ function handleDeleteChapters() {
         <div class="chapter-links">
             <div v-for="(chapter, index) in chapters" :key="index" class="chapter-link">
                 <input v-if="isAdmin || isOwner" type="checkbox" :value="chapter.chapterId" @change.prevent="handleCheckboxChange">
-                <RouterLink :to="`/chapter/${chapter.chapterId}`" >
+                <RouterLink :to="`/chapters/${chapter.chapterId}`" >
                     <img :src="helper.getImagePath(chapter.imagePath)" width="150px" height="120px">
                     <p>{{ chapter.chapterTitle }}</p>
                 </RouterLink>

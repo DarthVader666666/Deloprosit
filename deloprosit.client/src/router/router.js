@@ -19,12 +19,12 @@ const router = createRouter({
             component: RegisterView
         },
         {
-            path: '/chapter/create',
+            path: '/chapters/create',
             name: 'create-chapter',
             component: ChapterCreateView            
         },
         {
-            path: '/chapter/:chapterId',
+            path: '/chapters/:chapterId',
             name: 'chapter-details',
             component: ChapterDetailsView            
         },
