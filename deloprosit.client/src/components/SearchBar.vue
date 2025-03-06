@@ -1,15 +1,19 @@
-<script></script>
+<script setup>
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+
+</script>
 <template>
     <div class="search-bar">
         <label>Поиск в разделах:  </label>
-        <input class="search-input" type="text" placeholder="Введите, что хотите найти...">
-        <button><i class="pi pi-search"></i>Искать</button>
+        <InputText placeholder="Введите, что хотите найти..."/>
+        <Button raised severity="secondary" reised><i class="pi pi-search"></i><span>Поиск</span></Button>
     </div>
 </template>
 
 <style scoped>
     .search-bar {
-        height: 3rem;
+        height: var(--SEARCHBAR-HEIGHT);
         flex-direction: row;
         text-align: center;
         align-content: center;
@@ -21,7 +25,7 @@
     }
 
     .search-bar button {
-        height: 50%;
+        box-shadow: var(--INPUT-BOX-SHADOW);
     }
 
     .search-bar button i {
@@ -29,9 +33,14 @@
     }
 
     .search-bar input {
-        height: 38%;
         width: 40%;
         margin-right: 5px;
         box-shadow: var(--INPUT-BOX-SHADOW);
+    }
+
+    @media (max-width: 1500px) {
+        .search-bar button span {
+            display: none;
+        }
     }
 </style>

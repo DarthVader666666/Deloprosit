@@ -1,185 +1,51 @@
 <script setup>
 import ThemeList from '@/components/ThemeList.vue';
-import ChapterCreateUpdateForm from '@/components/ChapterCreateUpdateForm.vue';
-import axios from 'axios';
-import { computed, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
-import { helper } from '@/helper/helper';
-import { useToast } from 'vue-toastification';
-import { RouterLink, useRouter } from 'vue-router';
-import Editor from 'primevue/editor';
+import { RouterLink, useRoute } from 'vue-router';
 import Button from 'primevue/button';
-import { Form } from '@primevue/forms';
 
 const store = useStore();
-const toast = useToast();
-const router = useRouter();
 
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
-const chapter = computed(() => store.state.chapter);
-const isEditMode = computed(() => store.state.isEditMode);
+const chapter = computed(() => store.getters.getChapter);
+const route = useRoute();
 
-const newThemes = ref([]);
-const isDeleteButtonActive = ref(false);
-const selectedThemeIds = ref([]);
-
-function initializeEditMode() {
-    store.commit('setIsEditMode', true);
-    store.commit('setTitle', 'Редактирование раздела');
-};
-
-function addBlankTheme() {
-    newThemes.value.push({
-        themeId: null,
-        userId: null,
-        chapterId: chapter.value.chapterId,
-        themeTitle: null,
-        content: null,
-        dateCreated: null,
-        dateDeleted: null,
-    })
-}
-
-function deleteBlankTheme(index) {
-    newThemes.value.splice(index, 1);
-}
-
-function changeDeleteButton(themeIds) {
-    isDeleteButtonActive.value = themeIds != null && themeIds.length > 0;
-    selectedThemeIds.value = themeIds;
-}
-
-async function handleDeleteThemes() {
-    if(!window.confirm('Эти темы будут удалены. Вы уверены?')) {
-        return;
-    }
-
-    if(isDeleteButtonActive.value) {
-        const themeIdsQuery = helper.getQueryString(selectedThemeIds.value, 'themeIds');
-        const url = `${store.state.serverUrl}/themes/deletelist` + themeIdsQuery;
-
-        await axios.delete(url, null)
-            .then(response => {
-                const status = response.status;
-
-                if(status === 200) {
-                    toast.success('Темы успешно удалены');
-                    isDeleteButtonActive.value = false;
-                    store.commit('downloadChapter', chapter.value.chapterId);
-                }
-            })
-            .catch(error => {
-                const response =  error.response;
-
-                if(response.status === 500) {
-                    toast.error('Ошибка базы данных')
-                }
-
-                if(response.status === 400) {
-                    toast.error(response.data.errorText);
-                }
-            });
-    }
-}
-
-async function submitNewTheme(index) {
-    chapter.value.themes.push(newThemes.value[index]);
-    newThemes.value.splice(index, 1);
-}
-
-function Cancel() {
-    store.commit('setIsEditMode', false);
-    router.push(`/chapters/${chapter.value.chapterId}`)
-}
-
-async function updateChapter(updatedChapter) {
-    const currentDate = helper.getCurrentDate();
-
-     updatedChapter.themes.forEach(theme => {
-        if(!theme.dateCreated) {
-            theme.dateCreated = currentDate;
-        }        
-    });
-
-    const url = store.state.serverUrl;
-
-    await axios.put(`${url}/chapters/update`,  updatedChapter,
-    {
-        headers: {
-            'Content': 'application/json',
-            'Accept': '*/*'
-        }
-    })
-    .then(response => {
-        if(response.status === 200) {
-            toast.success('Раздел успешно обновлен');
-            store.commit('downloadChapters');
-            store.commit('downloadChapter',  updatedChapter.chapterId);
-
-            store.commit('setIsEditMode', false);
-        }
-    })
-    .catch(error => {
-        const data = error.response.data;
-
-        if(data) {
-            toast.error(data.detail);
-        }
-        else {
-            toast.error('Ошибка обновления раздела')
-        }
-    });
-}
+onMounted(async () => {
+    await store.dispatch('downloadChapter', route.params.chapterId);
+})
 
 </script>
 
 <template>
-<div class="edit-chapter">
-    <div v-if="!isEditMode && chapter">
-    <div class="title">
-        <h3>
-            <RouterLink to="/"><i class="pi pi-arrow-left"></i></RouterLink>
-            {{chapter.chapterTitle}}
-            <i v-if="isAdmin || isOwner" class="pi pi-pen-to-square edit-chapter-button" @click="initializeEditMode"></i>
-        </h3>
-        <div v-if="isAdmin || isOwner" class="delete-button">
-            <i :class="'pi pi-trash' + ` ${isDeleteButtonActive ? 'active' : 'inactive'}`" @click.prevent="handleDeleteThemes"></i>
-        </div>            
-    </div>
-    <hr/>    
-    </div>
-    <div v-else-if="chapter">
-        <ChapterCreateUpdateForm :doClearThemes="true" :chapter="chapter" :handleSave="updateChapter" @cancel="Cancel"/>
-        <hr/>
-        <div class="add-new-theme">
-            <h3>Темы:</h3>
-            <button @click.prevent="addBlankTheme"><i class="pi pi-file-plus"></i>Добавить</button>
+<div class="chapter-details-container">
+    <div v-if="chapter">
+        <div class="title">
+            <h3>
+                <Button text rounded severity="contrast" class="back-button">
+                    <RouterLink to="/"><i class="pi pi-arrow-left"></i></RouterLink>
+                </Button>
+
+                {{chapter.chapterTitle}}
+
+                <Button v-if="isAdmin || isOwner" text rounded severity="contrast" title="Редактировать" class="edit-button">
+                    <RouterLink :to="`/chapters/${chapter.chapterId}/edit`"><i class="pi pi-pen-to-square"></i></RouterLink>
+                </Button>
+            </h3>
         </div>
-        <Form v-for="(newTheme, index) in newThemes" :key="index" @submit="submitNewTheme(index)" class="new-theme-form">
-            <div class="new-theme-title">
-                <input v-model="newTheme.themeTitle" type="text" placeholder="Заголовок темы" required>
-                <button @click.prevent="deleteBlankTheme(index)"><i class="pi pi-times"></i>Удалить</button>
-            </div>
-            <Editor v-model.content="newTheme.content" editorStyle="height: 500px"/>
-            <Button type="submit" severity="primary" label="OK" />
-        </Form>
+        <hr/>    
     </div>
-<ThemeList @changeDeleteButton="changeDeleteButton" :useCheckboxes="true" :themes="chapter ? chapter.themes : []"></ThemeList>
+    <ThemeList :themes="chapter ? chapter.themes : []"></ThemeList>
 </div>
 
 </template>
 
 <style scoped>
 
-.edit-chapter {
+.chapter-details-container {
     display: flex;
     flex-direction: column;
-}
-
-.edit-chapter-button:hover {
-    box-shadow: var(--GLOW-BOX-SHADOW);
-    cursor: pointer;
 }
 
 .title {
@@ -187,7 +53,6 @@ async function updateChapter(updatedChapter) {
     flex-direction: row;
     padding-right: 15px;
     align-items: center;
-    justify-content: space-between;
 }
 
 .title input {
@@ -198,88 +63,35 @@ async function updateChapter(updatedChapter) {
     width: 66%;
 }
 
-.title a i {
-    color: black;
-    margin-right: 10px;
+.back-button {
+    padding-left: 9px;
+    padding-bottom: 6px;
 }
 
-.title i:hover {
-    background-color: var(--TEXT-BCKGND-CLR);
-    box-shadow: var(--GLOW-BOX-SHADOW);
+.back-button a {
+    color: black;
+    width: 14px;
+}
+
+.edit-button {
+    padding-left: 10px;
+    padding-bottom: 6px;
+}
+
+.edit-button a {
+    color: black;
+    width: 14px;
 }
 
 .delete-button {
-    margin: 5px 10px 0 0;
+    margin: 10px 0 10px 0;
+    float: right;
 }
 
-.delete-button i {
-    font-size: medium;
-}
-
-.active {
-    color: var(--DANGER-RED);
-}
-
-.active:hover {
-    cursor: pointer;
-    background: var(--GLOW-BOX-SHADOW);
-}
-
-.inactive {
-    color: gray;
-}
-
-.add-new-theme {
-    padding-left: 15px;
-    margin-bottom: 10px;
-    display: flex;
-    flex-direction: row;
-    gap: 90px;
-    align-items: center;
-    height: 25px;
-}
-
-.add-new-theme button {
-    height: 25px;
-}
-
-.new-theme-form {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    width: 100%;
-    padding-bottom:10px;
-}
-
-.new-theme-form button {
-    width: 20%;
-}
-
-.new-theme-title {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.new-theme-title input {
-    width: 85%;
-}
-
-.new-theme-title button {
+.ok-button {
+    margin: 10px 0 10px 0;
+    float: right;
     width: 90px;
-}
-
-h3 i {
-    margin-left: 8px;
-}
-
-h3 {
-    padding-top: 5px;
-    text-align: start;
-}
-
-button i {
-    margin-right: 5px;
 }
 
 </style>

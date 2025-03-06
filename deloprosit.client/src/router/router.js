@@ -2,6 +2,7 @@ import RegisterView from "@/views/RegisterView.vue";
 import HomeView from "@/views/HomeView.vue";
 import ChapterCreateView from "@/views/ChapterCreateView.vue";
 import ChapterDetailsView from "@/views/ChapterDetailsView.vue";
+import ChapterEditView from "@/views/ChapterEditView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import store from '@/vuex/store.js';
 
@@ -29,6 +30,11 @@ const router = createRouter({
             component: ChapterDetailsView            
         },
         {
+            path: '/chapters/:chapterId/edit',
+            name: 'edit-chapter',
+            component: ChapterEditView        
+        },
+        {
             path: '/:catchAll(.*)', // any resource which doesn't exist
             name: 'home',
             component: HomeView
@@ -36,17 +42,14 @@ const router = createRouter({
     ]
 });
 
-router.afterEach((to, from) => {
-    if(from.name === 'chapter-details' || from.name === 'create-chapter') {
-        store.commit('renderSearchBar', true);
-        store.commit('setIsEditMode', false);
-    }
+router.afterEach(async (to, from) => {
+    // if(from.name === 'chapter-details' || from.name === 'create-chapter') {
+    //     store.commit('renderSearchBar');
+    // }
 
-    if(to.name === 'chapter-details') {
-        store.commit('downloadChapter', to.params['chapterId']);
-    }
-
-    store.commit('setIsEditMode', false);
+    // if(to.name === 'chapter-details' || to.name === 'edit-chapter') {
+    //     await store.dispatch('downloadChapter', to.params['chapterId']);
+    // }
 });
 
 export default router;

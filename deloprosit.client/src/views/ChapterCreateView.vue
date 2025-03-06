@@ -11,7 +11,7 @@ const toast = useToast();
 const router = useRouter();
 const store = useStore();
 
-onMounted(() => {
+onMounted(async () => {
     store.commit('setTitle', 'Создание нового раздела');
 });
 
@@ -29,13 +29,13 @@ async function createChapter(newChapter) {
                 'Content-Type': 'multipart/form-data'
             }
         })
-        .then(response => {
+        .then(async response => {
             const status = response.status;
 
             if(status === 200) {
                 toast.success('Раздел создан');
                 newChapter.chapterTitle = '';
-                store.commit('downloadChapters');
+                await store.dispatch('downloadChapters');
                 router.push('/');
             }
         })

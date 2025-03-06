@@ -3,23 +3,28 @@ import { useStore } from 'vuex';
 import { computed, onUpdated, ref } from 'vue';
 
 const store = useStore();
-
 const emit = defineEmits(['changeDeleteButton']);
 
 const selectedThemeIds = ref([]);
 const themeIds = computed(() => selectedThemeIds.value );
+const downloadedThemes = computed(() => store.getters.getThemes );
 
 const props = defineProps({
     themes: {
         typeof: Array,
-        default: [],
-        required: true
+        default: []
     },
     useCheckboxes: {
         typeof: Boolean,
         default: false
+    },
+    useShortMode: {
+        typeof: Boolean,
+        default: false
     }
 });
+
+const themes = computed(() => props.themes.length ? props.themes : downloadedThemes.value);
 
 onUpdated(() => {
     const checkBoxes = document.querySelectorAll('input[type=checkbox]');
@@ -39,18 +44,18 @@ function handleCheckboxChange(event, themeId) {
 
     emit('changeDeleteButton', themeIds.value)
 }
-
 </script>
+
 <template>
 <div class="theme">
-    <div v-for="(theme, index) in props.themes" :key="index">
+    <div v-for="(theme, index) in themes" :key="index">
         <div class="theme-header">
             <span>{{ theme.themeTitle }}</span>
 
             <input v-if="useCheckboxes && (store.getters.isAdmin || store.getters.isOwner)" type="checkbox"
                 @change.prevent="handleCheckboxChange($event, theme.themeId)">            
         </div>
-        <div v-html="theme.content" class="theme-content"></div>
+        <div v-if="!props.useShortMode" v-html="theme.content" class="theme-content"></div>
     </div>
 </div>
 </template>
@@ -72,7 +77,7 @@ function handleCheckboxChange(event, themeId) {
     color: black;
     background: var(--THEME-HEADER-BCKGND-GRADIENT);
     padding: 6px;
-    height: 26px;
+    height: 34px;
 }
 
 .theme-header a {

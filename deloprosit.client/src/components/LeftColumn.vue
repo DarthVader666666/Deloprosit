@@ -2,6 +2,7 @@
 import { useStore } from 'vuex';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
+import Button from 'primevue/button';
 
 const store = useStore();
 
@@ -14,8 +15,10 @@ const chapters = computed(() => store.state.chapters);
     <div class="left-container">
         <div class="chapters">
             <div class="chapters-header">
-                <RouterLink to="/"><strong>Разделы:</strong></RouterLink>                
-                <RouterLink v-if="isAdmin || isOwner" to="/chapters/create"><i class="pi pi-folder-plus"></i> Создать </RouterLink>
+                <strong>Разделы:</strong>
+                <Button v-if="isAdmin || isOwner" text raised severity="contrast">
+                    <RouterLink to="/chapters/create"><i class="pi pi-folder-plus"></i> <span>Создать</span> </RouterLink>
+                </Button>
             </div>
             <hr/>
             <ul v-for="(chapter, index) in chapters" :key="index">
@@ -39,16 +42,16 @@ const chapters = computed(() => store.state.chapters);
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        align-items: center;
+    }
+
+    .chapters-header button {
+        padding: 6px;
     }
 
     .chapters-header a {
         text-decoration: none;
         color: black;
-    }
-
-    .chapters-header a:hover {
-        box-shadow: var(--GLOW-BOX-SHADOW);
-        background-color:var(--TEXT-BCKGND-CLR);
     }
 
     ul {
@@ -75,5 +78,11 @@ const chapters = computed(() => store.state.chapters);
         color: var(--TEXT-GLOW-COLOR);
         text-decoration: underline;
         cursor: pointer;
+    }
+
+    @media (max-width: 1500px) {
+        .chapters-header a span {
+            display: none;
+        }
     }
 </style>

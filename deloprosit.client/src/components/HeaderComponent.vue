@@ -5,6 +5,7 @@ import { ref, computed } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
+import Button from 'primevue/button';
 
 const loginRequestForm = ref({
     nicknameOrEmail: null,
@@ -104,7 +105,7 @@ const handleLogout = () => {
             <RouterLink to="/"><h1>DP</h1></RouterLink>            
         </div>
         <div v-if="nickname" class="message"><span>{{ nickname }}</span>
-            <button @click="handleLogout">Выйти</button>
+            <Button @click="handleLogout" severity="secondary" label="Выйти"/>
         </div>
         <form v-else class="authentication-form" @submit.prevent="handleLogin">
             <div class="login-inputs" @keydown.enter.prevent="handleLogin">
@@ -139,6 +140,7 @@ const handleLogout = () => {
       box-shadow: var(--COMPONENT-BOX-SHADOW);
       border-radius: 0 0 5px 5px;
       height: var(--HEADER-HEIGHT);
+      font-size: small;
     }
 
     .authentication-form {

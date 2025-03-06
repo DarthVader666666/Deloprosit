@@ -9,9 +9,9 @@ const store = createStore({
         nickname: null,
         chapter: null,
         chapters: [],
+        themes: [],
         showSearchBar: true,
         title: null,
-        isEditMode: false,
         imagePaths: 
             [
                 'archive-1.png',
@@ -19,10 +19,18 @@ const store = createStore({
                 'folders-1.png',
                 'laptop-1.png',
                 'laptop-2.png',
-            ]
-        
+            ]        
     },
     getters: {
+        getChapter(state) {
+            return state.chapter;
+        },
+        getChapters(state) {
+            return state.chapters;
+        },
+        getThemes(state) {
+            return state.themes;
+        },
         serverUrl(state) {
             return state.serverUrl;
         },
@@ -51,16 +59,26 @@ const store = createStore({
             state.title = value;
             state.showSearchBar = false;
         },
-        async downloadChapters(state) {
-            state.chapters = (await axios.get(`${state.serverUrl}/chapters/getlist`).then(response => response).then(data => data)).data;
+        setChapters(state, chapters) {
+            state.chapters = chapters;
         },
-        async downloadChapter(state, chapterId) {
+        setChapter(state, chapter) {            
+            state.chapter = chapter;
+        },
+        setThemes(state, themes) {
+            state.themes = themes;
+        }
+    },
+    actions: {
+        async downloadChapters({commit, state}) {
+            const chapters = (await axios.get(`${state.serverUrl}/chapters/getlist`)).data;
+            commit('setChapters', chapters);
+        },
+        async downloadChapter({commit, state}, chapterId ) {
             const url = `${state.serverUrl}/chapters/get/${chapterId}`;
-            const data = (await axios.get(url).then(response => response).then(data => data)).data;
-            state.chapter = data;
-        },
-        async setIsEditMode(state, value) {
-            state.isEditMode = value;
+            const chapter = (await axios.get(url)).data;
+            commit('setChapter', chapter);
+            commit('setThemes', chapter.themes);
         }
     }
 });
