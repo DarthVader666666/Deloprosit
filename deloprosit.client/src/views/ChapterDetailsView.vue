@@ -2,10 +2,11 @@
 import ThemeList from '@/components/ThemeList.vue';
 import { computed } from 'vue';
 import { useStore } from 'vuex';
-import { RouterLink } from 'vue-router';
+import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 
 const store = useStore();
+const router = useRouter();
 
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
@@ -18,15 +19,10 @@ const chapter = computed(() => store.getters.getChapter);
     <div v-if="chapter">
         <div class="title">
             <h3>
-                <Button text rounded severity="contrast" class="back-button">
-                    <RouterLink to="/"><i class="pi pi-arrow-left"></i></RouterLink>
-                </Button>
-
+                <Button text rounded severity="contrast" icon="pi pi-arrow-left" @click="router.push('/')"/>
                 {{chapter.chapterTitle}}
-
-                <Button v-if="isAdmin || isOwner" text rounded severity="contrast" title="Редактировать" class="edit-button">
-                    <RouterLink :to="`/chapters/${chapter.chapterId}/edit`"><i class="pi pi-pen-to-square"></i></RouterLink>
-                </Button>
+                <Button v-if="isAdmin || isOwner" text rounded severity="contrast" icon="pi pi-pen-to-square" title="Редактировать" 
+                    @click="router.push(`/chapters/${chapter.chapterId}/edit`)"/>
             </h3>
         </div>
         <hr/>    
@@ -56,26 +52,6 @@ const chapter = computed(() => store.getters.getChapter);
     font-size: 15px;
     font-weight: bold;
     width: 66%;
-}
-
-.back-button {
-    padding-left: 9px;
-    padding-bottom: 6px;
-}
-
-.back-button a {
-    color: black;
-    width: 14px;
-}
-
-.edit-button {
-    padding-left: 10px;
-    padding-bottom: 6px;
-}
-
-.edit-button a {
-    color: black;
-    width: 14px;
 }
 
 .delete-button {

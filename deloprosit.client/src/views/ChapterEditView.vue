@@ -36,6 +36,10 @@ async function removeTheme(themeId) {
 }
 
 function changeFormStatus() {
+    const el = document.getElementById("editor");
+    el.classList.toggle('expanded');
+    el.classList.toggle('collapsed');
+
     isFormActive.value = !isFormActive.value;
     clearNewTheme();
 }
@@ -125,14 +129,16 @@ async function updateChapter() {
             <h3>Темы:</h3>            
             <Button v-if="!isFormActive" @click="changeFormStatus" raised severity="secondary" icon="pi pi-arrow-down" label="Новая тема"/>
             <Button v-else @click="changeFormStatus" raised severity="contrast" icon="pi pi-arrow-up" label="Новая тема"/>
-            <Button form="form" type="submit" raised severity="secondary" icon="pi pi-save" label="Добавить"/>
+            <Button form="form" type="submit" raised :disabled="!isFormActive" severity="secondary" icon="pi pi-save" label="Добавить"/>
         </div>
-        <Form v-if="isFormActive" @submit="submitNewTheme(index)" class="new-theme-form" id="form">
-            <div class="new-theme-title">
-                <InputText v-model="newTheme.themeTitle" type="text" placeholder="Заголовок темы" required/>
+        <div id="expand-container">
+            <div class="collapsed" id="editor">
+                <Form @submit="submitNewTheme(index)" class="new-theme-form" id="form">
+                    <InputText v-model="newTheme.themeTitle" type="text" placeholder="Заголовок темы" required/>
+                    <Editor v-model.content="newTheme.content" editorStyle="height: 500px"/>
+                </Form>
             </div>
-            <Editor v-model.content="newTheme.content" editorStyle="height: 500px"/>
-        </Form>
+        </div>                
     </div>
     <ThemeList v-if="!isFormActive" @removeTheme="removeTheme" :themes="chapter.themes" :useDeleteButtons="true" :useShortMode="true"></ThemeList>
 </div>
@@ -156,30 +162,39 @@ async function updateChapter() {
     height: 35px;
 }
 
-.add-new-theme button {
-    height: 35px;
-}
-
 .new-theme-form {
     display: flex;
     flex-direction: column;
     gap: 5px;
     width: 100%;
-    padding-bottom:10px;
+    padding-bottom: 10px;
 }
 
-.new-theme-title {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+#expand-container {
+    overflow: hidden;
 }
 
-.new-theme-title input {
-    width: 85%;
+#editor {
+    margin-top: -100%;
+    transition: all 1s;
 }
 
-.new-theme-title button {
-    width: 90px;
+#editor.expanded {
+    margin-top: 0;
 }
 
+.expanded {
+    animation-name: slide-in;
+    animation-duration: 1s;
+}
+
+.collapsed {
+    transform: translateY(-100%);
+}
+
+@keyframes slide-in {
+    100% {
+        transform: translateY(0%)
+    }
+}
 </style>
