@@ -77,7 +77,7 @@ function handleSave(chapter) {
         props.createChapter(chapter)
     }
     else {
-        emit('updateChapter')
+        emit('updateChapter', chapter)
     }
 }
 

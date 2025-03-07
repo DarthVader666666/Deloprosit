@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Deloprosit.Server.Controllers
 {
@@ -153,7 +154,7 @@ namespace Deloprosit.Server.Controllers
 
         private async Task HandleThemes(IEnumerable<Theme> updatedThemes, int chapterId)
         {
-            var deletedThemes = (await _themeRepository.GetListAsync(chapterId)).Except(updatedThemes);
+            var deletedThemes = (await _themeRepository.GetListAsync(chapterId)).Except(updatedThemes, new ThemeComparer());
 
             foreach (var deletedTheme in deletedThemes)
             {
@@ -176,6 +177,26 @@ namespace Deloprosit.Server.Controllers
                     await _themeRepository.CreateAsync(updatedTheme);
                 }
             }
+        }
+    }
+
+    public class ThemeComparer : IEqualityComparer<Theme?>
+    {
+        public bool Equals(Theme? x, Theme? y)
+        {
+            if (x?.ThemeId == y?.ThemeId)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public int GetHashCode([DisallowNull] Theme theme)
+        {
+            return theme.ThemeId ?? 0;
         }
     }
 }

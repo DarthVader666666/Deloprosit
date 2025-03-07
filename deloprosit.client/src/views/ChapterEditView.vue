@@ -81,7 +81,7 @@ async function findTheme(themeId) {
     return theme;
 }
 
-async function updateChapter() {
+async function updateChapter(updatedChapter) {
     const currentDate = helper.getCurrentDate();
 
      chapter.value.themes.forEach(theme => {
@@ -89,6 +89,9 @@ async function updateChapter() {
             theme.dateCreated = currentDate;
         }
     });
+
+    chapter.value.chapterTitle = updatedChapter.chapterTitle;
+    chapter.value.imagePath = updatedChapter.imagePath;
 
     const url = store.state.serverUrl;
 
@@ -104,6 +107,7 @@ async function updateChapter() {
             toast.success('Раздел успешно обновлен');
             store.dispatch('downloadChapters');
             store.dispatch('downloadChapter',  chapter.value.chapterId);
+            router.push('/');
         }
     })
     .catch(error => {
