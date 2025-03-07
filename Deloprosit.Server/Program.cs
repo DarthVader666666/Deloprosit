@@ -109,6 +109,9 @@ await MigrateSeedDatabase(scope, jsonFileCreated);
 
 var app = builder.Build();
 
+app.UseStatusCodePagesWithRedirects("/errors/{0}");
+app.MapGet("/errors/404", () => app.Configuration["ClientUrl"]);
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
