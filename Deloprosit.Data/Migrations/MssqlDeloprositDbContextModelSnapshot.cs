@@ -137,7 +137,7 @@ namespace Deloprosit.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("ThemeId"));
 
-                    b.Property<int>("ChapterId")
+                    b.Property<int?>("ChapterId")
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
@@ -154,7 +154,7 @@ namespace Deloprosit.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("ThemeId");
@@ -289,14 +289,12 @@ namespace Deloprosit.Data.Migrations
                     b.HasOne("Deloprosit.Data.Entities.Chapter", "Chapter")
                         .WithMany("Themes")
                         .HasForeignKey("ChapterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Deloprosit.Data.Entities.User", "User")
                         .WithMany("Themes")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Chapter");
 

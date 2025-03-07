@@ -1,12 +1,11 @@
 <script setup>
 import { useStore } from 'vuex';
-import { computed, onUpdated, ref } from 'vue';
+import { computed } from 'vue';
+import Button from 'primevue/button';
 
 const store = useStore();
-const emit = defineEmits(['changeDeleteButton']);
+const emit = defineEmits(['removeTheme']);
 
-const selectedThemeIds = ref([]);
-const themeIds = computed(() => selectedThemeIds.value );
 const downloadedThemes = computed(() => store.getters.getThemes );
 
 const props = defineProps({
@@ -14,7 +13,7 @@ const props = defineProps({
         typeof: Array,
         default: []
     },
-    useCheckboxes: {
+    useDeleteButtons: {
         typeof: Boolean,
         default: false
     },
@@ -26,24 +25,6 @@ const props = defineProps({
 
 const themes = computed(() => props.themes.length ? props.themes : downloadedThemes.value);
 
-onUpdated(() => {
-    const checkBoxes = document.querySelectorAll('input[type=checkbox]');
-    checkBoxes.forEach(x => x.checked = false);
-})
-
-function handleCheckboxChange(event, themeId) {
-    const isChecked = event.target.checked;
-
-    if(isChecked) {
-        selectedThemeIds.value.push(themeId);
-    }
-    else {
-        const index = selectedThemeIds.value.indexOf(themeId);
-        selectedThemeIds.value.splice(index, 1);
-    }
-
-    emit('changeDeleteButton', themeIds.value)
-}
 </script>
 
 <template>
@@ -52,8 +33,8 @@ function handleCheckboxChange(event, themeId) {
         <div class="theme-header">
             <span>{{ theme.themeTitle }}</span>
 
-            <input v-if="useCheckboxes && (store.getters.isAdmin || store.getters.isOwner)" type="checkbox"
-                @change.prevent="handleCheckboxChange($event, theme.themeId)">            
+            <Button v-if="useDeleteButtons && (store.getters.isAdmin || store.getters.isOwner)" icon="pi pi-times" text severity="danger"
+                @click="() => emit('removeTheme', theme.themeId)"></Button>
         </div>
         <div v-if="!props.useShortMode" v-html="theme.content" class="theme-content"></div>
     </div>

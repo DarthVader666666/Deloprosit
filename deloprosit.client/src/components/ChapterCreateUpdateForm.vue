@@ -9,7 +9,7 @@ import { useRouter } from 'vue-router';
 
 const store = useStore();
 const router = useRouter();
-const emit = defineEmits(['cancel']);
+const emit = defineEmits(['cancel', 'updateChapter']);
 
 const props = defineProps({
     chapter: {
@@ -25,15 +25,15 @@ const props = defineProps({
             themes: []
         }
     },
-    handleSave: {
+    createChapter: {
         typeof: Function,
-        require: true
+        require: false
     },
     doClearChapter: {
         typeof: Boolean,
         default: false
     },
-    doClearThemes: {
+    isCreateForm: {
         typeof: Boolean,
         default: false
     }
@@ -51,17 +51,9 @@ function clearChapter() {
     chapter.themes = []
 }
 
-function clearThemes() {
-    chapter.themes = [];
-}
-
 onMounted(() => {
     if(props.doClearChapter) {
         clearChapter();
-    }
-
-    if(props.doClearThemes) {
-        clearThemes();
     }
 })
 
@@ -80,11 +72,20 @@ function handleCancel() {
     }
 }
 
+function handleSave(chapter) {
+    if(props.isCreateForm) {
+        props.createChapter(chapter)
+    }
+    else {
+        emit('updateChapter')
+    }
+}
+
 </script>
 
 <template>
     <div>
-        <form class="form-container" @submit.prevent="props.handleSave(chapter)">
+        <form class="form-container" @submit.prevent="handleSave(chapter)">
             <div class="inputs">
                 <InputText v-model="chapter.chapterTitle" type="text" :required="!isDisabled" placeholder="Заголовок раздела"/>
                 <Select v-model="chapter.imagePath" :options="store.state.imagePaths" placeholder="Путь к картинке"/>

@@ -8,7 +8,7 @@ const store = useStore();
 
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
-const chapters = computed(() => store.state.chapters);
+const chapters = computed(() => store.getters.getChapters);
 
 </script>
 <template>

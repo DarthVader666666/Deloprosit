@@ -7,7 +7,7 @@ import InputText from 'primevue/inputtext';
     <div class="search-bar">
         <label>Поиск в разделах:  </label>
         <InputText placeholder="Введите, что хотите найти..."/>
-        <Button raised severity="secondary" reised><i class="pi pi-search"></i><span>Поиск</span></Button>
+        <Button raised severity="secondary" reised><i class="pi pi-search"></i><span>Искать</span></Button>
     </div>
 </template>
 

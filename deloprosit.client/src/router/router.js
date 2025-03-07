@@ -42,14 +42,30 @@ const router = createRouter({
     ]
 });
 
-router.afterEach(async (to, from) => {
-    // if(from.name === 'chapter-details' || from.name === 'create-chapter') {
-    //     store.commit('renderSearchBar');
-    // }
+router.afterEach(async (to) => {
+    if(to.name === 'chapter-details') {
+        await store.dispatch('downloadChapter', to.params['chapterId']);
+        store.commit('renderSearchBar');
+    }
 
-    // if(to.name === 'chapter-details' || to.name === 'edit-chapter') {
-    //     await store.dispatch('downloadChapter', to.params['chapterId']);
-    // }
+    if(to.name === 'edit-chapter') {
+        await store.dispatch('downloadChapter', to.params['chapterId']);
+        store.commit('setTitle', 'Редактирование раздела');
+    }
+
+    if(to.name === 'create-chapter') {
+        store.commit('setTitle', 'Создание нового раздела');
+    }
+
+    if(to.name === 'register') {
+        store.commit('setTitle', 'Заполните форму регистрации');
+    }
+
+    if(to.name === 'home') {
+        store.commit('renderSearchBar');
+    }
+
+    await store.dispatch('downloadChapters');
 });
 
 export default router;

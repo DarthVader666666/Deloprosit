@@ -135,24 +135,13 @@ namespace Deloprosit.Server.Controllers
         [Authorize(Roles = "Owner, Admin")]
         public async Task<IActionResult> Update([FromBody] ChapterUpdateModel chapterUpdateModel)
         {   
-            var userId = (await _userManager.GetCurrentUserAsync(HttpContext))?.UserId;
-
-            if (userId == null) {
-                return Problem(statusCode: 500, detail: "Пользователь не найден");
-            }
-
             var chapter = _mapper.Map<Chapter>(chapterUpdateModel);
 
             try
             {
                 await _chapterRepository.UpdateAsync(chapter);
 
-                foreach (var updatedTheme in chapterUpdateModel.Themes ?? [])
-                {
-                    var theme = _mapper.Map<Theme>(updatedTheme);
-                    theme.UserId = (int)userId;
-                    await _themeRepository.CreateAsync(theme);
-                }
+                await HandleThemes(_mapper.Map<IEnumerable<Theme>>(chapterUpdateModel.Themes), chapter.ChapterId);                
             }
             catch (SqlException)
             { 
@@ -160,6 +149,33 @@ namespace Deloprosit.Server.Controllers
             }
 
             return Ok();
+        }
+
+        private async Task HandleThemes(IEnumerable<Theme> updatedThemes, int chapterId)
+        {
+            var deletedThemes = (await _themeRepository.GetListAsync(chapterId)).Except(updatedThemes);
+
+            foreach (var deletedTheme in deletedThemes)
+            {
+                await _themeRepository.DeleteAsync(deletedTheme?.ThemeId);
+            }
+
+            var userId = (await _userManager.GetCurrentUserAsync(HttpContext))?.UserId;
+
+            foreach (var updatedTheme in updatedThemes.Except(deletedThemes))
+            {
+                if (updatedTheme == null)
+                {
+                    continue;
+                }
+
+                if (updatedTheme.ThemeId == null && updatedTheme?.UserId == null)
+                {
+                    updatedTheme!.ChapterId = chapterId;
+                    updatedTheme!.UserId = userId;
+                    await _themeRepository.CreateAsync(updatedTheme);
+                }
+            }
         }
     }
 }

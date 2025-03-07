@@ -1,6 +1,6 @@
 <script setup>
 import { useStore } from 'vuex';
-import { onMounted, computed, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import axios from 'axios';
 import { helper } from '@/helper/helper';
@@ -11,17 +11,11 @@ const store = useStore();
 const toast = useToast();
 
 const chapters = computed(() => store.state.chapters);
-const isDeleteButtonActive = computed(() => chapterIds.value.length > 0)
-
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
+const isDeleteButtonActive = computed(() => chapterIds.value.length > 0)
 
 const chapterIds = ref([]);
-
-onMounted(async () => {
-    await store.dispatch('downloadChapters');
-    store.commit('renderSearchBar');
-});
 
 function ClearForm() {
     chapterIds.value = [];

@@ -1,7 +1,6 @@
 <script setup>
 import ChapterCreateUpdateForm from '@/components/ChapterCreateUpdateForm.vue';
 import { useStore } from 'vuex';
-import { onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -10,10 +9,6 @@ import { helper } from '@/helper/helper';
 const toast = useToast();
 const router = useRouter();
 const store = useStore();
-
-onMounted(async () => {
-    store.commit('setTitle', 'Создание нового раздела');
-});
 
 async function createChapter(newChapter) {
     let formData = new FormData();
@@ -56,7 +51,7 @@ async function createChapter(newChapter) {
 </script>
 
 <template>
-    <ChapterCreateUpdateForm :doClearChapter="true" :handleSave="createChapter"/>
+    <ChapterCreateUpdateForm :isCreateForm="true" :doClearChapter="true" :createChapter="createChapter"/>
 </template>
 
 <style scoped>

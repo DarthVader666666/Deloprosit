@@ -1,8 +1,8 @@
 <script setup>
 import ThemeList from '@/components/ThemeList.vue';
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useStore } from 'vuex';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
 
 const store = useStore();
@@ -10,11 +10,6 @@ const store = useStore();
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const chapter = computed(() => store.getters.getChapter);
-const route = useRoute();
-
-onMounted(async () => {
-    await store.dispatch('downloadChapter', route.params.chapterId);
-})
 
 </script>
 

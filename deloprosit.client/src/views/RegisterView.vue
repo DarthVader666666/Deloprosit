@@ -1,17 +1,12 @@
 <script setup>
 import RegisterFormView from '@/components/RegisterComponent.vue';
 import SpinningCircleView from '@/components/SpinningCircle.vue';
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import { RouterLink } from 'vue-router';
 import { useStore } from 'vuex';
 
 const store = useStore();
-
-onMounted(() => {
-    store.commit('setTitle', 'Заполните форму регистрации')
-});
-
 const toast = useToast();
 
 const pending = ref(false);
