@@ -107,7 +107,7 @@ async function updateChapter(updatedChapter) {
             toast.success('Раздел успешно обновлен');
             store.dispatch('downloadChapters');
             store.dispatch('downloadChapter',  chapter.value.chapterId);
-            router.push('/');
+            router.push(`/chapters/${chapter.value.chapterId}`)
         }
     })
     .catch(error => {
