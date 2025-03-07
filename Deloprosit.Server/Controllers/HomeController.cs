@@ -5,14 +5,25 @@ namespace Deloprosit.Server.Controllers
 {
     [EnableCors("AllowClient")]
     [ApiController]
-    [Route("api/[controller]")]
     public class HomeController : ControllerBase
     {
-        [HttpGet]
-        [Route("home/index")]
-        public async Task<IActionResult> Index([FromQuery] string returnUrl)
+        private readonly IConfiguration _configuration;
+
+        public HomeController(IConfiguration configuration)
         {
-            return Ok(returnUrl);
+            _configuration = configuration;
+        }
+
+        [HttpGet]
+        [Route("error/{status:int}")]
+        public IActionResult Error([FromRoute] int status)
+        {
+            if (status == 404)
+            {
+                Redirect(_configuration["ClientUrl"] ?? "/");
+            }
+
+            return Ok();
         }
     }
 }
