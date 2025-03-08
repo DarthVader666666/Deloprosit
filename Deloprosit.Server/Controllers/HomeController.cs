@@ -15,8 +15,8 @@ namespace Deloprosit.Server.Controllers
         }
 
         [HttpGet]
-        [Route("error/{status:int}")]
-        public IActionResult Error([FromRoute] int status)
+        [Route("/error")]
+        public IActionResult Error([FromQuery] int status)
         {
             if (status == 404)
             {

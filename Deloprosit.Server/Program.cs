@@ -109,7 +109,7 @@ await MigrateSeedDatabase(scope, jsonFileCreated);
 
 var app = builder.Build();
 
-app.UseStatusCodePagesWithRedirects("error/{0}");
+app.UseStatusCodePagesWithReExecute("/error", "?status={0}");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
