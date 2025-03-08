@@ -76,6 +76,10 @@ const themes = computed(() => props.themes.length ? props.themes : downloadedThe
     margin:0px;
 }
 
+.theme-content:deep(img) {
+    max-width:1000px;
+}
+
 .theme-content a {
     color: black;
     padding: 8px;
@@ -84,6 +88,18 @@ const themes = computed(() => props.themes.length ? props.themes : downloadedThe
 .theme-content input {
     float: inline-end;
     margin: 0 8px 8px 0;
+}
+
+@media (max-width: 1500px) {
+    .theme-content:deep(img) {
+        max-width: 500px;
+    }
+}
+
+@media (max-width: 800px) {
+    .theme-content:deep(img) {
+        max-width: 300px;
+    }
 }
 
 </style>
