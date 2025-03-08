@@ -20,7 +20,7 @@ namespace Deloprosit.Server.Controllers
         {
             if (status == 404)
             {
-                Redirect(_configuration["ClientUrl"] ?? "/");
+                return Redirect(_configuration["ClientUrl"] ?? "/");
             }
 
             return Ok();

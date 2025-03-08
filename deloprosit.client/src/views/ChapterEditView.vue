@@ -126,14 +126,20 @@ async function updateChapter(updatedChapter) {
 
 <template>
 <div v-if="chapter && (isAdmin || isOwner)" class="edit-chapter-container">
-    <div >
+    <div>
         <ChapterCreateUpdateForm :chapter="chapter" @updateChapter="updateChapter" @cancel="Cancel"/>
         <hr/>
         <div class="add-new-theme">
             <h3>Темы:</h3>            
-            <Button v-if="!isFormActive" @click="changeFormStatus" raised severity="secondary" icon="pi pi-arrow-down" label="Новая тема"/>
-            <Button v-else @click="changeFormStatus" raised severity="contrast" icon="pi pi-arrow-up" label="Новая тема"/>
-            <Button form="form" type="submit" raised :disabled="!isFormActive" severity="secondary" icon="pi pi-save" label="Добавить"/>
+            <Button v-if="!isFormActive" @click="changeFormStatus" raised severity="secondary">
+                <i class="pi pi-arrow-down"></i><span>Новая тема</span>
+            </Button>
+            <Button v-else @click="changeFormStatus" raised severity="contrast">
+                <i class="pi pi-arrow-up"></i><span>Новая тема</span>
+            </Button>
+            <Button form="form" type="submit" raised :disabled="!isFormActive" severity="secondary">
+                <i class="pi pi-save"></i><span>Добавить</span>
+            </Button>
         </div>
         <div id="expand-container">
             <div class="collapsed" id="editor">
@@ -199,6 +205,12 @@ async function updateChapter(updatedChapter) {
 @keyframes slide-in {
     100% {
         transform: translateY(0%)
+    }
+}
+
+@media (max-width: 800px) {
+    .add-new-theme span {
+        display: none;
     }
 }
 </style>
