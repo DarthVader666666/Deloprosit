@@ -31,7 +31,7 @@ async function createChapter(newChapter) {
                 toast.success('Раздел создан');
                 newChapter.chapterTitle = '';
                 await store.dispatch('downloadChapters');
-                router.push('/');
+                router.push(`/chapters/${response.data.chapterId}`);
             }
         })
         .catch(error => {

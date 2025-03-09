@@ -65,7 +65,7 @@ namespace Deloprosit.Server.Controllers
                 return Problem(statusCode: 500, detail: "Ошибка сервера");
             }
 
-            return Ok();
+            return Ok(createdChapter);
         }
 
 
