@@ -91,8 +91,8 @@ function handleSave(chapter) {
                 <Select v-model="chapter.imagePath" :options="store.state.imagePaths" placeholder="Путь к картинке"/>
             </div>
             <div class="buttons">
-                <Button type="submit" :disabled="isDisabled" raised severity="contrast" label="Сохранить"/>
-                <Button type="button" @click="handleCancel" raised severity="secondary" label="Отменить"/>
+                <Button type="submit" :disabled="isDisabled" raised severity="secondary" label="Сохранить"/>
+                <Button type="button" @click="handleCancel" raised severity="contrast" label="Отменить"/>
             </div>        
         </form>
         <div class="image">

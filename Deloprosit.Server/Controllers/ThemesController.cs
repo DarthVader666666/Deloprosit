@@ -1,5 +1,8 @@
-﻿using Deloprosit.Bll.Interfaces;
+﻿using AutoMapper;
+using Deloprosit.Bll.Interfaces;
+using Deloprosit.Bll.Services;
 using Deloprosit.Data.Entities;
+using Deloprosit.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +16,14 @@ namespace Deloprosit.Server.Controllers
     public class ThemesController : ControllerBase
     {
         private readonly IRepository<Theme> _themeRepository;
+        private readonly UserManager _userManager;
+        private readonly IMapper _mapper;
 
-        public ThemesController(IRepository<Theme> themesRepository)
+        public ThemesController(IRepository<Theme> themesRepository, UserManager userManager, IMapper mapper)
         {
             _themeRepository = themesRepository;
+            _userManager = userManager;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -28,27 +35,45 @@ namespace Deloprosit.Server.Controllers
             return Ok(themes);
         }
 
-        [HttpDelete]
+        [HttpPost]
         [Route("[action]")]
         [Authorize(Roles = "Admin, Owner")]
-        public async Task<IActionResult> DeleteList([FromQuery] int[] themeIds) 
+        public async Task<IActionResult> Create(ThemeCreateModel themeCreateModel)
         {
-            if (themeIds == null || !themeIds.Any())
-            {
-                return BadRequest(new { errorText = "Нет выбранных тем" });
-            }
-
             try
             {
-                foreach (var themeId in themeIds ?? [])
-                {
-                    await _themeRepository.DeleteAsync(themeId);
-                }
+                var theme = _mapper.Map<Theme>(themeCreateModel);
+                var userId = (await _userManager.GetCurrentUserAsync(HttpContext))?.UserId;
+                theme.UserId = userId;
+
+                await _themeRepository.CreateAsync(theme);
             }
             catch (SqlException)
             {
                 return Problem(statusCode: 500);
-            }            
+            }
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("[action]/{themeId:int}")]
+        [Authorize(Roles = "Admin, Owner")]
+        public async Task<IActionResult> Delete([FromRoute] int? themeId) 
+        {
+            if (themeId == null)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _themeRepository.DeleteAsync(themeId);
+            }
+            catch (SqlException)
+            {
+                return Problem(statusCode: 500);
+            }
 
             return Ok();
         }

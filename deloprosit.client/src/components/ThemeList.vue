@@ -34,7 +34,7 @@ const themes = computed(() => props.themes.length ? props.themes : downloadedThe
             <span>{{ theme.themeTitle }}</span>
 
             <Button v-if="useDeleteButtons && (store.getters.isAdmin || store.getters.isOwner)" icon="pi pi-times" text severity="danger"
-                rounded @click="() => emit('removeTheme', theme.themeId)"></Button>
+                title="Удалить раздел" rounded @click="() => emit('removeTheme', theme.themeId)"></Button>
         </div>
         <div v-if="!props.useShortMode" v-html="theme.content" class="theme-content"></div>
     </div>

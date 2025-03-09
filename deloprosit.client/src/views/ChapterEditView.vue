@@ -11,12 +11,10 @@ import Editor from 'primevue/editor';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import { Form } from '@primevue/forms';
-import { useRoute } from 'vue-router';
 
 const store = useStore();
 const toast = useToast();
 const router = useRouter();
-const route = useRoute();
 
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
@@ -30,33 +28,79 @@ const newTheme = ref({
 const isFormActive = ref(false);
 
 async function removeTheme(themeId) {
-    const theme = await findTheme(themeId);
-    const index =  chapter.value.themes.indexOf(theme);
-    chapter.value.themes.splice(index, 1);
+    if(!window.confirm('Выуверены, что хотите удалить тему?')) {
+        return;
+    }
+
+    const url = store.state.serverUrl;
+
+    await axios.delete(`${url}/themes/delete/${themeId}`,  null,
+    {
+        headers: {
+            'Content': 'application/json',
+            'Accept': '*/*'
+        }
+    })
+    .then(response => {
+        if(response.status === 200) {
+            toast.success('Тема успешно удалена');
+            store.dispatch('downloadChapters');
+            store.dispatch('downloadChapter',  chapter.value.chapterId);
+        }
+    })
+    .catch(error => {
+        const status = error.response.status;
+        if(status == 400) {
+            toast.error('Не выбрана тема')
+        }
+        else {
+            toast.error('Ошибка при удалении темы')
+        }
+    });
+
+    clearNewTheme();    
 }
 
 function changeFormStatus() {
-    const el = document.getElementById("editor");
-    el.classList.toggle('expanded');
-    el.classList.toggle('collapsed');
+    const editor = document.getElementById("editor");
+    editor.classList.toggle('expanded');
+    editor.classList.toggle('collapsed');
 
     isFormActive.value = !isFormActive.value;
     clearNewTheme();
 }
 
-async function submitNewTheme() {
-    const theme = 
-    {
-        themeId: null,
-        userId: null,
-        chapterId: null,
-        themeTitle: newTheme.value.themeTitle,
-        content: newTheme.value.content,
-        dateCreated: null,
-        dateDeleted: null
-    }
+async function addNewTheme() {
+    newTheme.value.chapterId = chapter.value.chapterId;
+    newTheme.value.dateCreated = helper.getCurrentDate();
 
-    chapter.value.themes.push(theme);
+    const url = store.state.serverUrl;
+
+    await axios.post(`${url}/themes/create`,  newTheme.value,
+    {
+        headers: {
+            'Content': 'application/json',
+            'Accept': '*/*'
+        }
+    })
+    .then(response => {
+        if(response.status === 200) {
+            toast.success('Тема успешно добавлена');
+            store.dispatch('downloadChapters');
+            store.dispatch('downloadChapter',  chapter.value.chapterId);
+        }
+    })
+    .catch(error => {
+        const data = error.response.data;
+
+        if(data) {
+            toast.error(data.detail);
+        }
+        else {
+            toast.error('Ошибка при добавлении темы')
+        }
+    });
+
     changeFormStatus();
     clearNewTheme();
 }
@@ -70,26 +114,7 @@ function clearNewTheme() {
     newTheme.value.content = null;
 }
 
-async function findTheme(themeId) {
-    let theme = chapter.value.themes.find(x => x.themeId === themeId);
-
-    if(!theme) {
-        await store.dispatch('downloadChapter', route.params.chapterId);
-        theme = chapter.value.themes.find(x => x.themeId === themeId);
-    }
-
-    return theme;
-}
-
 async function updateChapter(updatedChapter) {
-    const currentDate = helper.getCurrentDate();
-
-     chapter.value.themes.forEach(theme => {
-        if(!theme.dateCreated) {
-            theme.dateCreated = currentDate;
-        }
-    });
-
     chapter.value.chapterTitle = updatedChapter.chapterTitle;
     chapter.value.imagePath = updatedChapter.imagePath;
 
@@ -131,11 +156,8 @@ async function updateChapter(updatedChapter) {
         <hr/>
         <div class="add-new-theme">
             <h3>Темы:</h3>            
-            <Button v-if="!isFormActive" @click="changeFormStatus" raised severity="secondary">
-                <i class="pi pi-arrow-down"></i><span>Новая тема</span>
-            </Button>
-            <Button v-else @click="changeFormStatus" raised severity="contrast">
-                <i class="pi pi-arrow-up"></i><span>Новая тема</span>
+            <Button @click="changeFormStatus" raised :severity="isFormActive ? 'contrast' : 'secondary'">
+                <i :class="isFormActive ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i><span>Новая тема</span>
             </Button>
             <Button form="form" type="submit" raised :disabled="!isFormActive" severity="secondary">
                 <i class="pi pi-save"></i><span>Добавить</span>
@@ -143,7 +165,7 @@ async function updateChapter(updatedChapter) {
         </div>
         <div id="expand-container">
             <div class="collapsed" id="editor">
-                <Form @submit="submitNewTheme(index)" class="new-theme-form" id="form">
+                <Form @submit="addNewTheme(index)" class="new-theme-form" id="form">
                     <InputText v-model="newTheme.themeTitle" type="text" placeholder="Заголовок темы" required/>
                     <Editor v-model.content="newTheme.content" editorStyle="height: 500px"/>
                 </Form>

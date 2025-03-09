@@ -19,7 +19,7 @@ const chapter = computed(() => store.getters.getChapter);
     <div v-if="chapter">
         <div class="title">
             <h3>
-                <Button text rounded severity="contrast" icon="pi pi-arrow-left" @click="router.push('/')"/>
+                <Button text rounded severity="contrast" icon="pi pi-arrow-left" title="Назад" @click="router.push('/')"/>
                 {{chapter.chapterTitle}}
                 <Button v-if="isAdmin || isOwner" text rounded severity="contrast" icon="pi pi-pen-to-square" title="Редактировать" 
                     @click="router.push(`/chapters/${chapter.chapterId}/edit`)"/>

@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Deloprosit.Server.Controllers
 {
@@ -21,15 +20,12 @@ namespace Deloprosit.Server.Controllers
     {
         private readonly UserManager _userManager;
         private readonly IRepository<Chapter> _chapterRepository;
-        private readonly IRepository<Theme> _themeRepository;
         private readonly IMapper _mapper;
 
-        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository, 
-            IRepository<Theme> themeRepository, IMapper mapper)
+        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository, IMapper mapper)
         {
             _userManager = userManager;
             _chapterRepository = chapterRepository;
-            _themeRepository = themeRepository;
             _mapper = mapper;
         }
 
@@ -141,8 +137,6 @@ namespace Deloprosit.Server.Controllers
             try
             {
                 await _chapterRepository.UpdateAsync(chapter);
-
-                await HandleThemes(_mapper.Map<IEnumerable<Theme>>(chapterUpdateModel.Themes), chapter.ChapterId);                
             }
             catch (SqlException)
             { 
@@ -150,53 +144,6 @@ namespace Deloprosit.Server.Controllers
             }
 
             return Ok();
-        }
-
-        private async Task HandleThemes(IEnumerable<Theme> updatedThemes, int chapterId)
-        {
-            var deletedThemes = (await _themeRepository.GetListAsync(chapterId)).Except(updatedThemes, new ThemeComparer());
-
-            foreach (var deletedTheme in deletedThemes)
-            {
-                await _themeRepository.DeleteAsync(deletedTheme?.ThemeId);
-            }
-
-            var userId = (await _userManager.GetCurrentUserAsync(HttpContext))?.UserId;
-
-            foreach (var updatedTheme in updatedThemes.Except(deletedThemes))
-            {
-                if (updatedTheme == null)
-                {
-                    continue;
-                }
-
-                if (updatedTheme.ThemeId == null && updatedTheme?.UserId == null)
-                {
-                    updatedTheme!.ChapterId = chapterId;
-                    updatedTheme!.UserId = userId;
-                    await _themeRepository.CreateAsync(updatedTheme);
-                }
-            }
-        }
-    }
-
-    public class ThemeComparer : IEqualityComparer<Theme?>
-    {
-        public bool Equals(Theme? x, Theme? y)
-        {
-            if (x?.ThemeId == y?.ThemeId)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public int GetHashCode([DisallowNull] Theme theme)
-        {
-            return theme.ThemeId ?? 0;
         }
     }
 }

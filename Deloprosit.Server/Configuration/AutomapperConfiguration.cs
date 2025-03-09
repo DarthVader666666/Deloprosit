@@ -44,6 +44,7 @@ namespace Deloprosit.Server.Configurations
                     autoMapperConfig.CreateMap<ChapterUpdateModel, Chapter>().ForMember(dest => dest.Themes, opts => opts.Ignore());
 
                     autoMapperConfig.CreateMap<ThemeUpdateModel, Theme>();
+                    autoMapperConfig.CreateMap<ThemeCreateModel, Theme>();
                 });
 
                 return config.CreateMapper();
