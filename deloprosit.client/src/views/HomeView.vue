@@ -127,7 +127,7 @@ function handleDeleteChapters() {
     color: black;
 }
 
-.chapter input[type=checkbox] {
+.chapter-links input[type=checkbox] {
     z-index: 1;
     position: absolute;
     margin-left: 120px;
@@ -170,8 +170,8 @@ function handleDeleteChapters() {
 
 @media(max-width: 800px) {
   .chapter img{
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 90px;
+    max-height: 90px;
   }
 
   .chapter p {
