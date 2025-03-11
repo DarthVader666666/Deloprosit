@@ -152,8 +152,8 @@ async function updateChapter(updatedChapter) {
 <template>
 <div v-if="chapter && (isAdmin || isOwner)" class="edit-chapter-container">
     <div>
-        <ChapterCreateUpdateForm :chapter="chapter" @updateChapter="updateChapter" @cancel="Cancel"/>
-        <hr/>
+        <ChapterCreateUpdateForm v-if="!isFormActive" :chapter="chapter" @updateChapter="updateChapter" @cancel="Cancel"/>
+        <hr v-if="!isFormActive"/>
         <div class="add-new-theme">
             <h3>Темы:</h3>            
             <Button @click="changeFormStatus" raised :severity="isFormActive ? 'contrast' : 'secondary'">
@@ -167,7 +167,7 @@ async function updateChapter(updatedChapter) {
             <div class="collapsed" id="editor">
                 <Form @submit="addNewTheme(index)" class="new-theme-form" id="form">
                     <InputText v-model="newTheme.themeTitle" type="text" placeholder="Заголовок темы" required/>
-                    <Editor v-model.content="newTheme.content" editorStyle="height: 500px"/>
+                    <Editor v-model.content="newTheme.content" editorStyle="height: 650px"/>
                 </Form>
             </div>
         </div>                
