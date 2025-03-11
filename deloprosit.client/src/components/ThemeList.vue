@@ -57,7 +57,7 @@ const themes = computed(() => props.themes.length ? props.themes : downloadedThe
     color: black;
     background: var(--THEME-HEADER-BCKGND-GRADIENT);
     padding: 6px;
-    height: 34px;
+    min-height: 34px;
 }
 
 .theme-header a {
@@ -70,15 +70,22 @@ const themes = computed(() => props.themes.length ? props.themes : downloadedThe
     background: white;
 }
 
+.theme-content:deep(img) {
+    max-width: 1000px;
+    height: auto;
+}
+
 @media (max-width: 1500px) {
     .theme-content:deep(img) {
         max-width: 500px;
+        height: auto;
     }
 }
 
 @media (max-width: 800px) {
     .theme-content:deep(img) {
         max-width: 300px;
+        height: auto;
     }
 }
 
