@@ -42,7 +42,6 @@ const themes = computed(() => props.themes.length ? props.themes : downloadedThe
 </template>
 <style scoped>
 .theme {
-    text-align: start;    
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -67,27 +66,8 @@ const themes = computed(() => props.themes.length ? props.themes : downloadedThe
 }
 
 .theme-content {
-    padding: 8px;
-    background: lightgray;
-    word-wrap: break-word;
-}
-
-.theme-content:deep(*) {
-    margin:0px;
-}
-
-.theme-content:deep(img) {
-    max-width:1000px;
-}
-
-.theme-content a {
-    color: black;
-    padding: 8px;
-}
-
-.theme-content input {
-    float: inline-end;
-    margin: 0 8px 8px 0;
+    padding: 18px 20px 20px 20px;
+    background: white;
 }
 
 @media (max-width: 1500px) {

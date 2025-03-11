@@ -21,7 +21,8 @@ async function createChapter(newChapter) {
         {
             headers:
             {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data',
+                'Accept': ''
             }
         })
         .then(async response => {

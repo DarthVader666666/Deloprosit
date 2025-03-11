@@ -1,14 +1,26 @@
 <script setup>
 import { useStore } from 'vuex';
 import { computed } from 'vue';
-import { RouterLink } from 'vue-router';
+import { useRouter, RouterLink } from 'vue-router';
 import Button from 'primevue/button';
 
 const store = useStore();
+const router = useRouter();
 
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const chapters = computed(() => store.getters.getChapters);
+
+function handleClick(chapterId, index) {
+    var links = document.getElementsByClassName('link active');
+
+    for (let item of links) {
+        item.classList.remove('active');
+    }
+
+    document.getElementById(`${index}`).classList.add('active');
+    router.push(`/chapters/${chapterId}`);
+}
 
 </script>
 <template>
@@ -21,13 +33,9 @@ const chapters = computed(() => store.getters.getChapters);
                 </Button>
             </div>
             <hr/>
-            <ul v-for="(chapter, index) in chapters" :key="index">
-                <li>
-                    <RouterLink :to="`/chapters/${chapter.chapterId}`">
-                        <i class="pi pi-bookmark-fill"></i>{{ chapter.chapterTitle }}
-                    </RouterLink>
-                </li>
-            </ul>
+            <div class="link" v-for="(chapter, index) in chapters" :key="index" @click="handleClick(chapter.chapterId, index)" :id="index">
+                <i class="pi pi-bookmark-fill"></i>{{ chapter.chapterTitle }}
+           </div>
         </div>        
     </div>
 </template>
@@ -54,30 +62,27 @@ const chapters = computed(() => store.getters.getChapters);
         color: black;
     }
 
-    ul {
-        list-style-type: none;
-        padding: 0;
-        margin: 2px 0 0 0;
-    }
-
-    li {
+    .link {
         font-size: small;
-        margin-bottom: 8px;
+        padding: 3px 0 3px 0;
+        margin: 3px 0 0 0;
     }
 
-    li a {
-        text-decoration: none;
-        color:black;
-    }
-
-    li a i {
+    .link i {
+        font-size: small;
         margin-right: 3px;
     }
 
-    li a:hover {
-        color: var(--TEXT-GLOW-COLOR);
-        text-decoration: underline;
+    .link:hover {
+        background: var(--SELECTED-LINK-BCKGND-CLR);
         cursor: pointer;
+        color:white;
+    }
+
+    .active {
+        background: var(--SELECTED-LINK-BCKGND-CLR);
+        cursor: pointer;
+        color:white;
     }
 
     @media (max-width: 1500px) {
