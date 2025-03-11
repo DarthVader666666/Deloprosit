@@ -46,6 +46,10 @@ router.afterEach(async (to) => {
     if(to.name === 'chapter-details') {
         await store.dispatch('downloadChapter', to.params['chapterId']);
         store.commit('renderSearchBar');
+        store.commit('setShowChapterList', false);
+    }
+    else {
+        store.commit('setShowChapterList', true);
     }
 
     if(to.name === 'edit-chapter') {

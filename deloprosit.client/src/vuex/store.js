@@ -19,7 +19,8 @@ const store = createStore({
                 'folders-1.png',
                 'laptop-1.png',
                 'laptop-2.png',
-            ]        
+            ],
+        showChapterList: true
     },
     getters: {
         getChapter(state) {
@@ -42,6 +43,9 @@ const store = createStore({
         },
         isOwner(state) {
             return state.roles.includes('Owner');
+        },
+        getShowChapterList(state) {
+            return state.showChapterList;
         }
     },
     mutations: {
@@ -67,6 +71,9 @@ const store = createStore({
         },
         setThemes(state, themes) {
             state.themes = themes;
+        },
+        setShowChapterList(state, value) {
+            state.showChapterList = value;
         }
     },
     actions: {

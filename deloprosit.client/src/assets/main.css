@@ -12,7 +12,7 @@
   --COLUMNS-BCKGND-CLR: rgb(245, 245, 245);
   --TEXT-BCKGND-CLR: rgba(204, 204, 204, 0.98);
   --BCKGND-COLOR-WHEN-SHADOW: rgb(190, 190, 190);
-  --SELECTED-LINK-BCKGND-CLR: rgb(33, 87, 42);
+  --SELECTED-LINK-BCKGND-CLR: rgb(49, 127, 62);
 
   /* SHADOWS */
   --GLOW-BOX-SHADOW: rgba(158, 158, 158, 0.8) 0 0 10px 2px;
@@ -34,6 +34,10 @@
   --HEADER-HEIGHT: 90px;
   --SEARCHBAR-HEIGHT: 60px;
   --TITLE-HEIGHT: 36px;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -59,12 +63,18 @@ body {
 .right-container {
   width: var(--RIGHT-COLUMN-WIDTH);
   background-color: var(--COLUMNS-BCKGND-CLR);
+  position: sticky;
+  height: 100vh;
+  top:0;
 }
 
 .left-container {
   width: var(--LEFT-COLUMN-WIDTH);
   background-color: var(--COLUMNS-BCKGND-CLR);
   word-break: break-word;
+  position: sticky;
+  height: 100vh;
+  top:0;
 }
 
 .main-container {

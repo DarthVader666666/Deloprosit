@@ -29,7 +29,7 @@ const themes = computed(() => props.themes.length ? props.themes : downloadedThe
 
 <template>
 <div class="theme">
-    <div v-for="(theme, index) in themes" :key="index">
+    <div v-for="(theme, index) in themes" :key="index" :id="`theme_${theme.themeId}`">
         <div class="theme-header">
             <span>{{ theme.themeTitle }}</span>
 

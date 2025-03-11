@@ -113,13 +113,13 @@ function handleDeleteChapters() {
     flex-flow: row wrap;
     justify-content: space-around;
     padding: 15px;
-    gap: 60px;
+    gap: 30px;
 }
 
 .chapter {
     padding: 10px;
     max-width: 130px;
-    max-height: 130px;
+    max-height: 180px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -171,7 +171,7 @@ function handleDeleteChapters() {
 @media(max-width: 800px) {
   .chapter img{
     max-width: 90px;
-    max-height: 90px;
+    max-height: 80px;
   }
 
   .chapter p {
