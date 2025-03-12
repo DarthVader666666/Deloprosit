@@ -25,13 +25,17 @@ const props = defineProps({
 
 const themes = computed(() => props.themes.length ? props.themes : downloadedThemes.value);
 
+function handleThemeClick(themeId) {
+    store.commit('redirectToTheme', themeId)
+}
+
 </script>
 
 <template>
 <div class="theme">
-    <div v-for="(theme, index) in themes" :key="index" :id="`theme_${theme.themeId}`">
+    <div v-for="(theme, index) in themes" :key="index" :id="`theme_${theme.themeId}`" :ref="`theme_${theme.themeId}`">
         <div class="theme-header">
-            <span>{{ theme.themeTitle }}</span>
+            <span @click="handleThemeClick(theme.themeId)">{{ theme.themeTitle }}</span>
 
             <Button v-if="useDeleteButtons && (store.getters.isAdmin || store.getters.isOwner)" icon="pi pi-times" text severity="danger"
                 title="Удалить раздел" rounded @click="() => emit('removeTheme', theme.themeId)"></Button>

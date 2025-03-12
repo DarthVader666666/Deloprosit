@@ -157,9 +157,9 @@ async function updateChapter(updatedChapter) {
         <div class="add-new-theme">
             <h3>Темы:</h3>            
             <Button @click="changeFormStatus" raised :severity="isFormActive ? 'contrast' : 'secondary'">
-                <i :class="isFormActive ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"></i><span>Новая тема</span>
+                <i :class="isFormActive ? 'pi pi-minus' : 'pi pi-plus'"></i><span>Новая тема</span>
             </Button>
-            <Button form="form" type="submit" raised :disabled="!isFormActive" severity="secondary">
+            <Button v-if="isFormActive" form="form" type="submit" raised severity="secondary">
                 <i class="pi pi-save"></i><span>Добавить</span>
             </Button>
         </div>

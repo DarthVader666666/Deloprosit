@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
 import axios from "axios";
+import router from "@/router/router";
 
 const store = createStore({
     state: {
@@ -74,6 +75,9 @@ const store = createStore({
         },
         setShowChapterList(state, value) {
             state.showChapterList = value;
+        },
+        redirectToTheme(state, themeId) {            
+            router.push(`/chapters/${state.chapter.chapterId}/${themeId}`);
         }
     },
     actions: {

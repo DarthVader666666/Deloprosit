@@ -36,5 +36,17 @@ export const helper = {
     },
     getImagePath(imagePath) {
         return store.state.environment === 'development' ? '/src/assets/images/' + imagePath : '/' + imagePath
+    },
+    scrollToTheme(themeId) {
+        var links = document.getElementsByClassName('link active');
+
+        for (let item of links) {
+            item.classList.remove('active');
+        }
+    
+        document.getElementById(`listItem_${themeId}`).classList.add('active');
+        
+        var top = document.getElementById(`theme_${themeId}`).offsetTop;
+        window.scrollTo(0, top);
     }
 }

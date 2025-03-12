@@ -25,7 +25,7 @@ const router = createRouter({
             component: ChapterCreateView            
         },
         {
-            path: '/chapters/:chapterId',
+            path: '/chapters/:chapterId/:themeId?',
             name: 'chapter-details',
             component: ChapterDetailsView            
         },
