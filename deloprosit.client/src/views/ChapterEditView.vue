@@ -215,12 +215,13 @@ async function updateChapter(updatedChapter) {
     margin-top: 0;
 }
 
-.expanded {
+.expanded {    
     animation-name: slide-in;
     animation-duration: 1s;
 }
 
 .collapsed {
+    height: 300px;
     transform: translateY(-100%);
 }
 

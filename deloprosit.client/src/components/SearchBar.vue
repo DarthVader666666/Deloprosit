@@ -5,7 +5,7 @@ import InputText from 'primevue/inputtext';
 </script>
 <template>
     <div class="search-bar">
-        <label>Поиск<span> в разделах:</span></label>
+        <label>Поиск<span> в разделах</span>:</label>
         <InputText placeholder="Введите, что хотите найти..."/>
         <Button raised severity="secondary" reised><i class="pi pi-search"></i><span>Искать</span></Button>
     </div>
@@ -44,6 +44,10 @@ import InputText from 'primevue/inputtext';
     }
 
     @media (max-width: 800px) {
+        .search-bar input{
+            width: 60%;
+        }
+
         .search-bar button span {
             display: none;
         }
