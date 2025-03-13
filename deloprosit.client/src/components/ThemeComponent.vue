@@ -2,9 +2,14 @@
 import { useStore } from 'vuex';
 import Button from 'primevue/button';
 import { RouterLink } from 'vue-router';
+import { helper } from '@/helper/helper';
+import { computed } from 'vue';
 
 const store = useStore();
 const emit = defineEmits(['removeTheme']);
+
+const isAdmin = computed(() => store.getters.isAdmin);
+const isOwner = computed(() => store.getters.isOwner);
 
 const props = defineProps({
     theme: {
@@ -26,9 +31,13 @@ const props = defineProps({
 <template>
     <div :id="`theme_${props.theme.themeId}`" :ref="`theme_${props.theme.themeId}`">
         <div class="theme-header">
-            <RouterLink :to="`/chapters/${store.state.chapter.chapterId}/${props.theme.themeId}`">
-                {{ props.theme.themeTitle }}
-            </RouterLink>
+            <div>
+                <RouterLink :class="!useShortMode && `disabled`" :to="`/chapters/${store.state.chapter.chapterId}/${props.theme.themeId}`" :disabled="true">
+                    {{ props.theme.themeTitle }}
+                </RouterLink>
+                <Button v-if="!props.useShortMode && (isAdmin || isOwner)" rounded text icon="pi pi-pencil" severity="contrast"/>
+            </div>
+            <span v-if="!useShortMode" class="date">{{ helper.getDateString(props.theme.dateCreated) }}</span>
 
             <Button v-if="useDeleteButtons && (store.getters.isAdmin || store.getters.isOwner)" icon="pi pi-times" text severity="danger"
                 title="Удалить раздел" rounded @click="() => emit('removeTheme', props.theme.themeId)"></Button>
@@ -50,8 +59,21 @@ const props = defineProps({
 }
 
 .theme-header a {
+    text-decoration: none;
     margin-left: 5px;
     color:  var(--THEME-HEADER-COLOR);
+}
+
+.theme-header a:hover {
+    text-decoration: underline;
+}
+
+.disabled {
+    pointer-events: none;
+}
+
+.disabled:hover {
+    text-decoration: none;
 }
 
 .theme-content {
@@ -62,6 +84,10 @@ const props = defineProps({
 .theme-content:deep(img) {
     max-width: 1000px;
     height: auto;
+}
+
+.date {
+    font-size: small;
 }
 
 @media (max-width: 1500px) {

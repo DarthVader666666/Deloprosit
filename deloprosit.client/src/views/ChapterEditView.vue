@@ -28,7 +28,7 @@ const newTheme = ref({
 const isFormActive = ref(false);
 
 async function removeTheme(themeId) {
-    if(!window.confirm('Выуверены, что хотите удалить тему?')) {
+    if(!window.confirm('Вы уверены, что хотите удалить тему?')) {
         return;
     }
 
@@ -172,7 +172,7 @@ async function updateChapter(updatedChapter) {
             </div>
         </div>                
     </div>
-    <ThemeList v-if="!isFormActive" @removeTheme="removeTheme" :themes="chapter.themes" :useDeleteButtons="true" :useShortMode="true"></ThemeList>
+    <ThemeList v-if="!isFormActive" :removeTheme="removeTheme" :themes="chapter.themes"></ThemeList>
 </div>
 
 </template>

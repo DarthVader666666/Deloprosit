@@ -11,13 +11,8 @@ const props = defineProps({
         typeof: Array,
         default: []
     },
-    useDeleteButtons: {
-        typeof: Boolean,
-        default: false
-    },
-    useShortMode: {
-        typeof: Boolean,
-        default: false
+    removeTheme: {
+        typeof: Function
     }
 });
 
@@ -27,10 +22,11 @@ const themes = computed(() => props.themes.length ? props.themes : downloadedThe
 
 <template>
 <div class="theme">
-    <ThemeComponent v-for="(theme, index) in themes" :key="index" 
+    <ThemeComponent v-for="(theme, index) in themes" :key="index" @removeTheme="props.removeTheme"
         :theme="theme" 
-        :useDeleteButtons="props.useDeleteButtons" 
-        :useShortMode="useShortMode">
+        :useDeleteButtons="true" 
+        :useShortMode="true"
+        >
     </ThemeComponent>
 </div>
 </template>
