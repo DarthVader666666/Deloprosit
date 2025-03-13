@@ -86,5 +86,24 @@ namespace Deloprosit.Server.Controllers
 
             return Ok();
         }
+
+        [HttpPut]
+        [Route("[action]")]
+        [Authorize(Roles = "Owner, Admin")]
+        public async Task<IActionResult> Update([FromBody] ThemeUpdateModel themeUpdateModel)
+        {
+            var theme = _mapper.Map<Theme>(themeUpdateModel);
+
+            try
+            {
+                await _themeRepository.UpdateAsync(theme);
+            }
+            catch (SqlException)
+            {
+                return Problem(statusCode: 500, detail: "Ошибка базы данных");
+            }
+
+            return Ok();
+        }
     }
 }

@@ -3,6 +3,7 @@ import HomeView from "@/views/HomeView.vue";
 import ChapterCreateView from "@/views/ChapterCreateView.vue";
 import ChapterDetailsView from "@/views/ChapterDetailsView.vue";
 import ChapterEditView from "@/views/ChapterEditView.vue";
+import ThemeEditView from "@/views/ThemeEditView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import store from '@/vuex/store.js';
 
@@ -38,6 +39,11 @@ const router = createRouter({
             path: '/:catchAll(.*)', // any resource which doesn't exist
             name: 'home',
             component: HomeView
+        },
+        {
+            path: '/themes/:themeId/edit',
+            name: 'edit-theme',
+            component: ThemeEditView        
         }
     ]
 });
@@ -52,6 +58,11 @@ router.afterEach(async (to) => {
     }
     else {
         store.commit('setShowChapterList', true);
+        store.commit('setTheme', null);
+    }
+
+    if(to.name === 'edit-theme') {
+        await store.dispatch('downloadTheme', to.params['themeId']);
     }
 
     if(to.name === 'edit-chapter') {

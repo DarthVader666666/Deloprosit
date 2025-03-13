@@ -1,11 +1,12 @@
 <script setup>
 import { useStore } from 'vuex';
 import Button from 'primevue/button';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 import { helper } from '@/helper/helper';
 import { computed } from 'vue';
 
 const store = useStore();
+const router = useRouter();
 const emit = defineEmits(['removeTheme']);
 
 const isAdmin = computed(() => store.getters.isAdmin);
@@ -35,7 +36,8 @@ const props = defineProps({
                 <RouterLink :class="!useShortMode && `disabled`" :to="`/chapters/${store.state.chapter.chapterId}/${props.theme.themeId}`" :disabled="true">
                     {{ props.theme.themeTitle }}
                 </RouterLink>
-                <Button v-if="!props.useShortMode && (isAdmin || isOwner)" rounded text icon="pi pi-pencil" severity="contrast"/>
+                <Button v-if="!props.useShortMode && (isAdmin || isOwner)" rounded text icon="pi pi-pencil" severity="contrast" 
+                    title="Редактировать" @click="router.push(`/themes/${theme.themeId}/edit`)"/>
             </div>
             <span v-if="!useShortMode" class="date">{{ helper.getDateString(props.theme.dateCreated) }}</span>
 
@@ -101,6 +103,10 @@ const props = defineProps({
     .theme-content:deep(img) {
         max-width: 300px;
         height: auto;
+    }
+
+    .theme-header span {
+        display: none;
     }
 }
 

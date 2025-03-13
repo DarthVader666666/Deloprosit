@@ -170,7 +170,7 @@ async function updateChapter(updatedChapter) {
                     <Editor v-model.content="newTheme.content" editorStyle="height: 650px"/>
                 </Form>
             </div>
-        </div>                
+        </div>
     </div>
     <ThemeList v-if="!isFormActive" :removeTheme="removeTheme" :themes="chapter.themes"></ThemeList>
 </div>

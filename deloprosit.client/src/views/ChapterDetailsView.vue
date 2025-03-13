@@ -4,6 +4,7 @@ import { computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
+import { helper } from '@/helper/helper';
 
 const store = useStore();
 const router = useRouter();
@@ -25,6 +26,7 @@ const theme = computed(() => store.getters.getTheme);
                 <Button v-if="isAdmin || isOwner" text rounded severity="contrast" icon="pi pi-pen-to-square" title="Редактировать" 
                     @click="router.push(`/chapters/${chapter.chapterId}/edit`)"/>
             </h3>
+            <span>{{ helper.getDateString(chapter.dateCreated) }}</span>
         </div>
         <hr/>    
     </div>
@@ -45,6 +47,7 @@ const theme = computed(() => store.getters.getTheme);
     flex-direction: row;
     padding-right: 15px;
     align-items: center;
+    justify-content: space-between;;
 }
 
 .title input {
@@ -53,6 +56,10 @@ const theme = computed(() => store.getters.getTheme);
     font-size: 15px;
     font-weight: bold;
     width: 66%;
+}
+
+.title span {
+    font-size: small;
 }
 
 .delete-button {
@@ -64,6 +71,12 @@ const theme = computed(() => store.getters.getTheme);
     margin: 10px 0 10px 0;
     float: right;
     width: 90px;
+}
+
+@media (max-width: 1200px) {
+    .title span {
+        display: none;
+    }
 }
 
 </style>
