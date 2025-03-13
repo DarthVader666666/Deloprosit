@@ -1,5 +1,5 @@
 <script setup>
-import ThemeList from '@/components/ThemeList.vue';
+import ThemeComponent from '@/components/ThemeComponent.vue';
 import { computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
@@ -11,6 +11,7 @@ const router = useRouter();
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const chapter = computed(() => store.getters.getChapter);
+const theme = computed(() => store.getters.getTheme);
 
 </script>
 
@@ -19,7 +20,7 @@ const chapter = computed(() => store.getters.getChapter);
     <div v-if="chapter">
         <div class="title">
             <h3>
-                <Button text rounded severity="contrast" icon="pi pi-home" title="На главную" @click="router.push('/')"/>
+                <Button text rounded severity="contrast" icon="pi pi-home" title="На главную" @click.prevent="() => router.push('/')"/>
                 {{chapter.chapterTitle}}
                 <Button v-if="isAdmin || isOwner" text rounded severity="contrast" icon="pi pi-pen-to-square" title="Редактировать" 
                     @click="router.push(`/chapters/${chapter.chapterId}/edit`)"/>
@@ -27,7 +28,7 @@ const chapter = computed(() => store.getters.getChapter);
         </div>
         <hr/>    
     </div>
-    <ThemeList :themes="chapter ? chapter.themes : []"></ThemeList>
+    <ThemeComponent v-if="theme" :theme="theme"></ThemeComponent>
 </div>
 
 </template>

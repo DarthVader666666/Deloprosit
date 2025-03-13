@@ -13,7 +13,10 @@ import Aura from '@primevue/themes/aura'
 createApp(App)
 .use(PrimeVue, {
     theme: {
-        preset: Aura
+        preset: Aura,
+        options: {
+             darkModeSelector: '.fake-dark-selector'
+        }
     }
 })
 .use(VueCookies)

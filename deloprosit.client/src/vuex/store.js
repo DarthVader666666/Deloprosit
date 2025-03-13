@@ -1,6 +1,5 @@
 import { createStore } from "vuex";
 import axios from "axios";
-import router from "@/router/router";
 
 const store = createStore({
     state: {
@@ -10,6 +9,7 @@ const store = createStore({
         nickname: null,
         chapter: null,
         chapters: [],
+        theme: null,
         themes: [],
         showSearchBar: true,
         title: null,
@@ -29,6 +29,9 @@ const store = createStore({
         },
         getChapters(state) {
             return state.chapters;
+        },
+        getTheme(state) {
+            return state.theme;
         },
         getThemes(state) {
             return state.themes;
@@ -70,14 +73,14 @@ const store = createStore({
         setChapter(state, chapter) {            
             state.chapter = chapter;
         },
+        setTheme(state, theme) {
+            state.theme = theme;
+        },
         setThemes(state, themes) {
             state.themes = themes;
         },
         setShowChapterList(state, value) {
             state.showChapterList = value;
-        },
-        redirectToTheme(state, themeId) {            
-            router.push(`/chapters/${state.chapter.chapterId}/${themeId}`);
         }
     },
     actions: {
@@ -90,6 +93,16 @@ const store = createStore({
             const chapter = (await axios.get(url)).data;
             commit('setChapter', chapter);
             commit('setThemes', chapter.themes);
+        },
+        async downloadTheme({commit, state}, themeId ) {
+            if (themeId) {
+                const url = `${state.serverUrl}/themes/get/${themeId}`;
+                const theme = (await axios.get(url)).data;
+                commit('setTheme', theme);
+            }
+            else {                
+                commit('setTheme', state.chapter.themes[0]);
+            }
         }
     }
 });

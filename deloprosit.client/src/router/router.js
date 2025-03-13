@@ -45,8 +45,10 @@ const router = createRouter({
 router.afterEach(async (to) => {
     if(to.name === 'chapter-details') {
         await store.dispatch('downloadChapter', to.params['chapterId']);
+        await store.dispatch('downloadTheme', to.params['themeId']);
         store.commit('renderSearchBar');
         store.commit('setShowChapterList', false);
+        window.scrollTo(0, 0);
     }
     else {
         store.commit('setShowChapterList', true);

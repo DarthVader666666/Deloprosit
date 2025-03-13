@@ -38,15 +38,18 @@ export const helper = {
         return store.state.environment === 'development' ? '/src/assets/images/' + imagePath : '/' + imagePath
     },
     scrollToTheme(themeId) {
-        var links = document.getElementsByClassName('link active');
+        if(themeId) {
+            var links = document.getElementsByClassName('link active');
 
-        for (let item of links) {
-            item.classList.remove('active');
-        }
-    
-        document.getElementById(`listItem_${themeId}`).classList.add('active');
+            for (let item of links) {
+                item.classList.remove('active');
+            }
         
-        var top = document.getElementById(`theme_${themeId}`).offsetTop;
-        window.scrollTo(0, top);
+            document.getElementById(`listItem_${themeId}`).classList.add('active');
+        }
+        
+        
+        // var top = document.getElementById(`theme_${themeId}`).offsetTop;
+        // window.scrollTo(0, top);
     }
 }

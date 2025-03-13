@@ -3,7 +3,6 @@ import { useStore } from 'vuex';
 import { computed } from 'vue';
 import { useRouter, RouterLink } from 'vue-router';
 import Button from 'primevue/button';
-import { helper } from '@/helper/helper';
 
 const store = useStore();
 const router = useRouter();
@@ -12,7 +11,20 @@ const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const chapters = computed(() => store.getters.getChapters);
 const chapter = computed(() => store.getters.getChapter);
+
 const showChapterList = computed(() => store.getters.getShowChapterList);
+
+function handleThemeClick(themeId) {
+    var links = document.getElementsByClassName('link active');
+
+    for (let item of links) {
+        item.classList.remove('active');
+    }
+
+    document.getElementById(`listItem_${themeId}`).classList.add('active');
+
+    router.push(`/chapters/${chapter.value.chapterId}/${themeId}`);
+}
 
 </script>
 <template>
@@ -25,7 +37,7 @@ const showChapterList = computed(() => store.getters.getShowChapterList);
                 </Button>
             </div>
             <hr/>
-            <div class="link" v-for="(chapter, index) in chapters" :key="index" @click="router.push(`/chapters/${chapter.chapterId}`)">
+            <div class="link" v-for="(chapter, index) in chapters" :key="index" @click.prevent="() => router.push(`/chapters/${chapter.chapterId}`)">
                 <i class="pi pi-bookmark-fill"></i>{{ chapter.chapterTitle }}
            </div>
         </div>
@@ -34,7 +46,7 @@ const showChapterList = computed(() => store.getters.getShowChapterList);
                 <strong>{{ chapter.chapterTitle }}:</strong>
             </div>
             <hr/>
-            <div class="link" v-for="(theme, index) in chapter.themes" :key="index" @click="helper.scrollToTheme(theme.themeId)" :id="`listItem_${theme.themeId}`">
+            <div class='link' v-for="(theme, index) in chapter.themes" :key="index" @click="handleThemeClick(theme.themeId)" :id="`listItem_${theme.themeId}`">
                 <i class="pi pi-bookmark"></i>{{ theme.themeTitle }}
            </div>
         </div>

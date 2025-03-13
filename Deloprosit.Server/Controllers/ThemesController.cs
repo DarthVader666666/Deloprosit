@@ -27,6 +27,15 @@ namespace Deloprosit.Server.Controllers
         }
 
         [HttpGet]
+        [Route("[action]/{themeId:int?}")]
+        public async Task<IActionResult> Get(int? themeId)
+        {
+            var theme = await _themeRepository.GetAsync(themeId);
+
+            return Ok(theme);
+        }
+
+        [HttpGet]
         [Route("[action]")]
         public async Task<IActionResult> GetList([FromQuery] int? chapterId = null)
         {
