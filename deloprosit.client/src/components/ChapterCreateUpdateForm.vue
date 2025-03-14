@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
 import Button from 'primevue/button';
@@ -57,10 +57,6 @@ onMounted(() => {
     }
 })
 
-const isDisabled = computed(() => {    
-    return chapter.chapterTitle === null ||  chapter.chapterTitle.length === 0;
-});
-
 function handleCancel() {
     const chapterId = chapter.chapterId;
 
@@ -81,17 +77,21 @@ function handleSave(chapter) {
     }
 }
 
+function handleInput() {
+    document.getElementById('save-button').disabled = false;
+};
+
 </script>
 
 <template>
     <div>
         <form class="form-container" @submit.prevent="handleSave(chapter)">
             <div class="inputs">
-                <InputText v-model="chapter.chapterTitle" type="text" :required="!isDisabled" placeholder="Заголовок раздела"/>
-                <Select v-model="chapter.imagePath" :options="store.state.imagePaths" placeholder="Путь к картинке"/>
+                <InputText v-model="chapter.chapterTitle" @input="handleInput" type="text" required placeholder="Заголовок раздела"/>
+                <Select v-model="chapter.imagePath" @change="handleInput" :options="store.state.imagePaths" placeholder="Путь к картинке"/>
             </div>
             <div class="buttons">
-                <Button type="submit" :disabled="isDisabled" raised severity="secondary" label="Сохранить"/>
+                <Button type="submit" disabled raised severity="secondary" label="Сохранить" id="save-button"/>
                 <Button type="button" @click="handleCancel" raised severity="contrast" label="Отменить"/>
             </div>        
         </form>

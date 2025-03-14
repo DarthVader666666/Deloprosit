@@ -22,11 +22,11 @@ namespace Deloprosit.Server.Controllers
         public IActionResult GetList()
         {
             var documentResponseModels = new DirectoryInfo(_webHostEnvironment.WebRootPath).GetFiles()
-                .Select(x => 
-                    new DocumentResponseModel 
+                .Select(x =>
+                    new DocumentResponseModel
                     {
                         Name = x.Name,
-                        Path = x.FullName
+                        Path = "https://deloprosit.azurewebsites.net/",
                     }
                 );
 

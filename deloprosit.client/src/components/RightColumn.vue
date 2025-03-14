@@ -3,14 +3,25 @@ import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
 import { computed } from 'vue';
 import { useStore } from 'vuex';
+import axios from 'axios';
 
 const store = useStore();
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const documents = computed(() => store.getters.getDocuments);
 
-function download(path) {
-    window.open(path);
+function download(url, label) {
+    console.log(url)
+    console.log(label)
+    axios.get(url, { responseType: 'blob' })
+      .then(response => {
+        const blob = new Blob([response.data], { type: 'image/png' })
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(blob)
+        link.download = label
+        link.click()
+        URL.revokeObjectURL(link.href)
+      }).catch(console.error)
 }
 
 </script>
@@ -24,7 +35,7 @@ function download(path) {
                 </Button>
             </div>
             <hr/>
-            <div class="link" v-for="(document, index) in documents" :key="index" @click="download(document.path)">
+            <div class="link" v-for="(document, index) in documents" :key="index" @click="download(document.path, document.name)">
                 <i class="pi pi-file"></i>
                 {{ document.name }}
                 <Button v-if="isAdmin || isOwner" severity="danger" text rounded><i class="pi pi-times"></i></Button>
