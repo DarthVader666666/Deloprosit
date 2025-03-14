@@ -21,7 +21,7 @@ namespace Deloprosit.Server.Controllers
         [Route("[action]")]
         public IActionResult GetList()
         {
-            var documentResponseModels = new DirectoryInfo(_webHostEnvironment.WebRootPath).GetFiles()
+            var documentResponseModels = new DirectoryInfo(_webHostEnvironment.WebRootPath + "\\docs").GetFiles()
                 .Select(x =>
                     new DocumentResponseModel
                     {
