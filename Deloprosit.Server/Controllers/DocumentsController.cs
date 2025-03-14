@@ -26,7 +26,7 @@ namespace Deloprosit.Server.Controllers
                     new DocumentResponseModel
                     {
                         Name = x.Name,
-                        Path = "https://deloprosit.azurewebsites.net/",
+                        Path = "https://deloprosit.azurewebsites.net/docs/",
                     }
                 );
 

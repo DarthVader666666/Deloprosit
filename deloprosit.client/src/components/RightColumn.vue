@@ -3,7 +3,6 @@ import { RouterLink } from 'vue-router';
 import Button from 'primevue/button';
 import { computed } from 'vue';
 import { useStore } from 'vuex';
-import axios from 'axios';
 
 const store = useStore();
 const isAdmin = computed(() => store.getters.isAdmin);
@@ -11,8 +10,6 @@ const isOwner = computed(() => store.getters.isOwner);
 const documents = computed(() => store.getters.getDocuments);
 
 function download(url, label) {
-    console.log(url)
-    console.log(label)
     // axios.get(url, { responseType: 'blob' })
     //   .then(response => {
     //     const blob = new Blob([response.data], { type: 'image/png' })
@@ -22,8 +19,6 @@ function download(url, label) {
     //     link.click()
     //     URL.revokeObjectURL(link.href)
     //   }).catch(console.error)
-
-    console.log(url + label)
     window.open(url + label);
 }
 
