@@ -24,7 +24,7 @@ const handleLogin = () => {
     const emailValue = helper.validateEmail(loginRequestForm.value.nicknameOrEmail) ? loginRequestForm.value.nicknameOrEmail : null;
 
     axios.defaults.withCredentials = true;
-    axios.post(`${store.getters.serverUrl}/authentication/login?nickname=${nicknameValue}&remember=${remember.value}`, null,
+    axios.post(`${store.getters.serverUrl}/authentication/login?nickname=${nicknameValue.trimEnd()}&remember=${remember.value}`, null,
     {
         headers: 
         {

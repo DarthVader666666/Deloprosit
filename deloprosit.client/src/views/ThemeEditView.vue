@@ -16,6 +16,10 @@ const router = useRouter();
 const chapter = computed(() => store.getters.getChapter);
 const theme = computed(() => store.getters.getTheme);
 
+function handleInput() {
+    document.getElementById('save-button').disabled = false;
+};
+
 async function updateTheme() {
     const url = store.state.serverUrl;
 
@@ -51,13 +55,13 @@ function handleCancel() {
 <div v-if="theme" class="theme-edit-container">
     <Form @submit="updateTheme" class="edit-theme-form" id="form">
         <div class="upper-part">
-            <InputText v-model="theme.themeTitle" type="text" placeholder="Заголовок темы" required/>
+            <InputText v-model="theme.themeTitle" type="text" placeholder="Заголовок темы" required @input="handleInput"/>
             <div class="buttons">
-                <Button type="submit" raised severity="secondary" label="Сохранить"/>
+                <Button type="submit" raised severity="secondary" label="Сохранить" id="save-button" disabled/>
                 <Button type="button" @click="handleCancel" raised severity="contrast" label="Отменить"/>
             </div>
         </div>
-        <Editor v-model.content="theme.content" editorStyle="height: 650px"/>
+        <Editor v-model.content="theme.content" editorStyle="height: 650px" @input="handleInput"/>
     </Form>
 </div>
 

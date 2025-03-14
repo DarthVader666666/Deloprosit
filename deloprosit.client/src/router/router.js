@@ -83,6 +83,7 @@ router.afterEach(async (to) => {
     }
 
     await store.dispatch('downloadChapters');
+    await store.dispatch('downloadDocuments');
 });
 
 export default router;

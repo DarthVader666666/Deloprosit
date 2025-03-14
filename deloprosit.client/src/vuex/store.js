@@ -11,6 +11,7 @@ const store = createStore({
         chapters: [],
         theme: null,
         themes: [],
+        documents: [],
         showSearchBar: true,
         title: null,
         imagePaths: 
@@ -35,6 +36,9 @@ const store = createStore({
         },
         getThemes(state) {
             return state.themes;
+        },
+        getDocuments(state) {
+            return state.documents;
         },
         serverUrl(state) {
             return state.serverUrl;
@@ -79,6 +83,9 @@ const store = createStore({
         setThemes(state, themes) {
             state.themes = themes;
         },
+        setDocuments(state, documents) {
+            state.documents = documents;
+        },
         setShowChapterList(state, value) {
             state.showChapterList = value;
         }
@@ -103,7 +110,11 @@ const store = createStore({
             else {                
                 commit('setTheme', state.chapter.themes[0]);
             }
-        }
+        },
+        async downloadDocuments({commit, state}) {
+            const documents = (await axios.get(`${state.serverUrl}/documents/getlist`)).data;
+            commit('setDocuments', documents);
+        },
     }
 });
 
