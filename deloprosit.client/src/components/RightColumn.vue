@@ -3,8 +3,11 @@ import FileUpload from 'primevue/fileupload';
 import Button from 'primevue/button';
 import { computed } from 'vue';
 import { useStore } from 'vuex';
+import { useToast } from 'vue-toastification';
+import axios from 'axios';
 
 const store = useStore();
+const toast = useToast();
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const documents = computed(() => store.getters.getDocuments);
@@ -22,6 +25,48 @@ function download(url, label) {
     window.open(url + label);
 }
 
+async function uploadFiles(event) {
+    const files = event.files;
+    let formData = new FormData();
+    files.forEach(file => formData.append("files", file));
+
+    await axios.post(`${store.state.serverUrl}/documents/upload`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+    .then( async response => {
+        if(response.status === 200) {
+            toast.success('Файл успешно загружен');
+            await store.dispatch('downloadDocuments');
+        }
+    })
+    .catch(error => {
+        if(error.response.status) {
+            toast.error("Ошибка загрузки файла")
+        }
+    })
+}
+
+async function deleteFile(fileName) {
+    if(!window.confirm('Файл будет удален, вы уверены')) {
+        return;
+    }
+
+    await axios.delete(`${store.state.serverUrl}/documents/delete/${fileName}`, null)
+    .then( async response => {
+        if(response.status === 200) {
+            toast.success('Файл успешно удален');
+            await store.dispatch('downloadDocuments');
+        }
+    })
+    .catch(error => {
+        if(error.response.status) {
+            toast.error("Ошибка при удалении файла")
+        }
+    })
+}
+
 </script>
 <template>
     <div class="right-container">
@@ -29,10 +74,9 @@ function download(url, label) {
             <div class="items-header">
                 <strong>Документы:</strong>
 
-                <FileUpload class="file-upload"
+                <FileUpload v-if="isOwner || isAdmin" class="file-upload"
                     mode="basic" 
                     name="files"
-                    :url="`${store.state.serverUrl}/documents/upload`"
                     :maxFileSize="20000000"
                     chooseLabel="Выгруз."
                     chooseIcon="pi pi-upload"
@@ -40,16 +84,20 @@ function download(url, label) {
                     :chooseButtonProps="
                     {
                         'severity': 'contrast',
-                        'text': 'true',
-                        'raised': 'true'
+                        'text': true,
+                        'raised': true
                     }"
+                    customUpload
+                    @select="uploadFiles"
                 />
             </div>
             <hr/>
-            <div class="link" v-for="(document, index) in documents" :key="index" @click="download(document.path, document.name)">
-                <i class="pi pi-file"></i>
-                {{ document.name }}
-                <Button v-if="isAdmin || isOwner" severity="danger" text rounded><i class="pi pi-times"></i></Button>
+            <div class="link" v-for="(document, index) in documents" :key="index">
+                <span @click.prevent="download(document.path, document.name)">
+                    <i class="pi pi-file"></i>
+                    {{ document.name }} 
+                </span>                
+                <Button v-if="isAdmin || isOwner" @click.prevent="deleteFile(document.name)" severity="danger" text rounded><i class="pi pi-times"></i></Button>
            </div>
         </div>
     </div>        
@@ -91,6 +139,7 @@ function download(url, label) {
         font-size: small;
         padding: 3px 0 3px 0;
         margin: 3px 0 0 0;
+        word-break: break-all;
     }
 
     .link i {
@@ -110,7 +159,7 @@ function download(url, label) {
         padding-left: 3px;
     }
 
-    .link:hover {
+    .link span:hover {
         background: var(--SELECTED-LINK-BCKGND-CLR);
         cursor: pointer;
         color:white;

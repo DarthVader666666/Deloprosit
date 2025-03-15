@@ -85,6 +85,7 @@ function handleThemeClick(themeId) {
     .link i {
         font-size: small;
         margin-right: 3px;
+        word-break: break-all;
     }
 
     .link:hover {
