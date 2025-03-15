@@ -137,8 +137,7 @@ async function deleteFile(fileName) {
         text-decoration: none;
         color: black;
         font-size: small;
-        padding: 3px 0 3px 0;
-        margin: 3px 0 0 0;
+
         word-break: break-all;
     }
 
@@ -157,6 +156,11 @@ async function deleteFile(fileName) {
     .link button i {
         font-size: xx-small;
         padding-left: 3px;
+    }
+
+    .link span {
+        padding: 3px;
+        margin: 3px 0 0 0;
     }
 
     .link span:hover {

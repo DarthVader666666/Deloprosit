@@ -15,7 +15,7 @@ namespace Deloprosit.Server.Controllers
 
         public DocumentsController(IWebHostEnvironment webHostEnvironment)
         {
-            webRootPath = webHostEnvironment.WebRootPath + "\\docs\\";
+            webRootPath = webHostEnvironment.WebRootPath + "\\docs";
         }
 
         [HttpGet]
@@ -41,7 +41,7 @@ namespace Deloprosit.Server.Controllers
         {
             try
             {
-                System.IO.File.Delete(webRootPath + fileName);
+                System.IO.File.Delete(webRootPath + "\\" + fileName);
             }
             catch
             {
