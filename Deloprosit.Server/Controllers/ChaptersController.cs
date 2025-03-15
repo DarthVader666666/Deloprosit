@@ -66,25 +66,17 @@ namespace Deloprosit.Server.Controllers
 
 
         [HttpDelete]
-        [Route("[action]")]
+        [Route("[action]/{chapterId:int}")]
         [Authorize(Roles = "Admin, Owner")]
-        public async Task<IActionResult> DeleteList([FromQuery] int[] chapterIds)
+        public async Task<IActionResult> Delete(int chapterId)
         {
-            if (chapterIds == null || !chapterIds.Any())
-            {
-                return BadRequest(new { errorText = "Нет выбранных разделов" });
-            }
-
             try
             {
-                foreach (var chapterId in chapterIds ?? [])
-                {
-                    await _chapterRepository.DeleteAsync(chapterId);
-                }
+                await _chapterRepository.DeleteAsync(chapterId);
             }
             catch (SqlException)
             {
-                return Problem(statusCode: 500);
+                return StatusCode(500, new { message = "" });
             }
 
             return Ok();

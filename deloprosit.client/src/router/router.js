@@ -63,6 +63,7 @@ router.afterEach(async (to) => {
 
     if(to.name === 'edit-theme') {
         await store.dispatch('downloadTheme', to.params['themeId']);
+        store.commit('setTitle', 'Редактирование темы');
     }
 
     if(to.name === 'edit-chapter') {

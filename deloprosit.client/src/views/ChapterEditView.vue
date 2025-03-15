@@ -114,6 +114,34 @@ function clearNewTheme() {
     newTheme.value.content = null;
 }
 
+function handleDeleteChapter() {
+    if(!window.confirm('Этот раздел и его темы будут удалены. Вы уверены?')) {
+        return;
+    }
+
+    const url = `${store.state.serverUrl}/chapters/delete/` + chapter.value.chapterId;
+
+    axios.delete(url, null)
+        .then(async response => {
+            const status = response.status
+            if(status === 200) {
+                toast.success('Раздел успешно удален');
+                await store.dispatch('downloadChapters');
+                router.push(`/`);
+            }
+        })
+        .catch(error => {
+            const response =  error.response
+            if(response.status === 500) {
+                toast.error('Ошибка базы данных')
+            }
+            
+            if(response.status === 400) {
+                toast.error(response.data.errorText);
+            }
+        });
+}
+
 async function updateChapter(updatedChapter) {
     chapter.value.chapterTitle = updatedChapter.chapterTitle;
     chapter.value.imagePath = updatedChapter.imagePath;
@@ -173,6 +201,12 @@ async function updateChapter(updatedChapter) {
         </div>
     </div>
     <ThemeList v-if="!isFormActive" :removeTheme="removeTheme" :themes="chapter.themes"></ThemeList>
+    <div class="delete-button">
+        <Button v-if="!isFormActive && (isAdmin || isOwner)" severity="danger" @click="handleDeleteChapter">
+            <i class="pi pi-trash"></i>
+            <span>Удалить</span>
+        </Button>
+    </div>        
 </div>
 
 </template>
@@ -180,6 +214,7 @@ async function updateChapter(updatedChapter) {
 <style scoped>
 
 .edit-chapter-container {
+    position: relative;
     display: flex;
     flex-direction: column;
 }
@@ -223,6 +258,13 @@ async function updateChapter(updatedChapter) {
 .collapsed {
     height: 300px;
     transform: translateY(-100%);
+}
+
+.delete-button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 0 20px 20px 0;
 }
 
 @keyframes slide-in {
