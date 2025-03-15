@@ -10,18 +10,18 @@ namespace Deloprosit.Server.Controllers
     [ApiController]
     public class DocumentsController : ControllerBase
     {
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly string? webRootPath;
 
         public DocumentsController(IWebHostEnvironment webHostEnvironment)
         {
-            _webHostEnvironment = webHostEnvironment;
+            webRootPath = webHostEnvironment.WebRootPath + "\\docs";
         }
 
         [HttpGet]
         [Route("[action]")]
         public IActionResult GetList()
         {
-            var documentResponseModels = new DirectoryInfo(_webHostEnvironment.WebRootPath + "\\docs").GetFiles()
+            var documentResponseModels = new DirectoryInfo(webRootPath).GetFiles()
                 .Select(x =>
                     new DocumentResponseModel
                     {
@@ -31,6 +31,23 @@ namespace Deloprosit.Server.Controllers
                 );
 
             return Ok(documentResponseModels);
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        public async Task<IActionResult> Upload(IEnumerable<IFormFile> files)
+        {
+            foreach (IFormFile file in files)
+            {
+                if (file.Length > 0)
+                {
+                    string filePath = Path.Combine(webRootPath, file.FileName);
+                    using Stream fileStream = new FileStream(filePath, FileMode.Create);
+                    await file.CopyToAsync(fileStream);
+                }
+            }
+
+            return Ok();
         }
     }
 }

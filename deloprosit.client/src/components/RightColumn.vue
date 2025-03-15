@@ -1,5 +1,5 @@
 <script setup>
-import { RouterLink } from 'vue-router';
+import FileUpload from 'primevue/fileupload';
 import Button from 'primevue/button';
 import { computed } from 'vue';
 import { useStore } from 'vuex';
@@ -28,9 +28,22 @@ function download(url, label) {
         <div class="items">
             <div class="items-header">
                 <strong>Документы:</strong>
-                <Button v-if="isAdmin || isOwner" text raised severity="contrast">
-                    <RouterLink to="/documents/settings"><i class="pi pi-upload"></i> <span>Загрузить</span> </RouterLink>
-                </Button>
+
+                <FileUpload class="file-upload"
+                    mode="basic" 
+                    name="files"
+                    :url="`${store.state.serverUrl}/documents/upload`"
+                    :maxFileSize="20000000"
+                    chooseLabel="Выгруз."
+                    chooseIcon="pi pi-upload"
+                    :auto="true"
+                    :chooseButtonProps="
+                    {
+                        'severity': 'contrast',
+                        'text': 'true',
+                        'raised': 'true'
+                    }"
+                />
             </div>
             <hr/>
             <div class="link" v-for="(document, index) in documents" :key="index" @click="download(document.path, document.name)">
@@ -43,6 +56,10 @@ function download(url, label) {
 </template>
 
 <style scoped>
+    .file-upload button {
+        padding: 0;
+    }
+
     .items {        
         text-align: start;
         padding: 1rem;
