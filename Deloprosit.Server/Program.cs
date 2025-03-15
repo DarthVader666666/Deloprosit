@@ -108,6 +108,8 @@ builder.Services.ConfigureAutomapper();
 var provider = builder?.Services?.BuildServiceProvider();
 using var scope = provider?.CreateScope();
 await MigrateSeedDatabase(scope, jsonFileCreated);
+CreateFolders();
+
 
 var app = builder.Build();
 
@@ -172,4 +174,14 @@ async Task MigrateSeedDatabase(IServiceScope? scope, bool jsonFileCreated)
 
 async Task SeedJsonDb(DataStore dataStore, IConfiguration configuration)
 {
+}
+
+void CreateFolders()
+{
+    var path = $"{Directory.GetCurrentDirectory()}\\wwwroot\\docs";
+
+    if (!Directory.Exists(path))
+    {
+        Directory.CreateDirectory(path);
+    }
 }
