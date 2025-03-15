@@ -22,7 +22,11 @@ namespace Deloprosit.Server.Controllers
         [Route("[action]")]
         public IActionResult GetList()
         {
-            var documentResponseModels = new DirectoryInfo(webRootPath ?? throw new NullReferenceException("Не задан путь к фалу")).GetFiles()
+            var documentResponseModels = Enumerable.Empty<DocumentResponseModel>();
+
+            try
+            {
+                documentResponseModels = new DirectoryInfo(webRootPath ?? throw new NullReferenceException("Не задан путь к фалу")).GetFiles()
                 .Select(x =>
                     new DocumentResponseModel
                     {
@@ -30,6 +34,12 @@ namespace Deloprosit.Server.Controllers
                         Path = "https://deloprosit.azurewebsites.net/docs/",
                     }
                 );
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+            
 
             return Ok(documentResponseModels);
         }
@@ -41,7 +51,7 @@ namespace Deloprosit.Server.Controllers
         {
             try
             {
-                System.IO.File.Delete(webRootPath + "\\" + fileName);
+                System.IO.File.Delete(webRootPath + $"\\{fileName}");
             }
             catch
             {

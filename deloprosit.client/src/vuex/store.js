@@ -1,5 +1,8 @@
 import { createStore } from "vuex";
 import axios from "axios";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 const store = createStore({
     state: {
@@ -112,7 +115,14 @@ const store = createStore({
             }
         },
         async downloadDocuments({commit, state}) {
-            const documents = (await axios.get(`${state.serverUrl}/documents/getlist`)).data;
+            const documents = (await axios.get(`${state.serverUrl}/documents/getlist`)
+                .then(response => response.data)
+                .catch(error => {
+                    if(error.response.status === 500) {
+                        toast.error(error.response.data.message)
+                    }
+                }));
+
             commit('setDocuments', documents);
         },
     }
