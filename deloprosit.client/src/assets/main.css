@@ -17,7 +17,7 @@
   /* SHADOWS */
   --GLOW-BOX-SHADOW: rgba(158, 158, 158, 0.8) 0 0 10px 2px;
   --COMPONENT-BOX-SHADOW: 0 7px 15px -3px black;
-  --INPUT-BOX-SHADOW: 4px 3px 4px -1px black;
+  --INPUT-BOX-SHADOW: 0px 2px 3px -2px black;
   --PNG-IMAGE-SHADOW: 5px 5px 5px #222;
 
   /* GRADIENTS */
@@ -31,7 +31,7 @@
   --MAIN-COMPONENT-WIDTH: 85%;
   --APP-COMPONENT-WIDTH: 90%;
   --MAIN-COMPONENT-MIN-HEIGHT: 810px;
-  --HEADER-HEIGHT: 90px;
+  --HEADER-HEIGHT: 105px;
   --SEARCHBAR-HEIGHT: 60px;
   --TITLE-HEIGHT: 36px;
 }
@@ -134,24 +134,13 @@ body {
   min-height: 470px;
 }
 
-.login-inputs {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: end;
-}
-
-.login-inputs button {
-  height: 22px;
-}
-
 @media (max-width: 1500px) {
   #app {
     width: 100%;
   }
 }
 
-@media(max-width: 800px) {
+@media(max-width: 1100px) {
   .central-container {
     width: 100%;
     padding: 10px 0 0 0;
@@ -183,12 +172,5 @@ body {
 
   .create-form-container {
     width: 100%;
-  }
-
-  .login-inputs {
-    display: flex;
-    flex-direction: column;
-    align-items: end;
-    gap: 10px;
   }
 }

@@ -47,7 +47,7 @@ const chapters = computed(() => store.state.chapters);
 .chapter {
     padding: 10px;
     max-width: 130px;
-    max-height: 180px;
+    max-height: 150px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -91,7 +91,7 @@ const chapters = computed(() => store.state.chapters);
 
 @media(max-width: 800px) {
   .chapter img{
-    max-width: 90px;
+    max-width: 120px;
     max-height: auto;
   }
 

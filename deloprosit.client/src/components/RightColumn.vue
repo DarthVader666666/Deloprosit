@@ -74,20 +74,22 @@ async function deleteFile(fileName) {
             <div class="items-header">
                 <strong>Документы:</strong>
 
-                <FileUpload v-if="isOwner || isAdmin" class="file-upload"
+                <FileUpload v-if="isOwner || isAdmin"
                     mode="basic" 
                     name="files"
                     :maxFileSize="20000000"
-                    chooseLabel="Выгруз."
+                    chooseLabel=" "
                     chooseIcon="pi pi-upload"
+                    style="height: 30px; width: 40px; padding-left: 20px;"
                     :auto="true"
                     :chooseButtonProps="
                     {
-                        'severity': 'contrast',
-                        'text': true,
+                        'severity': 'secondary',
+                        'text': false,
                         'raised': true
                     }"
                     customUpload
+                    title="Выгрузить файл"
                     @select="uploadFiles"
                 />
             </div>
@@ -104,10 +106,6 @@ async function deleteFile(fileName) {
 </template>
 
 <style scoped>
-    .file-upload button {
-        padding: 0;
-    }
-
     .items {        
         text-align: start;
         padding: 1rem;

@@ -78,6 +78,7 @@ function handleCancel() {
 .upper-part {
     display: flex;
     flex-direction: row;
+    gap: 10px;
     justify-content: space-between;
 }
 
@@ -90,6 +91,10 @@ function handleCancel() {
     flex-direction: row;
     justify-content: end;
     gap: 10px;
+}
+
+.buttons button {
+    padding: 6px;
 }
 
 .edit-theme-form {

@@ -1,7 +1,7 @@
 <script setup>
 import { useStore } from 'vuex';
 import { computed } from 'vue';
-import { useRouter, RouterLink } from 'vue-router';
+import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 
 const store = useStore();
@@ -32,8 +32,8 @@ function handleThemeClick(themeId) {
         <div v-if="showChapterList" class="items">
             <div class="items-header">
                 <strong>Разделы:</strong>
-                <Button v-if="isAdmin || isOwner" text raised severity="contrast">
-                    <RouterLink to="/chapters/create"><i class="pi pi-folder-plus"></i> <span>Создать</span> </RouterLink>
+                <Button v-if="isAdmin || isOwner" raised severity="secondary" @click="router.push('/chapters/create')">
+                    <i class="pi pi-plus"></i> <span>Создать</span>
                 </Button>
             </div>
             <hr/>
@@ -100,8 +100,8 @@ function handleThemeClick(themeId) {
         color:white;
     }
 
-    @media (max-width: 1500px) {
-        .items-header a span {
+    @media (max-width: 1400px) {
+        .items-header button span {
             display: none;
         }
     }

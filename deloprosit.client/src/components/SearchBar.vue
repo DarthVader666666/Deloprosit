@@ -13,6 +13,7 @@ import InputText from 'primevue/inputtext';
 
 <style scoped>
     .search-bar {
+        position: relative;
         height: var(--SEARCHBAR-HEIGHT);
         flex-direction: row;
         text-align: center;
@@ -20,8 +21,9 @@ import InputText from 'primevue/inputtext';
         background-color: var(--COLUMNS-BCKGND-CLR);;
         margin-top: 0.5rem;
         margin-bottom: 0.5rem;
-        box-shadow: 0 7px 15px -3px black;
+        box-shadow: var(--COMPONENT-BOX-SHADOW);
         border-radius: 5px;
+        padding-right: 60px;
     }
 
     .search-bar label {
@@ -29,8 +31,9 @@ import InputText from 'primevue/inputtext';
     }
 
     .search-bar button {
-        box-shadow: var(--INPUT-BOX-SHADOW);
-        height: 38px;
+        position: absolute;
+        height: 36px;
+        bottom: 12px;
     }
 
     .search-bar button i {
@@ -45,7 +48,7 @@ import InputText from 'primevue/inputtext';
 
     @media (max-width: 800px) {
         .search-bar input{
-            width: 60%;
+            width: 70%;
         }
 
         .search-bar button span {

@@ -6,6 +6,8 @@ import { RouterLink, useRouter } from 'vue-router';
 import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
 import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Checkbox from 'primevue/checkbox';
 
 const loginRequestForm = ref({
     nicknameOrEmail: null,
@@ -107,24 +109,34 @@ const handleLogout = () => {
         <div v-if="nickname" class="message"><span>{{ nickname }}</span>
             <Button @click="handleLogout" severity="secondary" label="Выйти"/>
         </div>
-        <form v-else class="authentication-form" @submit.prevent="handleLogin">
-            <div class="login-inputs" @keydown.enter.prevent="handleLogin">
+
+
+        <div class="menu">
+            <div class="menu-options">
+                <RouterLink to="/register">Регистрация</RouterLink>   
+
+            </div>
+
+            <form class="authentication-form" @submit.prevent="handleLogin" @keydown.enter.prevent="handleLogin">
                 <div>
                     <label>Логин: </label>
-                    <input v-model="loginRequestForm.nicknameOrEmail" type="text" placeholder="Почта или никнэйм" required>
+                    <InputText v-model="loginRequestForm.nicknameOrEmail" type="text" placeholder="Почта или никнэйм" required/>
                 </div>
                 <div>
                     <label>Пароль: </label>
-                    <input v-model="loginRequestForm.password" type="password" placeholder="Пароль" required>
+                    <InputText v-model="loginRequestForm.password" type="password" placeholder="Пароль" required/>
                 </div>
-                <button type="submit">Войти</button>
-            </div>
-            <div class="login-anchors">
-                <RouterLink to="/register">Регистрация</RouterLink> | <a>Забыл(а) пароль</a> | 
-                <label for="remember-checkbox">Запомнить</label>
-                <input v-model="remember" type="checkbox" id="remember-checkbox">
-            </div>
-        </form>
+                <div class="bottom-part">
+                    <div class="remember">
+                        <label for="remember-checkbox">Запомнить</label>
+                        <Checkbox v-model="remember" binary size='small' id="remember-checkbox"/>
+                    </div>
+
+                    <Button type="submit" severity="secondary" icon="pi pi-arrow-circle-right" label="Войти" raised ></Button>
+                </div>
+            </form>
+        </div>
+
     </div>
 </template>
 
@@ -133,14 +145,25 @@ const handleLogout = () => {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      padding-top: 1rem;
-      padding-bottom: 1rem;
       background-image: var(--BCKGND-GRADIENT);
-      align-content: center;
       box-shadow: var(--COMPONENT-BOX-SHADOW);
       border-radius: 0 0 5px 5px;
       height: var(--HEADER-HEIGHT);
       font-size: small;
+      width: 100%;
+    }
+
+    .menu {
+        display: flex;
+        flex-direction: row;
+        justify-content: end;
+        
+    }
+
+    .menu-options {
+        display: flex;
+        flex-direction: row;
+        align-items: end;
     }
 
     .authentication-form {
@@ -148,36 +171,35 @@ const handleLogout = () => {
         flex-direction: column;
         justify-content: start;
         padding-right: 15px;
+        padding-top: 10px;
         max-width: 430px;
+        align-items: end;
         gap: 8px;
     }
 
-    .login-anchors {
-        align-content: center;
-        padding-top: 5px;
-        width: 289px;
-    }
-
-    .login-anchors a {
-        color: black;
-        text-decoration: none;
+    .authentication-form input[type="text"], input[type="password"] {
         font-size: small;
+        height: 22px;
     }
 
-    .login-anchors a:hover {
-        cursor: pointer;
-        color: var(--COLUMNS-BCKGND-CLR);;
+    .bottom-part {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
     }
 
-    .login-anchors input {
-        height: 15px;
-        width: 15px;
-        position:absolute;
-        margin-top:0px;
+    .bottom-part button {
+        font-size: small;
+        height: 24px;
+        padding: 5px;
+        margin-left: 22px;
     }
 
-    .login-anchors input, label {
-        cursor: pointer;
+    .remember {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
     }
 
     .message {
@@ -194,7 +216,6 @@ const handleLogout = () => {
     .logo {
         text-shadow: 3px 3px rgba(22, 22, 22, 0.651);
         height: 18px;
-        margin-top: -24px;
         margin-left: 10px;
         width: 10px;
     }
