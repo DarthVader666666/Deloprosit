@@ -1,13 +1,13 @@
 <script setup>
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import Checkbox from 'primevue/checkbox';
+import Menu from 'primevue/menu';
 
 const loginRequestForm = ref({
     nicknameOrEmail: null,
@@ -20,6 +20,42 @@ const router = useRouter();
 
 const nickname = computed(() => store.state.nickname);
 const remember = ref (false);
+const showLogin = ref(false);
+const header = ref(null)
+
+onMounted(() => {
+    window.addEventListener('click', closeLogin)
+})
+
+function anyChildren(event, element) {
+    if(element && element.children.length) {
+        if(event.target === element) {
+            return true;
+        }
+
+        for (let i = 0; i < element.children.length; i++) {
+            if(event.target === element.children[i]) {
+                return true;
+            }
+            else {
+                if(anyChildren(event, element.children[i])) {
+                    return true;
+                }
+            }
+        }        
+    }
+
+    return false;
+}
+
+const closeLogin = (event) => {
+    var isButton = anyChildren(event, document.getElementById('login-button'));
+    var isForm = anyChildren(event, document.getElementById('login-form'));
+
+    if (!isForm && !isButton) {
+        showLogin.value = false;
+    }
+};
 
 const handleLogin = () => {
     const nicknameValue = helper.validateEmail(loginRequestForm.value.nicknameOrEmail) ? '' : loginRequestForm.value.nicknameOrEmail
@@ -53,6 +89,7 @@ const handleLogin = () => {
             store.commit('setRoles', response.data.roles);
             store.commit('setNickname', response.data.nickname);
             toast.success(`Вы вошли, как ${response.data.nickname}`);
+            showLogin.value = false;
             router.push('/');
         }
     })
@@ -102,42 +139,37 @@ const handleLogout = () => {
 </script>
 
 <template>
-    <div class="header-container">
+    <div class="header-container" ref="header">
         <div class="logo">
             <RouterLink to="/"><h1>DP</h1></RouterLink>            
-        </div>
-        <div v-if="nickname" class="message"><span>{{ nickname }}</span>
-            <Button @click="handleLogout" severity="secondary" label="Выйти"/>
-        </div>
-
+        </div>        
 
         <div class="menu">
-            <div class="menu-options">
-                <RouterLink to="/register">Регистрация</RouterLink>   
-
+            <Button v-if="!nickname" @click="() => { showLogin = false; router.push('/register'); }" severity="contrast" text label="Регистрация"/>
+            <Button v-if="!nickname" @click="() => showLogin = !showLogin" icon="pi pi-sign-in" severity="contrast" text label="Войти" id="login-button"/>
+            <div v-else class="message"><span>{{ nickname }}</span>
+                <Button @click="handleLogout" severity="secondary" label="Выйти"/> 
             </div>
-
-            <form class="authentication-form" @submit.prevent="handleLogin" @keydown.enter.prevent="handleLogin">
-                <div>
-                    <label>Логин: </label>
-                    <InputText v-model="loginRequestForm.nicknameOrEmail" type="text" placeholder="Почта или никнэйм" required/>
-                </div>
-                <div>
-                    <label>Пароль: </label>
-                    <InputText v-model="loginRequestForm.password" type="password" placeholder="Пароль" required/>
-                </div>
-                <div class="bottom-part">
-                    <div class="remember">
-                        <label for="remember-checkbox">Запомнить</label>
-                        <Checkbox v-model="remember" binary size='small' id="remember-checkbox"/>
-                    </div>
-
-                    <Button type="submit" severity="secondary" icon="pi pi-arrow-circle-right" label="Войти" raised ></Button>
-                </div>
-            </form>
         </div>
-
     </div>
+
+    <form v-if="showLogin" class="authentication-form" @submit.prevent="handleLogin" @keydown.enter.prevent="handleLogin" id="login-form">
+        <div class="login-input">
+            <label>Логин: </label>
+            <InputText v-model="loginRequestForm.nicknameOrEmail" type="text" placeholder="Почта или никнэйм" required/>
+        </div>
+        <div class="login-input">
+            <label>Пароль: </label>
+            <InputText v-model="loginRequestForm.password" type="password" placeholder="Пароль" required/>
+        </div>
+        <div class="bottom-part">
+            <div class="remember">
+                <label for="remember-checkbox">Запомнить</label>
+                <input v-model="remember" type="checkbox" id="remember-checkbox"/>
+            </div>
+            <Button type="submit" severity="secondary" icon="pi pi-sign-in" label="Войти" raised form="login-form"></Button>
+        </div>
+    </form>
 </template>
 
 <style scoped>
@@ -150,36 +182,45 @@ const handleLogout = () => {
       border-radius: 0 0 5px 5px;
       height: var(--HEADER-HEIGHT);
       font-size: small;
-      width: 100%;
     }
 
     .menu {
         display: flex;
         flex-direction: row;
         justify-content: end;
-        
+        align-items: end;
+        padding: 8px;
     }
 
-    .menu-options {
-        display: flex;
-        flex-direction: row;
-        align-items: end;
+    .menu button {
+        border-radius: 0;
     }
 
     .authentication-form {
+        position: absolute;
+        right: 0;
         display: flex;
         flex-direction: column;
         justify-content: start;
-        padding-right: 15px;
-        padding-top: 10px;
-        max-width: 430px;
+        padding: 15px;
         align-items: end;
-        gap: 8px;
+        gap: 12px;
+        background-color: var(--SELECTED-LINK-BCKGND-CLR);
+        border-radius: 5px;        
+        z-index: 1;
+        box-shadow: var(--COMPONENT-BOX-SHADOW);
+        font-size: small;
     }
 
     .authentication-form input[type="text"], input[type="password"] {
         font-size: small;
         height: 22px;
+    }
+
+    .login-input {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
     }
 
     .bottom-part {
@@ -192,7 +233,7 @@ const handleLogout = () => {
         font-size: small;
         height: 24px;
         padding: 5px;
-        margin-left: 22px;
+        margin-left: 30px;
     }
 
     .remember {
@@ -200,6 +241,10 @@ const handleLogout = () => {
         flex-direction: row;
         align-items: center;
         gap: 5px;
+    }
+
+    .remember label:hover, input:hover {
+        cursor: pointer;
     }
 
     .message {
