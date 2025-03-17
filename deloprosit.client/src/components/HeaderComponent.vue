@@ -143,8 +143,14 @@ const handleLogout = () => {
         <div class="logo">
             <RouterLink to="/"><h1>DP</h1></RouterLink>            
         </div>        
-
+        <div class="menu-burger" >
+            <Button  security="contrast" rounded text>
+                <i class="pi pi-bars"></i>
+            </Button>
+        </div>
         <div class="menu">
+            <Button @click="() => router.push('/')" severity="contrast" text label="Главная"/>
+            <Button @click="() => router.push('/')" severity="contrast" text label="Обратная связь"/>
             <Button v-if="!nickname" @click="() => { showLogin = false; router.push('/register'); }" severity="contrast" text label="Регистрация"/>
             <Button v-if="!nickname" @click="() => showLogin = !showLogin" icon="pi pi-sign-in" severity="contrast" text label="Войти" id="login-button"/>
             <div v-else class="message"><span>{{ nickname }}</span>
@@ -192,6 +198,29 @@ const handleLogout = () => {
         padding: 8px;
     }
 
+    .menu-burger {
+        display: none;
+        align-content: center;
+        padding: 0;
+    }
+
+    .menu-burger button {
+        margin: 0 10px 0 10px;
+        padding: 12px;
+    }
+
+    .menu-burger button {
+        color: black;
+        font-size: large;
+        border-width: 1px;
+        border-color: rgba(0, 0, 0, 0.332);
+    }
+
+    .menu-burger i {
+        color: black;
+        font-size: x-large;
+    }
+
     .menu button {
         border-radius: 0;
     }
@@ -205,10 +234,10 @@ const handleLogout = () => {
         padding: 15px;
         align-items: end;
         gap: 12px;
-        background-color: var(--SELECTED-LINK-BCKGND-CLR);
+        background-color: rgb(79, 166, 79);
         border-radius: 5px;        
         z-index: 1;
-        box-shadow: var(--COMPONENT-BOX-SHADOW);
+        box-shadow: var(--MENU-BOX-SHADOW);
         font-size: small;
     }
 
@@ -233,7 +262,7 @@ const handleLogout = () => {
         font-size: small;
         height: 24px;
         padding: 5px;
-        margin-left: 30px;
+        margin-left: 15px;
     }
 
     .remember {
@@ -277,5 +306,15 @@ const handleLogout = () => {
 
     label {
         font-weight: bold;
+    }
+
+    @media(max-width: 800px) {
+        .menu {
+            display: none;
+        }
+
+        .menu-burger {
+            display: block;
+        }
     }
 </style>

@@ -18,6 +18,7 @@
   --COMPONENT-BOX-SHADOW: 0 7px 15px -3px black;
   --INPUT-BOX-SHADOW: 0px 2px 3px -2px black;
   --PNG-IMAGE-SHADOW: 5px 5px 5px #222;
+  --MENU-BOX-SHADOW: 0px 0px 10px 0px black;
 
   /* GRADIENTS */
   --BCKGND-GRADIENT: linear-gradient(to right,rgb(165, 218, 165),rgb(72, 163, 72));
