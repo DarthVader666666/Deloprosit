@@ -6,21 +6,23 @@ import axios from 'axios';
 import { useStore } from 'vuex';
 import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
+import { useRouter } from 'vue-router';
+import { helper } from '@/helper/helper';
 
 const store = useStore();
 const toast = useToast();
+const router = useRouter();
 
 const messageForm = ref(
     {
         name: null,
         email: null,
         phone: null,
-        message: null
+        text: null,
+        dateSent: null
     });
 
 function sendMessage() {
-    console.log(messageForm.value)
-
     if(!(messageForm.value.email && messageForm.value.phone)) {
         toast.error('Поле "Ваш Email" или "Ваш номер телефона" должны быть заполнены');
         return;
@@ -30,12 +32,26 @@ function sendMessage() {
     formData.append('name', messageForm.value.name);
     formData.append('email', messageForm.value.email);
     formData.append('phone', messageForm.value.phone);
-    formData.append('message', messageForm.value.message);
+    formData.append('text', messageForm.value.text);
+    formData.append('dateSent', helper.getCurrentDate());
 
-    axios.put(`${store.state.serverUrl}/feedback`, formData, {
+    axios.post(`${store.state.serverUrl}/feedback/send`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
+    })
+    .then(response => {
+        if(response.status === 200) {
+            messageForm.value.name = null;
+            messageForm.value.email = null;
+            messageForm.value.phone = null;
+            messageForm.value.text = null;
+            toast.success('Сообщение успешно отправлено');
+            router.push('/');
+        }
+    })
+    .catch(error => {
+        toast.error('Ошибка отправки сообщения');
     });
 }
 
@@ -59,7 +75,7 @@ function sendMessage() {
         </div>
         <div class="send-message-input">
             <span>Ваше сообщение:</span>
-            <Textarea v-model="messageForm.message" required></Textarea>
+            <Textarea v-model="messageForm.text" required></Textarea>
         </div>        
         <div>
             <Button severity="secondary" type="submit" raised>Отправить</Button>

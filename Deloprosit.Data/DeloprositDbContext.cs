@@ -93,6 +93,7 @@ namespace Deloprosit.Data
                 comment.HasOne(x => x.Theme).WithMany(x => x.Comments).HasForeignKey(x => x.ThemeId);
                 comment.HasOne(x => x.User).WithMany(x => x.Comments).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
             });
+            modelBuilder.Entity<Message>();
         }
 
         public virtual DbSet<User> Users { get; set; }
@@ -101,5 +102,6 @@ namespace Deloprosit.Data
         public virtual DbSet<Chapter> Chapters { get; set; }
         public virtual DbSet<Theme> Themes { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
     }
 }
