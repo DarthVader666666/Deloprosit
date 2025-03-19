@@ -4,6 +4,7 @@ import ChapterCreateView from "@/views/ChapterCreateView.vue";
 import ChapterDetailsView from "@/views/ChapterDetailsView.vue";
 import ChapterEditView from "@/views/ChapterEditView.vue";
 import ThemeEditView from "@/views/ThemeEditView.vue";
+import FeedBackView from "@/views/FeedBackView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import store from '@/vuex/store.js';
 
@@ -44,6 +45,11 @@ const router = createRouter({
             path: '/themes/:themeId/edit',
             name: 'edit-theme',
             component: ThemeEditView        
+        },
+        {
+            path: '/feedback',
+            name: 'feedback',
+            component: FeedBackView
         }
     ]
 });

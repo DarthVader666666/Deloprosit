@@ -54,7 +54,6 @@ const props = defineProps({
     justify-content: space-between;
     align-items: center;
     font-size: large;
-    color: black;
     background: var(--THEME-HEADER-BCKGND-GRADIENT);
     padding: 6px;
     min-height: 34px;
@@ -63,7 +62,7 @@ const props = defineProps({
 .theme-header a {
     text-decoration: none;
     margin-left: 5px;
-    color:  var(--THEME-HEADER-COLOR);
+    color:  var(--TEXT-COLOR);
 }
 
 .theme-header a:hover {

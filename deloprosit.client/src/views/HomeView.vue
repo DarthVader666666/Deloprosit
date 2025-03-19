@@ -29,6 +29,8 @@ const chapters = computed(() => store.state.chapters);
 .chapters-container h1 {
     text-align: center;
     margin: 15px;
+    filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.5));
+    color: var(--HOME-HEADER-COLOR);
 }
 
 .chapters-header {
@@ -51,24 +53,19 @@ const chapters = computed(() => store.state.chapters);
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-decoration: none;
-    color: black;
+    text-decoration: none;    
 }
 
 .chapter a {
     text-decoration: none;
-    color: black;
+    color: var(--TEXT-COLOR);    
 }
 
 .chapter p {
     font-size: medium;
     text-align: center;
     font-weight: bold;
-}
-
-.chapter p:hover {
-    text-align: center;
-    font-weight: bold;
+    filter: drop-shadow(4px 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .chapter img:hover {

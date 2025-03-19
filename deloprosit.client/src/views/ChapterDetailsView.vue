@@ -73,7 +73,7 @@ const theme = computed(() => store.getters.getTheme);
     width: 90px;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 800px) {
     .title span {
         display: none;
     }

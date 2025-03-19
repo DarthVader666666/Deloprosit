@@ -2,9 +2,10 @@
 
 :root {
   /* COLORS */
-  --THEME-HEADER-COLOR: rgb(63, 62, 62);
   --DANGER-RED: rgb(220, 0, 0);
   --LOGO-COLOR: rgb(124, 172, 124);
+  --TEXT-COLOR: rgb(44, 44, 44);
+  --HOME-HEADER-COLOR: rgb(76, 199, 76);
 
   /* BACKGROUNDS */
   --CENTRAL-BCKGND-CLR: rgb(226, 219, 219);
@@ -41,11 +42,12 @@ html {
 }
 
 body {
-  font-family:"Gill Sans Extrabold", sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   display: flex;
   flex-direction: row;
   justify-content: center;
   margin: 0;
+  color: var(--TEXT-COLOR);
   background-color: var(--CENTRAL-BCKGND-CLR);
 }
 

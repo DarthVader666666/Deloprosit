@@ -150,7 +150,7 @@ const handleLogout = () => {
         </div>
         <div class="menu">
             <Button @click="() => router.push('/')" severity="contrast" text label="Главная"/>
-            <Button @click="() => router.push('/')" severity="contrast" text label="Обратная связь"/>
+            <Button @click="() => router.push('/feedback')" severity="contrast" text label="Обратная связь"/>
             <Button v-if="!nickname" @click="() => { showLogin = false; router.push('/register'); }" severity="contrast" text label="Регистрация"/>
             <Button v-if="!nickname" @click="() => showLogin = !showLogin" icon="pi pi-sign-in" severity="contrast" text label="Войти" id="login-button"/>
             <div v-else class="message"><span>{{ nickname }}</span>
@@ -210,19 +210,23 @@ const handleLogout = () => {
     }
 
     .menu-burger button {
-        color: black;
         font-size: large;
         border-width: 1px;
         border-color: rgba(0, 0, 0, 0.332);
     }
 
     .menu-burger i {
-        color: black;
+        color: var(--TEXT-COLOR);
         font-size: x-large;
     }
 
     .menu button {
         border-radius: 0;
+    }
+
+    .menu button:deep(span) {
+        font-weight:bold;
+        color: var(--TEXT-COLOR);
     }
 
     .authentication-form {
@@ -252,6 +256,14 @@ const handleLogout = () => {
         gap: 2px;
     }
 
+    .login-input input {
+        border-radius: 4px;
+    }
+
+    .login-input:hover:deep(input) {
+        cursor:text;
+    }
+
     .bottom-part {
         display: flex;
         flex-direction: row;
@@ -263,6 +275,7 @@ const handleLogout = () => {
         height: 24px;
         padding: 5px;
         margin-left: 15px;
+        border-radius: 4px;
     }
 
     .remember {
