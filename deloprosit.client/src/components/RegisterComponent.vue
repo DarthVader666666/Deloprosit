@@ -21,16 +21,16 @@ const showNicknameError = ref(false);
 const showEmailError = ref(false);
 const repeatPassword = ref(null);
 const registerModel = ref({
-    nickname: '',
-    email: '',
-    firstName: '',
-    lastName: '',
-    password: '',
-    birthDate: '',
-    country: '',
-    city: '',
-    title: '',
-    info: ''
+    nickname: null,
+    email: null,
+    firstName: null,
+    lastName: null,
+    password: null,
+    birthDate: null,
+    country: null,
+    city: null,
+    title: null,
+    info: null
 });
 
 const isDisabledSendButton = computed(() => {    

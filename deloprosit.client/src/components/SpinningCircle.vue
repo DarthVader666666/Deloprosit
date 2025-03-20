@@ -1,6 +1,17 @@
-<template>    
+<script setup>
+import { defineProps } from 'vue';
+
+const props = defineProps({
+  title: {
+    typeof: String,
+    default: null
+  }
+}) 
+
+</script>
+<template>
     <div class="sending">
-            <h2>Письмо отправляется...</h2>
+            <h2>{{ props.title }}</h2>
             <div id="wrapper">    
                 <div class="profile-main-loader">
                   <div class="loader">

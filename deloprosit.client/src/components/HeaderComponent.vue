@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
@@ -19,13 +19,29 @@ const toast = useToast();
 const router = useRouter();
 
 const nickname = computed(() => store.state.nickname);
+const isAdmin = computed(() => store.getters.isAdmin);
+const isOwner = computed(() => store.getters.isOwner);
 const remember = ref (false);
 const showLogin = ref(false);
 const header = ref(null)
+const isMenuOpened = ref(false);
 
 onMounted(() => {
     window.addEventListener('click', closeLogin)
 })
+
+watch(isMenuOpened, (oldValue, newValue) => {
+    const menu = document.getElementById('menu');
+
+    if(!newValue) {
+        menu.classList.remove('menu');
+        menu.classList.add('menu-minimized');
+    }
+    else {
+        menu.classList.remove('menu-minimized');
+        menu.classList.add('menu');
+    }
+});
 
 function anyChildren(event, element) {
     if(element && element.children.length) {
@@ -136,6 +152,10 @@ const handleLogout = () => {
     }
 }
 
+function handleBurgerClick() {
+    isMenuOpened.value = !isMenuOpened.value;
+}
+
 </script>
 
 <template>
@@ -144,15 +164,15 @@ const handleLogout = () => {
             <RouterLink to="/"><h1>DP</h1></RouterLink>            
         </div>        
         <div class="menu-burger" >
-            <Button  security="contrast" rounded text>
+            <Button  security="contrast" rounded text @click="handleBurgerClick">
                 <i class="pi pi-bars"></i>
             </Button>
         </div>
-        <div class="menu">
-            <Button @click="() => router.push('/')" severity="contrast" text label="Главная"/>
-            <Button @click="() => router.push('/feedback')" severity="contrast" text label="Обратная связь"/>
-            <Button v-if="!nickname" @click="() => { showLogin = false; router.push('/register'); }" severity="contrast" text label="Регистрация"/>
-            <Button v-if="!nickname" @click="() => showLogin = !showLogin" icon="pi pi-sign-in" severity="contrast" text label="Войти" id="login-button"/>
+        <div class="menu" id="menu">
+            <Button @click="() => { isMenuOpened = false; router.push('/'); }" severity="contrast" text label="Главная"/>
+            <Button v-if="!(isAdmin || isOwner)" @click="() => { isMenuOpened = false; router.push('/feedback'); }" severity="contrast" text label="Обратная связь"/>
+            <Button v-if="!nickname" @click="() => { isMenuOpened = false; showLogin = false; router.push('/register'); }" severity="contrast" text label="Регистрация"/>
+            <Button v-if="!nickname" @click="() => { isMenuOpened = false; showLogin = !showLogin; }" icon="pi pi-sign-in" severity="contrast" text label="Войти" id="login-button"/>
             <div v-else class="message"><span>{{ nickname }}</span>
                 <Button @click="handleLogout" severity="secondary" label="Выйти"/> 
             </div>
@@ -198,6 +218,20 @@ const handleLogout = () => {
         padding: 8px;
     }
 
+    .menu-minimized {
+        position: absolute;
+        right: 0;
+        z-index: 1;
+        background-color: var(--MENU-BCKGND-CLR);
+        display: flex;
+        flex-direction: column-reverse;
+        padding: 10px;
+        border-radius: 3px;
+        box-shadow: var(--MENU-BOX-SHADOW);
+        top: 80px;
+        align-items: start;
+    }
+
     .menu-burger {
         display: none;
         align-content: center;
@@ -238,7 +272,7 @@ const handleLogout = () => {
         padding: 15px;
         align-items: end;
         gap: 12px;
-        background-color: rgb(79, 166, 79);
+        background-color: var(--MENU-BCKGND-CLR);
         border-radius: 5px;        
         z-index: 1;
         box-shadow: var(--MENU-BOX-SHADOW);

@@ -69,7 +69,6 @@ namespace Deloprosit.Server.Controllers
             {
                 return StatusCode(500, new { errorText = "Ошибка отправки письма на email" });
             }
-
         }
     }
 }

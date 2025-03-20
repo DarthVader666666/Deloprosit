@@ -59,8 +59,7 @@ router.afterEach(async (to) => {
         await store.dispatch('downloadChapter', to.params['chapterId']);
         await store.dispatch('downloadTheme', to.params['themeId']);
         store.commit('renderSearchBar');
-        store.commit('setShowChapterList', false);
-        window.scrollTo(0, 0);
+        store.commit('setShowChapterList', false);        
     }
     else {
         store.commit('setShowChapterList', true);
@@ -85,12 +84,13 @@ router.afterEach(async (to) => {
         store.commit('setTitle', 'Заполните форму регистрации');
     }
 
-    if(to.name === 'home') {
+    if(to.name === 'home' || to.name === 'feedback') {
         store.commit('renderSearchBar');
     }
 
     await store.dispatch('downloadChapters');
     await store.dispatch('downloadDocuments');
+    window.scrollTo(0, 0);
 });
 
 export default router;

@@ -13,6 +13,7 @@
   --TEXT-BCKGND-CLR: rgba(204, 204, 204, 0.98);
   --BCKGND-COLOR-WHEN-SHADOW: rgb(190, 190, 190);
   --SELECTED-LINK-BCKGND-CLR: rgb(49, 127, 62);
+  --MENU-BCKGND-CLR: rgb(79, 166, 79);
 
   /* SHADOWS */
   --GLOW-BOX-SHADOW: rgba(158, 158, 158, 0.8) 0 0 10px 2px;
@@ -94,7 +95,7 @@ body {
 }
 
 .form-container {
-  padding: 10px;
+  padding: 20px;
   font-size: small;
   background-color: var(--CENTRAL-BCKGND-CLR);
 }
@@ -158,6 +159,10 @@ body {
 
   .register-form {
     width: 100%;
+  }
+
+  .form-container {
+    padding: 20px;
   }
 
   .sending {

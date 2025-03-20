@@ -8,11 +8,13 @@ import { ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
 import { helper } from '@/helper/helper';
+import SpinningCircle from '@/components/SpinningCircle.vue';
 
 const store = useStore();
 const toast = useToast();
 const router = useRouter();
 
+const pending = ref(false);
 const messageForm = ref(
     {
         name: null,
@@ -21,6 +23,38 @@ const messageForm = ref(
         text: null,
         dateSent: null
     });
+
+async function handleSendProcess(promise) {
+    if(promise) {
+        pending.value = true
+
+        await promise
+            .then(response => {
+                if(response.status === 200) {
+                    toast.success('Сообщение успешно отправлено');
+                    messageForm.value.name = null;
+                    messageForm.value.email = null;
+                    messageForm.value.phone = null;
+                    messageForm.value.text = null;
+                    messageForm.value.dateSent = null;
+                    router.push('/');
+                }
+            })
+            .catch(error => {
+                const status = error.response.status;
+                
+                if(status === 400) {
+                    toast.error(error.response.data.errorText);
+                }
+
+                if (status === 500) {
+                    toast.error(error.response.data.errorText);
+                }
+        });
+    }
+
+    pending.value = false;
+}
 
 function sendMessage() {
     if(!(messageForm.value.email && messageForm.value.phone)) {
@@ -35,53 +69,45 @@ function sendMessage() {
     formData.append('text', messageForm.value.text);
     formData.append('dateSent', helper.getCurrentDate());
 
-    axios.post(`${store.state.serverUrl}/feedback/send`, formData, {
+    const promise = axios.post(`${store.state.serverUrl}/feedback/send`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
-    })
-    .then(response => {
-        if(response.status === 200) {
-            messageForm.value.name = null;
-            messageForm.value.email = null;
-            messageForm.value.phone = null;
-            messageForm.value.text = null;
-            toast.success('Сообщение успешно отправлено');
-            router.push('/');
-        }
-    })
-    .catch(error => {
-        toast.error('Ошибка отправки сообщения');
     });
+
+    handleSendProcess(promise);
 }
 
 </script>
 
 <template>
 <div class="feedback-container">
-    <h1>Напишите ваше сообщение</h1>
-    <form @submit.prevent="sendMessage" class="send-message-form">
-        <div class="send-message-input">
-            <span>Ваше имя:</span>
-            <InputText required v-model="messageForm.name"></InputText>
-        </div>
-        <div class="send-message-input">
-            <span>Ваш Email:</span>        
-            <InputText type="email" v-model="messageForm.email"></InputText>
-        </div>
-        <div class="send-message-input">
-            <span>Ваш номер телефона:</span>
-            <InputText type="tel" v-model="messageForm.phone"></InputText>
-        </div>
-        <div class="send-message-input">
-            <span>Ваше сообщение:</span>
-            <Textarea v-model="messageForm.text" required></Textarea>
-        </div>        
-        <div>
-            <Button severity="secondary" type="submit" raised>Отправить</Button>
-            <Button severity="contrast" raised>Отменить</Button>
-        </div>        
-    </form>
+    <div v-if="!pending">
+        <h1>Напишите ваше сообщение</h1>
+        <form @submit.prevent="sendMessage" class="send-message-form">
+            <div class="send-message-input">
+                <span>Ваше имя:</span>
+                <InputText required v-model="messageForm.name"></InputText>
+            </div>
+            <div class="send-message-input">
+                <span>Ваш Email:</span>        
+                <InputText type="email" v-model="messageForm.email"></InputText>
+            </div>
+            <div class="send-message-input">
+                <span>Ваш номер телефона:</span>
+                <InputText type="tel" v-model="messageForm.phone"></InputText>
+            </div>
+            <div class="send-message-input">
+                <span>Ваше сообщение:</span>
+                <Textarea v-model="messageForm.text" required></Textarea>
+            </div>        
+            <div>
+                <Button severity="secondary" type="submit" raised>Отправить</Button>
+                <Button severity="contrast" raised @click="router.push('/')">Отменить</Button>
+            </div>        
+        </form>
+    </div>
+    <SpinningCircle v-else title="Сообщение отправляется..."></SpinningCircle>
 
 </div>
 
@@ -118,6 +144,10 @@ button {
 }
 
 @media(max-width: 800px) {
+    .feedback-container {
+        padding: 15px;
+    }
+    
     .send-message-input {
         width: 100%;
     }

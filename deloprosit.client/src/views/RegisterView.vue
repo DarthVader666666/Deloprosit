@@ -45,6 +45,6 @@ const handlePending = async (promise) => {
         <img src="/src/assets/images/email-sent.jpg" alt="email-sent.jpg">
         <button><RouterLink to="/">Понятно</RouterLink></button>
     </div>
-    <SpinningCircleView v-else-if="pending"/>
+    <SpinningCircleView v-else-if="pending" title='Письмо отправляется...'/>
     <RegisterFormView v-else :pending="pending" @email-sent="handlePending"/>
 </template>
