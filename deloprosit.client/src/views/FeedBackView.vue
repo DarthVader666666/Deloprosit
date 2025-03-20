@@ -83,7 +83,6 @@ function sendMessage() {
 <template>
 <div class="feedback-container">
     <div v-if="!pending">
-        <h1>Напишите ваше сообщение</h1>
         <form @submit.prevent="sendMessage" class="send-message-form">
             <div class="send-message-input">
                 <span>Ваше имя:</span>
@@ -147,7 +146,7 @@ button {
     .feedback-container {
         padding: 15px;
     }
-    
+
     .send-message-input {
         width: 100%;
     }

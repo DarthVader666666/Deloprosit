@@ -7,7 +7,6 @@ import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import Menu from 'primevue/menu';
 
 const loginRequestForm = ref({
     nicknameOrEmail: null,
@@ -33,13 +32,13 @@ onMounted(() => {
 watch(isMenuOpened, (oldValue, newValue) => {
     const menu = document.getElementById('menu');
 
-    if(!newValue) {
-        menu.classList.remove('menu');
-        menu.classList.add('menu-minimized');
-    }
-    else {
+    if(newValue) {
         menu.classList.remove('menu-minimized');
         menu.classList.add('menu');
+    }
+    else {
+        menu.classList.remove('menu');
+        menu.classList.add('menu-minimized');        
     }
 });
 
@@ -171,6 +170,7 @@ function handleBurgerClick() {
         <div class="menu" id="menu">
             <Button @click="() => { isMenuOpened = false; router.push('/'); }" severity="contrast" text label="Главная"/>
             <Button v-if="!(isAdmin || isOwner)" @click="() => { isMenuOpened = false; router.push('/feedback'); }" severity="contrast" text label="Обратная связь"/>
+            <Button v-else @click="() => { isMenuOpened = false; router.push('/chapters/create'); }" severity="contrast" text label="Создать раздел"/>
             <Button v-if="!nickname" @click="() => { isMenuOpened = false; showLogin = false; router.push('/register'); }" severity="contrast" text label="Регистрация"/>
             <Button v-if="!nickname" @click="() => { isMenuOpened = false; showLogin = !showLogin; }" icon="pi pi-sign-in" severity="contrast" text label="Войти" id="login-button"/>
             <div v-else class="message"><span>{{ nickname }}</span>
@@ -230,6 +230,14 @@ function handleBurgerClick() {
         box-shadow: var(--MENU-BOX-SHADOW);
         top: 80px;
         align-items: start;
+        animation-name: slide;
+        animation-duration: 0.2s;
+        transform: translateX(0%);
+    }
+
+    .menu-minimized button:deep(span) {
+        font-weight: bold;
+        color: var(--TEXT-COLOR);
     }
 
     .menu-burger {
@@ -277,6 +285,9 @@ function handleBurgerClick() {
         z-index: 1;
         box-shadow: var(--MENU-BOX-SHADOW);
         font-size: small;
+        animation-name: slide;
+        animation-duration: 0.2s;
+        transform: translateX(0%)
     }
 
     .authentication-form input[type="text"], input[type="password"] {
@@ -362,6 +373,22 @@ function handleBurgerClick() {
 
         .menu-burger {
             display: block;
+        }
+    }
+
+    @media(min-width: 800px) {
+        .menu-minimized {
+            display: none;
+        }
+
+        .menu {
+            display: flex;
+        }
+    }
+
+    @keyframes slide {
+        0% {
+            transform: translateX(100%);
         }
     }
 </style>

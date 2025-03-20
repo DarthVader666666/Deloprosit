@@ -84,8 +84,12 @@ router.afterEach(async (to) => {
         store.commit('setTitle', 'Заполните форму регистрации');
     }
 
-    if(to.name === 'home' || to.name === 'feedback') {
+    if(to.name === 'home') {
         store.commit('renderSearchBar');
+    }
+
+    if(to.name === 'feedback') {
+       store.commit('setTitle', 'Напишите ваше сообщение'); 
     }
 
     await store.dispatch('downloadChapters');

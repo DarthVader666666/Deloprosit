@@ -5,7 +5,7 @@
   --DANGER-RED: rgb(220, 0, 0);
   --LOGO-COLOR: rgb(124, 172, 124);
   --TEXT-COLOR: rgb(44, 44, 44);
-  --HOME-HEADER-COLOR: rgb(76, 199, 76);
+  --HOME-HEADER-COLOR: rgb(56, 185, 56);
 
   /* BACKGROUNDS */
   --CENTRAL-BCKGND-CLR: rgb(226, 219, 219);
@@ -13,7 +13,7 @@
   --TEXT-BCKGND-CLR: rgba(204, 204, 204, 0.98);
   --BCKGND-COLOR-WHEN-SHADOW: rgb(190, 190, 190);
   --SELECTED-LINK-BCKGND-CLR: rgb(49, 127, 62);
-  --MENU-BCKGND-CLR: rgb(79, 166, 79);
+  --MENU-BCKGND-CLR: rgb(88, 175, 88);
 
   /* SHADOWS */
   --GLOW-BOX-SHADOW: rgba(158, 158, 158, 0.8) 0 0 10px 2px;
