@@ -20,5 +20,6 @@
         public virtual ICollection<Chapter>? Chapters { get; set; }
         public virtual ICollection<Theme>? Themes { get; set; }
         public virtual ICollection<Comment>? Comments { get; set; }
+        public virtual ICollection<Message>? Messages { get; set; }
     }
 }

@@ -49,6 +49,7 @@ namespace Deloprosit.Server.Configurations
                         .ForMember(dest => dest.Content, opts => opts.MapFrom(src => src.Content != null ? src.Content.Replace("&nbsp;", " ") : null));
 
                     autoMapperConfig.CreateMap<MessageForm, Message>();
+                    autoMapperConfig.CreateMap<Message, MessageResponseModel>();
                 });
 
                 return config.CreateMapper();

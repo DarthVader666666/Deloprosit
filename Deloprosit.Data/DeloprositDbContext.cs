@@ -26,6 +26,7 @@ namespace Deloprosit.Data
                 user.HasKey(x => x.UserId);
                 user.HasIndex(x => x.Email).IsUnique();
                 user.HasIndex(x => x.Nickname).IsUnique();
+                user.HasMany(x => x.Messages).WithOne(x => x.User).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
                 user.Property(x => x.Email).HasMaxLength(maxNameLength).IsRequired();
                 user.Property(x => x.Nickname).HasMaxLength(maxNameLength).IsRequired();
                 user.Property(x => x.Password).HasMaxLength(maxNameLength).IsRequired();
@@ -93,7 +94,11 @@ namespace Deloprosit.Data
                 comment.HasOne(x => x.Theme).WithMany(x => x.Comments).HasForeignKey(x => x.ThemeId);
                 comment.HasOne(x => x.User).WithMany(x => x.Comments).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
             });
-            modelBuilder.Entity<Message>();
+            modelBuilder.Entity<Message>(message =>
+            {
+                message.HasKey(x => x.MessageId);
+                message.HasOne(x => x.User).WithMany(x => x.Messages).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
+            });
         }
 
         public virtual DbSet<User> Users { get; set; }

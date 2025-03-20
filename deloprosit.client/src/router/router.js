@@ -7,6 +7,7 @@ import ThemeEditView from "@/views/ThemeEditView.vue";
 import FeedBackView from "@/views/FeedBackView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import store from '@/vuex/store.js';
+import MessagesView from "@/views/MessagesView.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -50,6 +51,11 @@ const router = createRouter({
             path: '/feedback',
             name: 'feedback',
             component: FeedBackView
+        },
+        {
+            path: '/messages',
+            name: 'messages',
+            component: MessagesView
         }
     ]
 });
@@ -91,6 +97,11 @@ router.afterEach(async (to) => {
     if(to.name === 'feedback') {
        store.commit('setTitle', 'Напишите ваше сообщение'); 
     }
+
+    if(to.name === 'messages') {
+        await store.dispatch('downloadMessages');
+        store.commit('setTitle', 'Сообщения');
+     }
 
     await store.dispatch('downloadChapters');
     await store.dispatch('downloadDocuments');

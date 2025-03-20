@@ -4,6 +4,7 @@ using Deloprosit.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Deloprosit.Data.Migrations
 {
     [DbContext(typeof(MssqlDeloprositDbContext))]
-    partial class MssqlDeloprositDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250320144228_Added Name in Message")]
+    partial class AddedNameinMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

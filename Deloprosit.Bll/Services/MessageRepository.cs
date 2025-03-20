@@ -2,6 +2,8 @@
 using Deloprosit.Data;
 using Deloprosit.Data.Entities;
 
+using Microsoft.Data.SqlClient;
+
 namespace Deloprosit.Bll.Services
 {
     public class MessageRepository: IRepository<Message>
@@ -48,7 +50,24 @@ namespace Deloprosit.Bll.Services
 
         public Task<IEnumerable<Message?>> GetListAsync(int? id = null)
         {
-            throw new NotImplementedException();
+            if (id == null)
+            {
+                return Task.FromResult<IEnumerable<Message?>>([]);
+            }
+
+            IEnumerable<Message?> messages = [];
+
+            try 
+            {
+                messages = _dbContext.Messages.Where(x => x.UserId == id).OrderByDescending(x => x.DateSent);
+            }
+            catch(SqlException)
+            {
+                return Task.FromResult<IEnumerable<Message?>>([]);
+            }
+
+
+            return Task.FromResult(messages);
         }
 
         public Task<Message?> UpdateAsync(Message? item)

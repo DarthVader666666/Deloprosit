@@ -171,6 +171,7 @@ function handleBurgerClick() {
             <Button @click="() => { isMenuOpened = false; router.push('/'); }" severity="contrast" text label="Главная"/>
             <Button v-if="!(isAdmin || isOwner)" @click="() => { isMenuOpened = false; router.push('/feedback'); }" severity="contrast" text label="Обратная связь"/>
             <Button v-else @click="() => { isMenuOpened = false; router.push('/chapters/create'); }" severity="contrast" text label="Создать раздел"/>
+            <Button v-if="isOwner" @click="() => { isMenuOpened = false; router.push('/messages'); }" severity="contrast" text label="Сообщения"></Button>   
             <Button v-if="!nickname" @click="() => { isMenuOpened = false; showLogin = false; router.push('/register'); }" severity="contrast" text label="Регистрация"/>
             <Button v-if="!nickname" @click="() => { isMenuOpened = false; showLogin = !showLogin; }" icon="pi pi-sign-in" severity="contrast" text label="Войти" id="login-button"/>
             <div v-else class="message"><span>{{ nickname }}</span>

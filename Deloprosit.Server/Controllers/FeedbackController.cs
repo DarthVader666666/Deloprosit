@@ -3,6 +3,8 @@ using Deloprosit.Bll.Interfaces;
 using Deloprosit.Bll.Services;
 using Deloprosit.Data.Entities;
 using Deloprosit.Server.Models;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -15,13 +17,15 @@ namespace Deloprosit.Server.Controllers
     public class FeedbackController : ControllerBase
     {
         private readonly EmailSender _emailSender;
+        private readonly UserManager _userManager;
         private readonly IRepository<Message> _messageRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public FeedbackController(EmailSender emailSender, IRepository<Message> messageRepository, IMapper mapper, IConfiguration configuration)
+        public FeedbackController(EmailSender emailSender, UserManager userManager, IRepository<Message> messageRepository, IMapper mapper, IConfiguration configuration)
         {
             _emailSender = emailSender;
+            _userManager = userManager;
             _messageRepository = messageRepository;
             _mapper = mapper;
             _configuration = configuration;
@@ -69,6 +73,19 @@ namespace Deloprosit.Server.Controllers
             {
                 return StatusCode(500, new { errorText = "Ошибка отправки письма на email" });
             }
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        [Authorize(Roles = "Owner")]
+        public async Task<IActionResult> GetList()
+        {
+            var user = await _userManager.GetCurrentUserAsync(HttpContext);
+            var messages = await _messageRepository.GetListAsync(user?.UserId);
+
+            var messageResponseModels = _mapper.Map<IEnumerable<MessageResponseModel>>(messages);
+
+            return Ok(messageResponseModels);
         }
     }
 }

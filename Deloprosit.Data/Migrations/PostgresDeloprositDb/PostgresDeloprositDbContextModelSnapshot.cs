@@ -105,10 +105,18 @@ namespace Deloprosit.Data.Migrations.PostgresDeloprositDb
                     b.Property<bool>("IsRead")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
                     b.Property<string>("Text")
                         .HasColumnType("text");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("MessageId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Messages");
                 });
@@ -306,6 +314,17 @@ namespace Deloprosit.Data.Migrations.PostgresDeloprositDb
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Deloprosit.Data.Entities.Message", b =>
+                {
+                    b.HasOne("Deloprosit.Data.Entities.User", "User")
+                        .WithMany("Messages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Deloprosit.Data.Entities.Theme", b =>
                 {
                     b.HasOne("Deloprosit.Data.Entities.Chapter", "Chapter")
@@ -362,6 +381,8 @@ namespace Deloprosit.Data.Migrations.PostgresDeloprositDb
                     b.Navigation("Chapters");
 
                     b.Navigation("Comments");
+
+                    b.Navigation("Messages");
 
                     b.Navigation("Themes");
 

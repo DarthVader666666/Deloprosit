@@ -15,6 +15,7 @@ const store = createStore({
         theme: null,
         themes: [],
         documents: [],
+        messages: [],
         showSearchBar: true,
         title: null,
         imagePaths: 
@@ -42,6 +43,9 @@ const store = createStore({
         },
         getDocuments(state) {
             return state.documents;
+        },
+        getMessages(state) {
+            return state.messages;
         },
         serverUrl(state) {
             return state.serverUrl;
@@ -89,6 +93,9 @@ const store = createStore({
         setDocuments(state, documents) {
             state.documents = documents;
         },
+        setMessages(state, messages) {
+            state.messages = messages;
+        },
         setShowChapterList(state, value) {
             state.showChapterList = value;
         }
@@ -124,6 +131,17 @@ const store = createStore({
                 }));
 
             commit('setDocuments', documents);
+        },
+        async downloadMessages({commit, state}) {
+            const messages = (await axios.get(`${state.serverUrl}/feedback/getlist`)
+                .then(response => response.data)
+                .catch(error => {
+                    if(error.response.status === 500) {
+                        toast.error(error.response.data.message)
+                    }
+                }));
+
+            commit('setMessages', messages);
         },
     }
 });
