@@ -102,11 +102,19 @@ namespace Deloprosit.Data.Migrations.PostgresDeloprositDb
                     b.Property<DateTime>("DateSent")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<bool>("IsRead")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Text")
                         .HasColumnType("text");
@@ -316,13 +324,13 @@ namespace Deloprosit.Data.Migrations.PostgresDeloprositDb
 
             modelBuilder.Entity("Deloprosit.Data.Entities.Message", b =>
                 {
-                    b.HasOne("Deloprosit.Data.Entities.User", "User")
+                    b.HasOne("Deloprosit.Data.Entities.User", "UserReceiver")
                         .WithMany("Messages")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("UserReceiver");
                 });
 
             modelBuilder.Entity("Deloprosit.Data.Entities.Theme", b =>

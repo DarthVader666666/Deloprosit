@@ -18,14 +18,17 @@ namespace Deloprosit.Server.Controllers
     {
         private readonly EmailSender _emailSender;
         private readonly UserManager _userManager;
+        private readonly CryptoService _cryptoService;
         private readonly IRepository<Message> _messageRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public FeedbackController(EmailSender emailSender, UserManager userManager, IRepository<Message> messageRepository, IMapper mapper, IConfiguration configuration)
+        public FeedbackController(EmailSender emailSender, UserManager userManager, CryptoService cryptoService,
+            IRepository<Message> messageRepository, IMapper mapper, IConfiguration configuration)
         {
             _emailSender = emailSender;
             _userManager = userManager;
+            _cryptoService = cryptoService;
             _messageRepository = messageRepository;
             _mapper = mapper;
             _configuration = configuration;
@@ -58,6 +61,15 @@ namespace Deloprosit.Server.Controllers
             try
             {
                 var message = _mapper.Map<Message>(messageForm);
+
+                var user = await _userManager.GetUserByAsync(nickname: _configuration["OwnerNickname"]) ?? throw new NullReferenceException();
+                message.UserId = user.UserId;
+
+                message.Name = _cryptoService.Encrypt(message.Name);
+                message.Email = _cryptoService.Encrypt(message.Email);
+                message.Phone = _cryptoService.Encrypt(message.Phone);
+                message.Text = _cryptoService.Encrypt(message.Text);
+
                 await _messageRepository.CreateAsync(message);
             }
             catch
@@ -81,7 +93,20 @@ namespace Deloprosit.Server.Controllers
         public async Task<IActionResult> GetList()
         {
             var user = await _userManager.GetCurrentUserAsync(HttpContext);
-            var messages = await _messageRepository.GetListAsync(user?.UserId);
+            var messages = (await _messageRepository.GetListAsync(user?.UserId)).Select(message =>
+            {
+                if (message == null)
+                {
+                    return null;
+                }
+
+                message.Name = _cryptoService.Decrypt(message.Name);
+                message.Email = _cryptoService.Decrypt(message.Email);
+                message.Phone = _cryptoService.Decrypt(message.Phone);
+                message.Text = _cryptoService.Decrypt(message.Text);
+
+                return message;
+            });
 
             var messageResponseModels = _mapper.Map<IEnumerable<MessageResponseModel>>(messages);
 

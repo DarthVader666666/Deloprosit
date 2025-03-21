@@ -26,9 +26,18 @@ export const helper = {
     
         return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
     },
-    getDateString(dateValue) {
+    getDateString(dateValue, short = false) {
         const date = new Date(dateValue);
-        return date.toLocaleDateString('ru-RU', {day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'});
+
+        if(short) {
+            return date.toLocaleDateString('ru-RU', {day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'});
+        }
+        else {
+            return date.toLocaleDateString('ru-RU', {day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'});
+        }
+        
+
+        
     },
     getQueryString(array, key) {
         const queryString = array.map(value => `${key}=${value}&`).join('').slice(0, -1);

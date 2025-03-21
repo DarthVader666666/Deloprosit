@@ -3,6 +3,7 @@
 using Deloprosit.Server.Models;
 using Deloprosit.Data.Entities;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Deloprosit.Server.Configurations
 {
@@ -44,12 +45,13 @@ namespace Deloprosit.Server.Configurations
                     autoMapperConfig.CreateMap<ChapterUpdateModel, Chapter>().ForMember(dest => dest.Themes, opts => opts.Ignore());
 
                     autoMapperConfig.CreateMap<ThemeUpdateModel, Theme>()
-                        .ForMember(dest => dest.Content, opts => opts.MapFrom(src => src.Content != null ? src.Content.Replace("&nbsp;", " ") : null));;
+                        .ForMember(dest => dest.Content, opts => opts.MapFrom(src => src.Content != null ? src.Content.Replace("&nbsp;", " ") : null));
                     autoMapperConfig.CreateMap<ThemeCreateModel, Theme>()
                         .ForMember(dest => dest.Content, opts => opts.MapFrom(src => src.Content != null ? src.Content.Replace("&nbsp;", " ") : null));
 
                     autoMapperConfig.CreateMap<MessageForm, Message>();
-                    autoMapperConfig.CreateMap<Message, MessageResponseModel>();
+                    autoMapperConfig.CreateMap<Message, MessageResponseModel>()
+                        .ForMember(dest => dest.Contacts, opts => opts.MapFrom(src => GetContacts(src.Email, src.Phone)));
                 });
 
                 return config.CreateMapper();
@@ -64,6 +66,17 @@ namespace Deloprosit.Server.Configurations
             }
 
             return Encoding.UTF8.GetString(bytes);
+        }
+
+        private static string? GetContacts(string? email, string? phone)
+        {
+            return (email, phone) switch
+            {
+                (var e, var p) when !e.IsNullOrEmpty() && !p.IsNullOrEmpty() => $"Email: {e}\nТел.: {p}",
+                (var e, var p) when e.IsNullOrEmpty() && !p.IsNullOrEmpty() => $"Email: {e}",
+                (var e, var p) when !e.IsNullOrEmpty() && p.IsNullOrEmpty() => $"Тел.: {p}",
+                _ => null
+            };
         }
     }
 }

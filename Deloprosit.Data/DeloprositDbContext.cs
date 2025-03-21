@@ -8,7 +8,7 @@ namespace Deloprosit.Data
     {
         const int maxRoleNameLength = 50;
         const int maxNameLength = 100;
-        const int maxInfoLength = 1000;
+        const int maxTextLength = 1000;
         const int maxBytesLength = 8000;
 
         public DeloprositDbContext(DbContextOptions options) : base(options)
@@ -26,7 +26,7 @@ namespace Deloprosit.Data
                 user.HasKey(x => x.UserId);
                 user.HasIndex(x => x.Email).IsUnique();
                 user.HasIndex(x => x.Nickname).IsUnique();
-                user.HasMany(x => x.Messages).WithOne(x => x.User).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+                user.HasMany(x => x.Messages).WithOne(x => x.UserReceiver).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
                 user.Property(x => x.Email).HasMaxLength(maxNameLength).IsRequired();
                 user.Property(x => x.Nickname).HasMaxLength(maxNameLength).IsRequired();
                 user.Property(x => x.Password).HasMaxLength(maxNameLength).IsRequired();
@@ -35,7 +35,7 @@ namespace Deloprosit.Data
                 user.Property(x => x.UserTitle).HasMaxLength(maxNameLength);
                 user.Property(x => x.Country).HasMaxLength(maxNameLength);
                 user.Property(x => x.City).HasMaxLength(maxNameLength);
-                user.Property(x => x.Info).HasMaxLength(maxInfoLength);
+                user.Property(x => x.Info).HasMaxLength(maxTextLength);
                 user.Property(x => x.Avatar).HasMaxLength(maxBytesLength);
                 user.Property(x => x.IsConfirmed).HasDefaultValue(false);
             });
@@ -74,7 +74,7 @@ namespace Deloprosit.Data
                 chapter.HasOne(x => x.User).WithMany(x => x.Chapters).HasForeignKey(x => x.UserId);
                 chapter.Property(x => x.UserId).IsRequired();
                 chapter.Property(x => x.DateCreated).IsRequired();
-                chapter.Property(x => x.ChapterTitle).HasMaxLength(maxInfoLength).IsRequired();
+                chapter.Property(x => x.ChapterTitle).HasMaxLength(maxTextLength).IsRequired();
                 chapter.Property(x => x.ImagePath).IsRequired(false);
             });
             modelBuilder.Entity<Theme>(theme =>
@@ -89,7 +89,7 @@ namespace Deloprosit.Data
             modelBuilder.Entity<Comment>(comment =>
             {
                 comment.HasKey(x => x.CommentId);
-                comment.Property(x => x.Text).HasMaxLength(maxInfoLength).IsRequired();
+                comment.Property(x => x.Text).HasMaxLength(maxTextLength).IsRequired();
                 comment.Property(x => x.DateCreated).IsRequired();
                 comment.HasOne(x => x.Theme).WithMany(x => x.Comments).HasForeignKey(x => x.ThemeId);
                 comment.HasOne(x => x.User).WithMany(x => x.Comments).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
@@ -97,7 +97,9 @@ namespace Deloprosit.Data
             modelBuilder.Entity<Message>(message =>
             {
                 message.HasKey(x => x.MessageId);
-                message.HasOne(x => x.User).WithMany(x => x.Messages).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
+                message.HasOne(x => x.UserReceiver).WithMany(x => x.Messages).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
+                message.Property(x => x.Email).HasMaxLength(maxNameLength).IsRequired(false);
+                message.Property(x => x.Phone).HasMaxLength(maxNameLength).IsRequired(false);
             });
         }
 

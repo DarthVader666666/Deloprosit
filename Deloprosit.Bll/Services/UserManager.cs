@@ -108,6 +108,8 @@ namespace Deloprosit.Bll.Services
                 return false;
             }
 
+            user.FirstName = _cryptoService.Encrypt(user.FirstName);
+            user.LastName = _cryptoService.Encrypt(user.LastName);
             user.Email = _cryptoService.Encrypt(user.Email);
             user.Password = _cryptoService.Encrypt(user.Password);
 
