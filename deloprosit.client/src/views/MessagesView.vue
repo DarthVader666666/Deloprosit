@@ -23,7 +23,7 @@ const filters = ref({
 <template>
 <div class="messages-container">
     <DataTable :value="messages" paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" v-model:filters="filters" filterDisplay="row" :globalFilterFields="['text', 'name', 'contacts', 'dateSent']" stripedRows showGridlines >
-        <Column field="text" header="Сообщение" style="width: 50%;">
+        <Column field="text" header="Сообщение">
             <template #body="{ data }">
                 {{ data.text }}
             </template>
@@ -31,7 +31,7 @@ const filters = ref({
                 <InputText v-model="filterModel.value" type="text" @input="filterCallback()" style="width:100%" placeholder="Поиск" />
             </template>
         </Column>
-        <Column field="name" header="Автор" sortable style="width: 18%" id="name">
+        <Column field="name" header="Автор" sortable style="width: 15%" id="name">
             <template #body="{ data }">
                 {{ data.name }}
             </template>
@@ -47,7 +47,7 @@ const filters = ref({
                 <InputText v-model="filterModel.value" type="text" @input="filterCallback()" style="width:100%" placeholder="Поиск" />
             </template>
         </Column>
-        <Column field="dateSent" header="Прислано" sortable id="date-sent">
+        <Column field="dateSent" header="Прислано" style="width: 15%;" sortable id="date-sent">
             <template #body="slotProps">
                 {{ helper.getDateString(slotProps.data.dateSent, true) }}
             </template>
