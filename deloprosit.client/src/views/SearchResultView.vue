@@ -12,6 +12,13 @@ const chapterSearchResult = computed(() => store.getters.getChapterSearchResult)
 
 <template>
 <div v-if="chapterSearchResult.length > 0" class="search-result-container">
+    <div>
+        <h3>
+            Результаты поиска
+        </h3>
+        <hr/> 
+    </div>
+    
     <DataTable :value="chapterSearchResult" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]" class="table-class">
         <Column>
             <template #body="slotProps">
@@ -32,6 +39,14 @@ const chapterSearchResult = computed(() => store.getters.getChapterSearchResult)
 </template>
 
 <style scoped>
+h1 {
+    padding-left: 40px;
+}
+
+h3 {
+    margin: 11px 11px 12px 11px;
+}
+
 .search-result-container {
     display: flex;
     flex-direction: column;

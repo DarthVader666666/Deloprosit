@@ -47,7 +47,7 @@ const theme = computed(() => store.getters.getTheme);
     flex-direction: row;
     padding-right: 15px;
     align-items: center;
-    justify-content: space-between;;
+    justify-content: space-between;
 }
 
 .title input {

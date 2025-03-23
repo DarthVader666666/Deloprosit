@@ -10,6 +10,11 @@ const router = useRouter();
 const searchLine = ref(null);
 
 async function handleSearch() {
+    if(!searchLine.value || searchLine.value.trim().length === 0) {
+        searchLine.value = null;
+        return;
+    }
+
     await store.dispatch('downloadChapterSearchResult', searchLine.value);
     searchLine.value = null;
     router.push('/search-result');
