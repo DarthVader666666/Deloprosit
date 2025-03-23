@@ -149,8 +149,7 @@ namespace Deloprosit.Server.Controllers
             try
             {
                 var reader = new StreamReader(HttpContext.Request.Body);
-                var r = await reader.ReadToEndAsync();
-                searchLine = JsonConvert.DeserializeObject<SearchLineModel>(r)?.SearchLine;
+                searchLine = JsonConvert.DeserializeObject<SearchLineModel>(await reader.ReadToEndAsync())?.SearchLine;
             }
             catch
             {
@@ -163,8 +162,8 @@ namespace Deloprosit.Server.Controllers
             }
 
             var chapterSearchResultModels = (await _chapterRepository.GetListAsync()).SelectMany(chapter => chapter?.Themes ?? [])
-                .Where(theme => theme.Content != null && theme.Content.Contains(searchLine))
-                .SelectMany(theme => theme == null || theme.Content.IsNullOrEmpty() ? [] : GetChapterSearchResultModels(theme, searchLine)).ToList();
+                .Where(theme => theme.Content != null && theme.Content.Contains(searchLine, StringComparison.OrdinalIgnoreCase))
+                .SelectMany(theme => theme == null || theme.Content.IsNullOrEmpty() ? [] : GetChapterSearchResultModels(theme, searchLine));
 
             return Ok(chapterSearchResultModels);
         }
@@ -176,11 +175,11 @@ namespace Deloprosit.Server.Controllers
             var htmlPage = new HtmlDocument();
             htmlPage.LoadHtml(theme!.Content!);
             var rootNode = htmlPage.DocumentNode;
-            var nodes = rootNode.ChildNodes.Where(x => x.InnerText.Contains(searchLine));
+            var nodes = rootNode.ChildNodes.Where(x => x.InnerText.Contains(searchLine, StringComparison.OrdinalIgnoreCase));
 
             foreach (var node in nodes)
             {
-                var childNode = node.ChildNodes.FirstOrDefault(x => x.Name != "#text" && x.InnerText.Contains(searchLine)) ?? node;
+                var childNode = node.ChildNodes.FirstOrDefault(x => x.Name != "#text" && x.InnerText.Contains(searchLine, StringComparison.OrdinalIgnoreCase)) ?? node;
                 var content = childNode.InnerText;
 
                 var lastIndex = content.Length - 1;
@@ -213,7 +212,8 @@ namespace Deloprosit.Server.Controllers
                     }
 
                     var searchFragmentText = content.Substring(leftIndex, leftOffset + searchLine.Length + rigthOffset);
-                    searchFragmentText = searchFragmentText.Replace(searchLine, $"<span style=\"background:yellow\">{searchLine}</span>");
+                    var searchLineContent = content.Substring(index, searchLine.Length);
+                    searchFragmentText = searchFragmentText.Replace(searchLineContent, $"<span style=\"background:yellow\">{searchLineContent.TrimStart('/')}</span>");
                     var searchFragment = content.Replace(childNode.InnerText, searchFragmentText);
 
                     var chapterSearchResultModel = new ChapterSearchResultModel
