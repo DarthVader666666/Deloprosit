@@ -175,7 +175,7 @@ namespace Deloprosit.Server.Controllers
 
         private static IEnumerable<ChapterSearchResultModel> GetChapterSearchResultModels(Theme theme, string searchLine)
         {
-            const int offset = 50;
+            const int offset = 100;
 
             var htmlPage = new HtmlDocument();
             htmlPage.LoadHtml(theme!.Content!);
@@ -187,7 +187,7 @@ namespace Deloprosit.Server.Controllers
                 var childNode = node.ChildNodes.FirstOrDefault(x => x.Name != "#text" && x.InnerText.Contains(searchLine, StringComparison.OrdinalIgnoreCase)) ?? node;
                 var content = childNode.InnerText;
 
-                var lastIndex = content.Length - 1;
+                var lastIndex = content.Length;
                 var startIndex = 0;
 
                 while (startIndex < lastIndex)
