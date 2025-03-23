@@ -39,14 +39,6 @@ const chapterSearchResult = computed(() => store.getters.getChapterSearchResult)
 </template>
 
 <style scoped>
-h1 {
-    padding-left: 40px;
-}
-
-h3 {
-    margin: 11px 11px 12px 11px;
-}
-
 .search-result-container {
     display: flex;
     flex-direction: column;
@@ -85,6 +77,7 @@ h3 {
 }
 
 .table-class:deep(td) {
+    padding-top: 0;
     background-color: var(--CENTRAL-BCKGND-CLR);
 }
 
@@ -92,4 +85,22 @@ h3 {
     display: none;
 }
 
+h1 {
+    padding-left: 40px;
+}
+
+h3 {
+    margin: 11px 11px 12px 11px;
+}
+
+@media (max-width: 800px) {
+    .table-class:deep(td) {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .date {
+        display: none;
+    }
+}
 </style>
