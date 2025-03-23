@@ -8,6 +8,7 @@ import FeedBackView from "@/views/FeedBackView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import store from '@/vuex/store.js';
 import MessagesView from "@/views/MessagesView.vue";
+import SearchResultView from "@/views/SearchResultView.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -56,6 +57,11 @@ const router = createRouter({
             path: '/messages',
             name: 'messages',
             component: MessagesView
+        },
+        {
+            path: '/search-result',
+            name: 'search-result',
+            component: SearchResultView
         }
     ]
 });

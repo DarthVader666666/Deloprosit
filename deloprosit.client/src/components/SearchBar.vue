@@ -1,13 +1,26 @@
 <script setup>
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+
+const store = useStore();
+const router = useRouter();
+const searchLine = ref(null);
+
+async function handleSearch() {
+    await store.dispatch('downloadChapterSearchResult', searchLine.value);
+    searchLine.value = null;
+    router.push('/search-result');
+}
 
 </script>
 <template>
     <div class="search-bar">
         <label>Поиск<span> в разделах</span>:</label>
-        <InputText placeholder="Введите, что хотите найти..."/>
-        <Button raised severity="secondary" reised><i class="pi pi-search"></i><span>Искать</span></Button>
+        <InputText v-model="searchLine" placeholder="Введите, что хотите найти..."/>
+        <Button @click="handleSearch" raised severity="secondary" reised><i class="pi pi-search"></i><span>Искать</span></Button>
     </div>
 </template>
 

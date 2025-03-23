@@ -15,6 +15,7 @@ const toast = useToast();
 const router = useRouter();
 
 const pending = ref(false);
+const invalid = ref(false);
 const messageForm = ref(
     {
         name: null,
@@ -58,7 +59,13 @@ async function handleSendProcess(promise) {
 
 function sendMessage() {
     if(!(messageForm.value.email && messageForm.value.phone)) {
-        toast.error('Поле "Ваш Email" или "Ваш номер телефона" должны быть заполнены');
+        invalid.value = true;
+        const email = document.getElementById('email');
+        const phone = document.getElementById('phone');
+
+        email.setAttribute('placeholder', 'Должен быть указан Email и/или Номер телефона');
+        phone.setAttribute('placeholder', 'Должен быть указан Email и/или Номер телефона');
+        
         return;
     }
 
@@ -90,11 +97,11 @@ function sendMessage() {
             </div>
             <div class="send-message-input">
                 <span>Ваш Email:</span>        
-                <InputText type="email" v-model="messageForm.email"></InputText>
+                <InputText type="email" :invalid="invalid" v-model="messageForm.email" id="email"></InputText>
             </div>
             <div class="send-message-input">
                 <span>Ваш номер телефона:</span>
-                <InputText type="tel" v-model="messageForm.phone"></InputText>
+                <InputText type="tel" :invalid="invalid" v-model="messageForm.phone" id="phone"></InputText>
             </div>
             <div class="send-message-input">
                 <span>Ваше сообщение:</span>
@@ -135,7 +142,8 @@ function sendMessage() {
 }
 
 .send-message-input textarea {
-    min-height: 300px;
+    min-height: 200px;
+    max-height: 250px;
 }
 
 button {

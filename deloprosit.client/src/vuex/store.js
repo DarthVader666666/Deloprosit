@@ -16,6 +16,7 @@ const store = createStore({
         themes: [],
         documents: [],
         messages: [],
+        chapterSearchResult: [],
         showSearchBar: true,
         title: null,
         imagePaths: 
@@ -46,6 +47,9 @@ const store = createStore({
         },
         getMessages(state) {
             return state.messages;
+        },
+        getChapterSearchResult(state) {
+            return state.chapterSearchResult;
         },
         serverUrl(state) {
             return state.serverUrl;
@@ -96,6 +100,9 @@ const store = createStore({
         setMessages(state, messages) {
             state.messages = messages;
         },
+        setChapterSearchResult(state, chapterSearchResult) {
+            state.chapterSearchResult = chapterSearchResult;
+        },
         setShowChapterList(state, value) {
             state.showChapterList = value;
         }
@@ -142,6 +149,24 @@ const store = createStore({
                 }));
 
             commit('setMessages', messages);
+        },
+        async downloadChapterSearchResult({commit, state}, searchLine) {
+            const chapterSearchResult = (await axios.post(`${state.serverUrl}/chapters/search/`,
+                {
+                    searchLine: searchLine
+                }
+            )
+                .then(response => response.data)
+                .catch(error => {
+                    if(error.response.status === 500) {
+                        toast.error(error.response.data.message)
+                    }
+                    else {
+                        toast.error('Что-то пошло не так')
+                    }
+                }));
+
+            commit('setChapterSearchResult', chapterSearchResult);
         },
     }
 });
