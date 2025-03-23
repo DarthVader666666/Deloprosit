@@ -19,7 +19,7 @@ async function handleSearch() {
 <template>
     <div class="search-bar">
         <label>Поиск<span> в разделах</span>:</label>
-        <InputText v-model="searchLine" placeholder="Введите, что хотите найти..."/>
+        <InputText v-model="searchLine" @keydown.enter="handleSearch" placeholder="Введите, что хотите найти..."/>
         <Button @click="handleSearch" raised severity="secondary" reised><i class="pi pi-search"></i><span>Искать</span></Button>
     </div>
 </template>

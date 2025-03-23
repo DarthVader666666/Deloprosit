@@ -150,6 +150,11 @@ namespace Deloprosit.Server.Controllers
             {
                 var reader = new StreamReader(HttpContext.Request.Body);
                 searchLine = JsonConvert.DeserializeObject<SearchLineModel>(await reader.ReadToEndAsync())?.SearchLine;
+
+                if (searchLine == null || searchLine.Length < 3)
+                {
+                    return Ok(Enumerable.Empty<ChapterSearchResultModel>());
+                }
             }
             catch
             {
@@ -208,7 +213,7 @@ namespace Deloprosit.Server.Controllers
 
                     if (rightIndex > lastIndex)
                     {
-                        rigthOffset = lastIndex - (index + searchLine.Length + 1);
+                        rigthOffset = lastIndex - (index + searchLine.Length);
                     }
 
                     var searchFragmentText = content.Substring(leftIndex, leftOffset + searchLine.Length + rigthOffset);

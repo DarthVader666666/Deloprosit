@@ -2,6 +2,8 @@
 import { helper } from '@/helper/helper';
 import { computed } from 'vue';
 import { useStore } from 'vuex';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 
 const store = useStore();
 const chapterSearchResult = computed(() => store.getters.getChapterSearchResult);
@@ -10,15 +12,19 @@ const chapterSearchResult = computed(() => store.getters.getChapterSearchResult)
 
 <template>
 <div v-if="chapterSearchResult.length > 0" class="search-result-container">
-    <div v-for="(searchResult, index) in chapterSearchResult" :key="index">
-        <div class="search-result-header">
-            <RouterLink :to="`/chapters/${searchResult.chapterId}/${searchResult.themeId}`">
-                {{ searchResult.themeTitle }}
-            </RouterLink>
-            <span class="date">{{ helper.getDateString(searchResult.dateCreated) }}</span>
-        </div>
-        <div v-html="searchResult.searchFragment" class="search-result-content"></div>
-    </div>
+    <DataTable :value="chapterSearchResult" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]" class="table-class">
+        <Column>
+            <template #body="slotProps">
+                <div class="search-result-header">
+                    <RouterLink :to="`/chapters/${slotProps.data.chapterId}/${slotProps.data.themeId}`">
+                        {{ slotProps.data.themeTitle }}
+                    </RouterLink>
+                    <span class="date">{{ helper.getDateString(slotProps.data.dateCreated) }}</span>
+                </div>
+                <div v-html="slotProps.data.searchFragment" class="search-result-content"></div>
+            </template>
+        </Column>        
+    </DataTable>
 </div>
 <h1 v-else>
     Поиск не дал результатов
@@ -62,4 +68,13 @@ const chapterSearchResult = computed(() => store.getters.getChapterSearchResult)
 .date {
     font-size: small;
 }
+
+.table-class:deep(td) {
+    background-color: var(--CENTRAL-BCKGND-CLR);
+}
+
+.table-class:deep(th) {
+    display: none;
+}
+
 </style>
