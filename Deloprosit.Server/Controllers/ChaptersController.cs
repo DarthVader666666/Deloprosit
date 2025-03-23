@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using System.Text.RegularExpressions;
 
 namespace Deloprosit.Server.Controllers
 {
