@@ -20,25 +20,30 @@ const router = useRouter();
 const nickname = computed(() => store.state.nickname);
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
+
 const remember = ref (false);
 const showLogin = ref(false);
+const showMenu = ref(false);
+const showAccountSettings = ref(false);
 const header = ref(null)
-const isMenuOpened = ref(false);
 
 onMounted(() => {
-    window.addEventListener('click', closeLogin)
+    window.addEventListener('click', closeLogin);
+    window.addEventListener('click', closeMenu);
+    window.addEventListener('click', closeAccountSettings);
+    window.addEventListener('resize', handleScreenSizeChange);
 })
 
-watch(isMenuOpened, (oldValue, newValue) => {
+watch(showMenu, (oldValue, newValue) => {
     const menu = document.getElementById('menu');
 
     if(newValue) {
-        menu.classList.remove('menu-minimized');
+        menu.classList.remove('slide-container');
         menu.classList.add('menu');
     }
     else {
         menu.classList.remove('menu');
-        menu.classList.add('menu-minimized');        
+        menu.classList.add('slide-container');        
     }
 });
 
@@ -64,13 +69,37 @@ function anyChildren(event, element) {
 }
 
 const closeLogin = (event) => {
-    var isButton = anyChildren(event, document.getElementById('login-button'));
-    var isForm = anyChildren(event, document.getElementById('login-form'));
+    var isValidClick = anyChildren(event, document.getElementById('login-button')) || 
+        anyChildren(event, document.getElementById('login-form'));
 
-    if (!isForm && !isButton) {
+    if (!isValidClick) {
         showLogin.value = false;
     }
 };
+
+const closeMenu = (event) => {
+    var isValidClick = anyChildren(event, document.getElementById('menu'))
+    || anyChildren(event, document.getElementById('burger-button'));
+
+    if (!isValidClick) {
+        showMenu.value = false;
+    }
+};
+
+const closeAccountSettings = (event) => {
+    var isValidClick = anyChildren(event, document.getElementById('account-settings'))
+    || anyChildren(event, document.getElementById('account-button'));
+
+    if (!isValidClick) {
+        showAccountSettings.value = false;
+    }
+};
+
+const handleScreenSizeChange = () => {
+    if(document.documentElement.clientWidth > 800) {
+        showMenu.value = false;
+    }
+}
 
 const handleLogin = () => {
     const nicknameValue = helper.validateEmail(loginRequestForm.value.nicknameOrEmail) ? '' : loginRequestForm.value.nicknameOrEmail
@@ -152,7 +181,7 @@ const handleLogout = () => {
 }
 
 function handleBurgerClick() {
-    isMenuOpened.value = !isMenuOpened.value;
+    showMenu.value = !showMenu.value;
 }
 
 </script>
@@ -161,26 +190,71 @@ function handleBurgerClick() {
     <div class="header-container" ref="header">
         <div class="logo">
             <RouterLink to="/"><h1>DP</h1></RouterLink>            
-        </div>        
-        <div class="menu-burger" >
-            <Button  security="contrast" rounded text @click="handleBurgerClick">
-                <i class="pi pi-bars"></i>
-            </Button>
         </div>
-        <div class="menu" id="menu">
-            <Button @click="() => { isMenuOpened = false; router.push('/'); }" severity="contrast" text label="Главная"/>
-            <Button v-if="!(isAdmin || isOwner)" @click="() => { isMenuOpened = false; router.push('/feedback'); }" severity="contrast" text label="Обратная связь"/>
-            <Button v-else @click="() => { isMenuOpened = false; router.push('/chapters/create'); }" severity="contrast" text label="Создать раздел"/>
-            <Button v-if="isOwner" @click="() => { isMenuOpened = false; router.push('/messages'); }" severity="contrast" text label="Сообщения"></Button>   
-            <Button v-if="!nickname" @click="() => { isMenuOpened = false; showLogin = false; router.push('/register'); }" severity="contrast" text label="Регистрация"/>
-            <Button v-if="!nickname" @click="() => { isMenuOpened = false; showLogin = !showLogin; }" icon="pi pi-sign-in" severity="contrast" text label="Войти" id="login-button"/>
-            <div v-else class="message"><span>{{ nickname }}</span>
-                <Button @click="handleLogout" severity="secondary" label="Выйти"/> 
+        <div class="account-and-menu">            
+            <div class="menu-burger" >
+                <Button
+                    @click="handleBurgerClick" 
+                    security="contrast" rounded text
+                    id="burger-button"
+                >
+                    <i class="pi pi-bars"></i>
+                </Button>
+            </div>        
+            <div class="menu" id="menu">
+                <Button
+                    @click="() => { showMenu = false; router.push('/'); }" 
+                    severity="contrast" text label="Главная" 
+                    id="home-button"
+                />
+                <Button v-if="!(isAdmin || isOwner)"
+                    @click="() => { showMenu = false; router.push('/feedback'); }" 
+                    severity="contrast" text label="Обратная связь"
+                    id="feedback-button"
+                />
+                <Button v-if="isAdmin || isOwner"
+                    @click="() => { showMenu = false; router.push('/chapters/create'); }"
+                    severity="contrast" text label="Создать раздел"
+                    id="create-chapter-button"
+                />
+                <Button v-if="isOwner" @click="() => { showMenu = false; router.push('/messages'); }" 
+                    severity="contrast" text label="Сообщения"
+                    id="messages-button"
+                />   
+                <Button v-if="!nickname" @click="() => { showMenu = false; showLogin = false; router.push('/register'); }" 
+                    severity="contrast" text label="Регистрация"
+                    id="register-button"
+                />
+                <Button v-if="!nickname" @click="() => { showMenu = false; showLogin = !showLogin; }" 
+                    severity="contrast" text label="Войти" icon="pi pi-sign-in"
+                    id="login-button"
+                />            
+            </div>
+            <div v-if="nickname" class="account">
+                <Button 
+                    @click="() => showAccountSettings = !showAccountSettings"
+                    severity="secondary" rounded
+                    id="account-button"
+                >
+                <i class="pi pi-user" style="font-size: x-large;"></i>
+                </Button>
+                <span>{{ nickname }}</span>                
+            </div>
+            <div v-if="nickname && showAccountSettings" class="slide-container" id="account-settings">
+                <span style="font-size: large;">
+                    {{ nickname }}
+                </span>
+                <Button 
+                    @click="handleLogout" 
+                    severity="secondary" label="Выйти"
+                    icon="pi pi-sign-out"
+                    id="logout-button"
+                />
             </div>
         </div>
     </div>
 
-    <form v-if="showLogin" class="authentication-form" @submit.prevent="handleLogin" @keydown.enter.prevent="handleLogin" id="login-form">
+    <form v-if="showLogin" class="slide-container" @submit.prevent="handleLogin" @keydown.enter.prevent="handleLogin" id="login-form">
         <div class="login-input">
             <label>Логин: </label>
             <InputText v-model="loginRequestForm.nicknameOrEmail" type="text" placeholder="Почта или никнэйм" required/>
@@ -208,7 +282,45 @@ function handleBurgerClick() {
       box-shadow: var(--COMPONENT-BOX-SHADOW);
       border-radius: 0 0 5px 5px;
       height: var(--HEADER-HEIGHT);
-      font-size: small;
+    }
+
+    .account-and-menu {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .account {
+        display: flex;
+        flex-direction: column;
+        font-size: medium;
+        align-items: center;
+        padding-top: 20px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .account button {
+        height: 50px;
+        width: 50px;
+    }
+
+    .slide-container {
+        position: absolute;
+        right: 0;
+        z-index: 1;
+        background-color: var(--MENU-BCKGND-CLR);
+        display: flex;
+        flex-direction: column;
+        padding: 15px;
+        border-radius: 3px;
+        box-shadow: var(--MENU-BOX-SHADOW);
+        top: 90px;
+        align-items: start;
+        animation-name: slide;
+        animation-duration: 0.2s;
+        transform: translateX(0%);
+        gap: 12px;
+        min-width: 220px;
     }
 
     .menu {
@@ -219,24 +331,7 @@ function handleBurgerClick() {
         padding: 8px;
     }
 
-    .menu-minimized {
-        position: absolute;
-        right: 0;
-        z-index: 1;
-        background-color: var(--MENU-BCKGND-CLR);
-        display: flex;
-        flex-direction: column-reverse;
-        padding: 10px;
-        border-radius: 3px;
-        box-shadow: var(--MENU-BOX-SHADOW);
-        top: 80px;
-        align-items: start;
-        animation-name: slide;
-        animation-duration: 0.2s;
-        transform: translateX(0%);
-    }
-
-    .menu-minimized button:deep(span) {
+    .slide-container button:deep(span) {
         font-weight: bold;
         color: var(--TEXT-COLOR);
     }
@@ -253,7 +348,6 @@ function handleBurgerClick() {
     }
 
     .menu-burger button {
-        font-size: large;
         border-width: 1px;
         border-color: rgba(0, 0, 0, 0.332);
     }
@@ -272,28 +366,9 @@ function handleBurgerClick() {
         color: var(--TEXT-COLOR);
     }
 
-    .authentication-form {
-        position: absolute;
-        right: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: start;
-        padding: 15px;
-        align-items: end;
-        gap: 12px;
-        background-color: var(--MENU-BCKGND-CLR);
-        border-radius: 5px;        
-        z-index: 1;
-        box-shadow: var(--MENU-BOX-SHADOW);
-        font-size: small;
-        animation-name: slide;
-        animation-duration: 0.2s;
-        transform: translateX(0%)
-    }
-
-    .authentication-form input[type="text"], input[type="password"] {
-        font-size: small;
-        height: 22px;
+    .slide-container input[type="text"], input[type="password"] {
+        font-size: medium;
+        height: 30px;
     }
 
     .login-input {
@@ -317,10 +392,10 @@ function handleBurgerClick() {
     }
 
     .bottom-part button {
-        font-size: small;
-        height: 24px;
-        padding: 5px;
-        margin-left: 15px;
+        font-size: medium;
+        height: 30px;
+        padding: 8px;
+        margin-left: 22px;
         border-radius: 4px;
     }
 
@@ -333,17 +408,6 @@ function handleBurgerClick() {
 
     .remember label:hover, input:hover {
         cursor: pointer;
-    }
-
-    .message {
-      font-size: large;
-      padding-right: 15px;
-      align-content: center;
-    }
-
-    .message span {
-      font-weight: bold;
-      padding-right: 15px;
     }
 
     .logo {
@@ -375,15 +439,9 @@ function handleBurgerClick() {
         .menu-burger {
             display: block;
         }
-    }
 
-    @media(min-width: 800px) {
-        .menu-minimized {
-            display: none;
-        }
-
-        .menu {
-            display: flex;
+        .account-and-menu {
+            flex-direction: row-reverse;
         }
     }
 

@@ -4,7 +4,7 @@ import Textarea from 'primevue/textarea';
 import Button from 'primevue/button'
 import axios from 'axios';
 import { useStore } from 'vuex';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
 import { helper } from '@/helper/helper';
@@ -24,6 +24,16 @@ const messageForm = ref(
         text: null,
         dateSent: null
     });
+
+watch(messageForm.value, (oldValue, newValue) => {
+    if(newValue.email || newValue.phone) {
+        invalid.value = false;
+        const email = document.getElementById('email');
+        const phone = document.getElementById('phone');
+        email.setAttribute('placeholder', '');
+        phone.setAttribute('placeholder', '');
+    }
+});
 
 async function handleSendProcess(promise) {
     if(promise) {

@@ -57,8 +57,14 @@ function handleCancel() {
         <div class="upper-part">
             <InputText v-model="theme.themeTitle" type="text" placeholder="Заголовок темы" required @input="handleInput"/>
             <div class="buttons">
-                <Button type="submit" raised severity="secondary" label="Сохранить" id="save-button" disabled/>
-                <Button type="button" @click="handleCancel" raised severity="contrast" label="Отменить"/>
+                <Button type="submit" raised severity="secondary" id="save-button" disabled>
+                    <i class="pi pi-save"></i>
+                    <span>Сохранить</span>
+                </Button>
+                <Button type="button" @click="handleCancel" raised severity="contrast">
+                    <i class="pi pi-ban"></i>
+                    <span>Отменить</span>
+                </Button>
             </div>
         </div>
         <Editor v-model.content="theme.content" editorStyle="height: 650px" @input="handleInput"/>
@@ -105,4 +111,14 @@ function handleCancel() {
     padding-bottom: 10px;
 }
 
+@media (max-width:800px) {
+    .buttons button {
+        padding: 10px;
+        margin-right: 5px;
+    }
+
+    .buttons span {
+        display: none;
+    }
+}
 </style>
