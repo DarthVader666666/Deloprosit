@@ -97,7 +97,7 @@ const chapters = computed(() => store.state.chapters);
   } 
 
   h1 {
-    font-size: medium;
+    font-size: large;
   }
 }
 </style>
