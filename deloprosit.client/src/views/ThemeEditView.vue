@@ -16,7 +16,7 @@ const router = useRouter();
 const chapter = computed(() => store.getters.getChapter);
 const theme = computed(() => store.getters.getTheme);
 
-function handleInput() {
+function handleThemeChange() {
     document.getElementById('save-button').disabled = false;
 };
 
@@ -37,7 +37,7 @@ async function updateTheme() {
             store.dispatch('downloadChapter',  chapter.value.chapterId);
             store.dispatch('downloadTheme',  theme.value.themeId);
 
-            router.push(`/chapters/${chapter.value.chapterId}/${theme.value.themeId}`)
+            router.push(`/chapters/${chapter.value.chapterId}/${theme.value.themeId}`);
         }
     })
     .catch(error => {
@@ -46,7 +46,13 @@ async function updateTheme() {
 }
 
 function handleCancel() {
-    router.push(`/chapters/${chapter.value.chapterId}/${theme.value.themeId}`)
+    if(chapter.value) {
+        router.push(`/chapters/${chapter.value.chapterId}/${theme.value.themeId}`);
+    }
+    else {
+        router.push('/');
+    }
+    
 }
 
 </script>
@@ -55,7 +61,7 @@ function handleCancel() {
 <div v-if="theme" class="theme-edit-container">
     <Form @submit="updateTheme" class="edit-theme-form" id="form">
         <div class="upper-part">
-            <InputText v-model="theme.themeTitle" type="text" placeholder="Заголовок темы" required @input="handleInput"/>
+            <InputText v-model="theme.themeTitle" type="text" placeholder="Заголовок темы" required @input="handleThemeChange"/>
             <div class="buttons">
                 <Button type="submit" raised severity="secondary" id="save-button" disabled>
                     <i class="pi pi-save"></i>
@@ -67,7 +73,7 @@ function handleCancel() {
                 </Button>
             </div>
         </div>
-        <Editor v-model.content="theme.content" editorStyle="height: 650px" @input="handleInput"/>
+        <Editor v-model.content="theme.content" editorStyle="height: 650px" @text-change="handleThemeChange"/>
     </Form>
 </div>
 

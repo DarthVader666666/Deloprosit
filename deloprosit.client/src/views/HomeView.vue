@@ -87,7 +87,7 @@ const chapters = computed(() => store.state.chapters);
 }
 
 @media(max-width: 800px) {
-  .chapter img{
+  .chapter img {
     max-width: 120px;
     max-height: auto;
   }
