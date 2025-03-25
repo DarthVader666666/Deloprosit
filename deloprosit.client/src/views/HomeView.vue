@@ -65,7 +65,6 @@ const chapters = computed(() => store.state.chapters);
     font-size: medium;
     text-align: center;
     font-weight: bold;
-    filter: drop-shadow(4px 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .chapter img:hover {

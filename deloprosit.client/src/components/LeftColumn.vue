@@ -90,6 +90,7 @@ function handleThemeClick(node) {
     .tree:deep(*) {
         padding: 0;
         margin: 0;
+        font-size: small;
     }
 
     @media (max-width: 1400px) {
