@@ -83,7 +83,7 @@ const props = defineProps({
 }
 
 .theme-content:deep(img) {
-    max-width: 1000px;
+    max-width: 920px;
     height: auto;
 }
 
