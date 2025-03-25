@@ -100,6 +100,22 @@ namespace Deloprosit.Server.Controllers
         }
 
         [HttpGet]
+        [Route("[action]")]
+        public async Task<IActionResult> GetNodes()
+        {
+            var chapters = await _chapterRepository.GetListAsync();
+
+            if (chapters == null)
+            {
+                return Problem(statusCode: 500, detail: "Ошибка сервера");
+            }
+
+            var response = _mapper.Map<IEnumerable<ChapterNode>>(chapters);
+
+            return Ok(response);
+        }
+
+        [HttpGet]
         [Route("[action]/{chapterId:int}")]
         public async Task<IActionResult> Get(int? chapterId)
         {

@@ -42,6 +42,19 @@ namespace Deloprosit.Server.Configurations
                             }
                         ).ToArray()));
 
+                    autoMapperConfig.CreateMap<Chapter, ChapterNode>()
+                        .ForMember(dest => dest.Key, opts => opts.MapFrom(src => $"{src.ChapterId}"))
+                        .ForMember(dest => dest.Label, opts => opts.MapFrom(src => src.ChapterTitle))
+                        .ForMember(dest => dest.Children, opts => opts.MapFrom(src =>
+                            src.Themes == null
+                            ? Array.Empty<ThemeNode>()
+                            : src.Themes.Select(x => new ThemeNode
+                            {
+                                Key = $"{x.ChapterId}-{x.ThemeId}",
+                                Label = x.ThemeTitle,
+                                Data = $"/chapters/{x.ChapterId}/{x.ThemeId}"
+                            }).ToArray()));
+
                     autoMapperConfig.CreateMap<ChapterUpdateModel, Chapter>().ForMember(dest => dest.Themes, opts => opts.Ignore());
 
                     autoMapperConfig.CreateMap<ThemeUpdateModel, Theme>()

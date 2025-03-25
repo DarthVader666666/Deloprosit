@@ -12,6 +12,7 @@ const store = createStore({
         nickname: null,
         chapter: null,
         chapters: [],
+        chapterNodes: [],
         theme: null,
         themes: [],
         documents: [],
@@ -35,6 +36,9 @@ const store = createStore({
         },
         getChapters(state) {
             return state.chapters;
+        },
+        getChapterNodes(state) {
+            return state.chapterNodes;
         },
         getTheme(state) {
             return state.theme;
@@ -82,11 +86,14 @@ const store = createStore({
             state.title = value;
             state.showSearchBar = false;
         },
+        setChapter(state, chapter) {            
+            state.chapter = chapter;
+        },
         setChapters(state, chapters) {
             state.chapters = chapters;
         },
-        setChapter(state, chapter) {            
-            state.chapter = chapter;
+        setChapterNodes(state, chapterNodes) {
+            state.chapterNodes = chapterNodes;
         },
         setTheme(state, theme) {
             state.theme = theme;
@@ -108,15 +115,19 @@ const store = createStore({
         }
     },
     actions: {
-        async downloadChapters({commit, state}) {
-            const chapters = (await axios.get(`${state.serverUrl}/chapters/getlist`)).data;
-            commit('setChapters', chapters);
-        },
         async downloadChapter({commit, state}, chapterId ) {
             const url = `${state.serverUrl}/chapters/get/${chapterId}`;
             const chapter = (await axios.get(url)).data;
             commit('setChapter', chapter);
             commit('setThemes', chapter.themes);
+        },
+        async downloadChapters({commit, state}) {
+            const chapters = (await axios.get(`${state.serverUrl}/chapters/getlist`)).data;
+            commit('setChapters', chapters);
+        },
+        async downloadChapterNodes({commit, state}) {
+            const chapterNodes = (await axios.get(`${state.serverUrl}/chapters/getnodes`)).data;
+            commit('setChapterNodes', chapterNodes);
         },
         async downloadTheme({commit, state}, themeId ) {
             if (themeId) {

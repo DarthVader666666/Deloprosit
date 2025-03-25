@@ -110,6 +110,7 @@ router.afterEach(async (to) => {
      }
 
     await store.dispatch('downloadChapters');
+    await store.dispatch('downloadChapterNodes');
     await store.dispatch('downloadDocuments');
     window.scrollTo(0, 0);
 });

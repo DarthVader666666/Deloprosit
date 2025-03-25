@@ -2,6 +2,7 @@ using Deloprosit.Bll.Interfaces;
 using Deloprosit.Bll.Services;
 using Deloprosit.Data;
 using Deloprosit.Data.Entities;
+using Deloprosit.Server;
 using Deloprosit.Server.Configurations;
 
 using JsonFlatFileDataStore;
@@ -15,6 +16,8 @@ using System.Text.Json.Serialization;
 const string azureEnvironment = "Production";
 var jsonFileCreated = false;
 var builder = WebApplication.CreateBuilder(args);
+
+ConfigurationHelper.Initialize(builder.Configuration, builder.Environment);
 
 builder.Services.AddLogging(logs =>
 {
