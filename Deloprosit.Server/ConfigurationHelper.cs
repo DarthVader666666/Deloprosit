@@ -12,7 +12,7 @@
             WebHostEnvironment = webHostEnvironment;
             WebRootPath = webHostEnvironment.EnvironmentName == "Development" 
                 ? webHostEnvironment.WebRootPath + "\\docs\\"
-                : "https://https://deloprosit.azurewebsites.net/docs";
+                : "https://deloprosit.azurewebsites.net/docs";
         }
     }
 }

@@ -144,7 +144,7 @@ namespace Deloprosit.Server.Controllers
             }
             catch
             {
-                return Problem(statusCode: 500, detail: "Ошибка при удалении файла");
+                return Problem(statusCode: 500, detail: "Ошибка при создании папки");
             }
 
             return Ok();
