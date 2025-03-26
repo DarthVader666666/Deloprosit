@@ -64,7 +64,7 @@ namespace Deloprosit.Server.Controllers
                         Icon = "pi pi-ellipsis-h",
                         Children = files.Select(f => new DocumentNode
                         {
-                            Key = $"docs-{f.FullName}",
+                            Key = $"{webRootPath}-{f.FullName}",
                             Label = f.Name,
                             Data = $"docs/{f.Name}"
                         }).ToArray()
