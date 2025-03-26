@@ -1,7 +1,8 @@
 <script setup>
 import FileUpload from 'primevue/fileupload';
 import Button from 'primevue/button';
-import { computed } from 'vue';
+import Tree from 'primevue/tree'
+import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import axios from 'axios';
@@ -10,19 +11,13 @@ const store = useStore();
 const toast = useToast();
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
-const documents = computed(() => store.getters.getDocuments);
+const documentNodes = computed(() => store.getters.getDocumentNodes);
 
-function download(url, label) {
-    // axios.get(url, { responseType: 'blob' })
-    //   .then(response => {
-    //     const blob = new Blob([response.data], { type: 'image/png' })
-    //     const link = document.createElement('a')
-    //     link.href = URL.createObjectURL(blob)
-    //     link.download = label
-    //     link.click()
-    //     URL.revokeObjectURL(link.href)
-    //   }).catch(console.error)
-    window.open(url + label);
+const selectedKey = ref(null);
+
+function download(node) {
+    if(node.data)
+        window.open(node.data);
 }
 
 async function uploadFiles(event) {
@@ -38,7 +33,7 @@ async function uploadFiles(event) {
     .then( async response => {
         if(response.status === 200) {
             toast.success('Файл успешно загружен');
-            await store.dispatch('downloadDocuments');
+            await store.dispatch('downloadDocumentNodes');
         }
     })
     .catch(error => {
@@ -48,21 +43,28 @@ async function uploadFiles(event) {
     })
 }
 
-async function deleteFile(fileName) {
+async function deleteFile(filePath) {
     if(!window.confirm('Файл будет удален, вы уверены')) {
         return;
     }
 
-    await axios.delete(`${store.state.serverUrl}/documents/delete/${fileName}`, null)
+    await axios.post(`${store.state.serverUrl}/documents/delete`,
+        {
+            filePath: filePath
+        }
+    )
     .then( async response => {
         if(response.status === 200) {
             toast.success('Файл успешно удален');
-            await store.dispatch('downloadDocuments');
+            await store.dispatch('downloadDocumentNodes');
         }
     })
     .catch(error => {
-        if(error.response.status) {
-            toast.error("Ошибка при удалении файла")
+        if(error.response) {
+            toast.error(error.response.data);
+        }
+        else {
+            toast.error("Ошибка при удалении файла");
         }
     })
 }
@@ -94,13 +96,21 @@ async function deleteFile(fileName) {
                 />
             </div>
             <hr/>
-            <div class="link" v-for="(document, index) in documents" :key="index">
+            <Tree :value="documentNodes" class="tree" v-model:selectionKeys="selectedKey" selectionMode="single" @nodeSelect="download">
+                <template #url="{ node }">
+                    <div>
+                        <span>{{ node.label }}</span>                    
+                        <Button v-if="isAdmin || isOwner" @click="deleteFile(node.data)" severity="danger" text rounded icon="pi pi-times"/>
+                    </div>
+                </template>
+            </Tree>
+            <!-- <div class="link" v-for="(document, index) in documents" :key="index">
                 <span @click.prevent="download(document.path, document.name)">
                     <i class="pi pi-file"></i>
                     {{ document.name }} 
                 </span>                
                 <Button v-if="isAdmin || isOwner" @click.prevent="deleteFile(document.name)" severity="danger" text rounded><i class="pi pi-times"></i></Button>
-           </div>
+           </div> -->
         </div>
     </div>        
 </template>
@@ -128,50 +138,43 @@ async function deleteFile(fileName) {
         color: black;
     }
 
-    .link {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        text-decoration: none;
-        color: black;
-        font-size: small;
-
-        word-break: break-all;
-    }
-
-    .link i {
-        font-size: small;
-        margin-right: 3px;
-    }
-
-    .link button {
-        height: 20px;
-        width: 20px;
-        margin-left: 5px;
+    .tree {
         padding: 0;
+        font-size: small;
+        background: var(--COLUMNS-BCKGND-CLR);
     }
 
-    .link button i {
-        font-size: xx-small;
-        padding-left: 3px;
+    .tree:deep(div) {
+        padding: 1px;
     }
 
-    .link span {
-        padding: 3px;
-        margin: 3px 0 0 0;
+    .tree:deep(li) {
+        font-weight: bold;
     }
 
-    .link span:hover {
-        background: var(--SELECTED-LINK-BCKGND-CLR);
-        cursor: pointer;
-        color:white;
+    .tree:deep(li) {
+        font-weight: bold;
     }
 
-    .active {
-        background: var(--SELECTED-LINK-BCKGND-CLR);
-        cursor: pointer;
-        color:white;
+    .tree:deep(*) {
+        padding: 0;
+        margin: 0;
+        font-size: small;
     }
+
+    .tree:deep(span span) {
+        font-weight: normal;
+    }
+
+    .tree:deep(span button) {
+        margin-left: 10px;
+        height: 16px;
+        width: 16px;
+    }
+    
+    .tree:deep(span button span) {
+        font-size: x-small;
+    }    
 
     @media (max-width: 1500px) {
         .items-header a span {

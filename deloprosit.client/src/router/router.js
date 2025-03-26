@@ -112,6 +112,7 @@ router.afterEach(async (to) => {
     await store.dispatch('downloadChapters');
     await store.dispatch('downloadChapterNodes');
     await store.dispatch('downloadDocuments');
+    await store.dispatch('downloadDocumentNodes');
     window.scrollTo(0, 0);
 });
 

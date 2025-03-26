@@ -16,6 +16,7 @@ const store = createStore({
         theme: null,
         themes: [],
         documents: [],
+        documentNodes: [],
         messages: [],
         chapterSearchResult: [],
         showSearchBar: true,
@@ -48,6 +49,9 @@ const store = createStore({
         },
         getDocuments(state) {
             return state.documents;
+        },
+        getDocumentNodes(state) {
+            return state.documentNodes;
         },
         getMessages(state) {
             return state.messages;
@@ -104,6 +108,9 @@ const store = createStore({
         setDocuments(state, documents) {
             state.documents = documents;
         },
+        setDocumentNodes(state, documentNodes) {
+            state.documentNodes = documentNodes;
+        },
         setMessages(state, messages) {
             state.messages = messages;
         },
@@ -150,6 +157,17 @@ const store = createStore({
 
             commit('setDocuments', documents);
         },
+        async downloadDocumentNodes({commit, state}) {
+            const documentNodes = (await axios.get(`${state.serverUrl}/documents/getnodes`)
+                .then(response => response.data)
+                .catch(error => {
+                    if(error.response.status === 500) {
+                        toast.error(error.response.data.message)
+                    }
+                }));
+
+            commit('setDocumentNodes', documentNodes);
+        },
         async downloadMessages({commit, state}) {
             const messages = (await axios.get(`${state.serverUrl}/feedback/getlist`)
                 .then(response => response.data)
@@ -162,7 +180,7 @@ const store = createStore({
             commit('setMessages', messages);
         },
         async downloadChapterSearchResult({commit, state}, searchLine) {
-            const chapterSearchResult = (await axios.post(`${state.serverUrl}/chapters/search/`,
+            const chapterSearchResult = (await axios.post(`${state.serverUrl}/chapters/search`,
                 {
                     searchLine: searchLine
                 }

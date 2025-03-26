@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+
+using Newtonsoft.Json;
+
 using System.IO;
 
 namespace Deloprosit.Server.Controllers
@@ -13,9 +16,9 @@ namespace Deloprosit.Server.Controllers
     {
         private readonly string? webRootPath;
 
-        public DocumentsController(IWebHostEnvironment webHostEnvironment)
+        public DocumentsController()
         {
-            webRootPath = webHostEnvironment.WebRootPath + "\\docs";
+            webRootPath = ConfigurationHelper.WebRootPath;
         }
 
         [HttpGet]
@@ -31,27 +34,85 @@ namespace Deloprosit.Server.Controllers
                     new DocumentResponseModel
                     {
                         Name = x.Name,
-                        Path = "https://deloprosit.azurewebsites.net/docs/",
+                        Path = webRootPath
                     }
                 );
             }
             catch(Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
-            }
-            
+            }            
 
             return Ok(documentResponseModels);
         }
 
-        [HttpDelete]
-        [Route("[action]/{fileName}")]
-        [Authorize(Roles = "Owner, Admin")]
-        public IActionResult Delete(string fileName)
+        [HttpGet]
+        [Route("[action]")]
+        public IActionResult GetNodes()
         {
+            List<DirectoryNode> directoryNodes = [];
+
             try
             {
-                System.IO.File.Delete(webRootPath + $"\\{fileName}");
+                var directoryInfo = new DirectoryInfo(webRootPath ?? throw new NullReferenceException("Не задан путь к фалу"));
+                var files = directoryInfo.GetFiles();
+
+                if (files.Any())
+                {
+                    directoryNodes.Add(new DirectoryNode
+                    {
+                        Key = "root",
+                        Label = "",
+                        Icon = "pi pi-ellipsis-h",
+                        Children = files.Select(f => new DocumentNode
+                        {
+                            Key = $"root-{f.FullName}",
+                            Label = f.Name,
+                            Data = f.FullName
+                        }).ToArray()
+                    });
+                }
+
+                directoryNodes.AddRange(directoryInfo
+                    .GetDirectories()
+                        .Select(d => new DirectoryNode
+                        {
+                            Key = d.FullName,
+                            Label = d.Name,
+                            Children = d.GetFiles().Select(f => new DocumentNode
+                            {
+                                Key = $"{d.FullName}-{f.FullName}",
+                                Label = f.Name,
+                                Data = f.FullName
+                            }).ToArray()
+                        }).ToList());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+
+            return Ok(directoryNodes);
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        [Authorize(Roles = "Owner, Admin")]
+        public async Task<IActionResult> Delete()
+        {
+            var reader = new StreamReader(HttpContext.Request.Body);
+            var filePath = JsonConvert.DeserializeObject<FilePathModel>(await reader.ReadToEndAsync())?.FilePath;
+
+            try
+            {
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath ?? throw new NullReferenceException());
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
             catch
             {
