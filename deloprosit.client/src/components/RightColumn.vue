@@ -1,7 +1,9 @@
 <script setup>
 import FileUpload from 'primevue/fileupload';
 import Button from 'primevue/button';
-import Tree from 'primevue/tree'
+import Tree from 'primevue/tree';
+import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
@@ -14,6 +16,39 @@ const isOwner = computed(() => store.getters.isOwner);
 const documentNodes = computed(() => store.getters.getDocumentNodes);
 
 const selectedKey = ref(null);
+const showNewFolderMenu = ref(false);
+const showUploadMenu = ref(false);
+const newFolderName = ref(null);
+const folderName = ref(null);
+
+function createFolder() {
+    if(!newFolderName.value) {
+        newFolderName.value = null;
+        return;
+    }
+
+    axios.post(`${store.state.serverUrl}/documents/addfolder`, 
+        {
+            folderName: newFolderName.value
+        }
+    )
+    .then( async response => {
+        if(response.status === 200) {
+            newFolderName.value = null;
+            showNewFolderMenu.value = false;
+            toast.success('Папка успешно создана');
+            await store.dispatch('downloadDocumentNodes');
+        }
+    })
+    .catch(error => {
+        if(error.response) {
+            toast.error(error.response.data);
+        }
+        else {
+            toast.error(error.message);
+        }
+    })
+}
 
 function download(node) {
     if(node.data)
@@ -24,6 +59,7 @@ async function uploadFiles(event) {
     const files = event.files;
     let formData = new FormData();
     files.forEach(file => formData.append("files", file));
+    formData.append("folderName", folderName.value);
 
     await axios.post(`${store.state.serverUrl}/documents/upload`, formData, {
         headers: {
@@ -32,13 +68,17 @@ async function uploadFiles(event) {
     })
     .then( async response => {
         if(response.status === 200) {
+            showUploadMenu.value = false;
             toast.success('Файл успешно загружен');
             await store.dispatch('downloadDocumentNodes');
         }
     })
     .catch(error => {
-        if(error.response.status) {
-            toast.error("Ошибка загрузки файла")
+        if(error.response) {
+            toast.error(error.response.data);
+        }
+        else {
+            toast.error("Ошибка загрузки файла");
         }
     })
 }
@@ -75,25 +115,55 @@ async function deleteFile(filePath) {
         <div class="items">
             <div class="items-header">
                 <strong>Документы:</strong>
-
-                <FileUpload v-if="isOwner || isAdmin"
-                    mode="basic" 
-                    name="files"
-                    :maxFileSize="20000000"
-                    chooseLabel=" "
-                    chooseIcon="pi pi-upload"
-                    style="height: 30px; width: 40px; padding-left: 20px;"
-                    :auto="true"
-                    :chooseButtonProps="
-                    {
-                        'severity': 'secondary',
-                        'text': false,
-                        'raised': true
-                    }"
-                    customUpload
-                    title="Выгрузить файл"
-                    @select="uploadFiles"
+                <Button v-if="isAdmin || isOwner"
+                    @click="showNewFolderMenu = !showNewFolderMenu"
+                    severity="secondary"
+                    raised
+                    icon="pi pi-folder-plus"
+                    title="Создать папку"
+                    style="height: 30px; min-width: 40px;"
                 />
+                <Button v-if="isAdmin || isOwner"
+                    @click="showUploadMenu = !showUploadMenu"
+                    severity="secondary"
+                    raised
+                    icon="pi pi-upload"
+                    title="Выбрать файл"
+                    style="height: 30px; min-width: 40px;"
+                />
+                <div v-if="showNewFolderMenu" class="right-column-menu">
+                    <span>Новая папка:</span>
+                    <InputText v-model="newFolderName" placeholder="Имя папки">
+                    </InputText>
+                    <div class="buttons">
+                        <Button severity="secondary" @click="createFolder" @keydown.enter="createFolder" raised label="Создать"/>
+                        <Button severity="contrast" @click="() => { newFolderName = null; showNewFolderMenu = false }" label="Отмена"/>
+                    </div>
+                </div>
+                <div v-if="showUploadMenu" class="right-column-menu">
+                    <span>Выберите путь:</span>
+                    <Select :options="documentNodes.map(x => x.label)" v-model="folderName"></Select>
+                    <div class="buttons">
+                        <FileUpload
+                            mode="basic" 
+                            name="files"
+                            :maxFileSize="20000000"
+                            chooseLabel="Файл"
+                            chooseIcon="pi pi-upload"
+                            :auto="true"
+                            :chooseButtonProps="
+                            {
+                                'severity': 'secondary',
+                                'text': false,
+                                'raised': true
+                            }"
+                            customUpload
+                            title="Выгрузить файл"
+                            @select="uploadFiles"
+                        />
+                        <Button severity="contrast" @click="() => { folderName = null; showUploadMenu = false }" label="Отмена"/>
+                    </div>
+                </div>
             </div>
             <hr/>
             <Tree :value="documentNodes" class="tree" v-model:selectionKeys="selectedKey" selectionMode="single" @nodeSelect="download">
@@ -174,7 +244,30 @@ async function deleteFile(filePath) {
     
     .tree:deep(span button span) {
         font-size: x-small;
-    }    
+    }
+
+    .right-column-menu {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        width: 300px;
+        height: 140px;
+        background: var(--MENU-BCKGND-CLR);
+        position: absolute;
+        z-index: 1;
+        box-shadow: var(--MENU-BOX-SHADOW);
+        border-radius: 5px;
+        right: 0;
+        top: 60px;
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: end;
+        gap: 15px;
+        padding-top: 15px;
+    }
 
     @media (max-width: 1500px) {
         .items-header a span {

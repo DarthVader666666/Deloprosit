@@ -61,9 +61,9 @@ namespace Deloprosit.Server.Controllers
                 {
                     directoryNodes.Add(new DirectoryNode
                     {
-                        Key = "root",
+                        Key = "../",
                         Label = "",
-                        Icon = "pi pi-ellipsis-h",
+                        //Icon = "pi pi-ellipsis-h",
                         Children = files.Select(f => new DocumentNode
                         {
                             Key = $"root-{f.FullName}",
@@ -122,18 +122,51 @@ namespace Deloprosit.Server.Controllers
             return Ok();
         }
 
+
         [HttpPost]
         [Route("[action]")]
         [Authorize(Roles = "Owner, Admin")]
-        public async Task<IActionResult> Upload(List<IFormFile> files)
+        public async Task<IActionResult> AddFolder()
         {
+            var reader = new StreamReader(HttpContext.Request.Body);
+            var folderFullName = webRootPath + JsonConvert.DeserializeObject<FolderNameModel>(await reader.ReadToEndAsync())?.FolderName;
+
+            try
+            {
+                if (!Directory.Exists(folderFullName))
+                {
+                    Directory.CreateDirectory(folderFullName ?? throw new NullReferenceException());
+                }
+                else
+                {
+                    return BadRequest(new { errorText = "Папка уже существует" });
+                }
+            }
+            catch
+            {
+                return Problem(statusCode: 500, detail: "Ошибка при удалении файла");
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        [Authorize(Roles = "Owner, Admin")]
+        public async Task<IActionResult> Upload([FromForm] UploadFileModel? uploadFileModel)
+        {
+            if (uploadFileModel == null || uploadFileModel.Files == null || !uploadFileModel.Files.Any())
+            {
+                return BadRequest(new { errorText = "Нет выбранных файлов" });
+            }
+
             try 
             {
-                foreach (IFormFile file in files)
+                foreach (IFormFile file in uploadFileModel.Files)
                 {
                     if (file.Length > 0)
                     {
-                        string filePath = Path.Combine(webRootPath ?? throw new NullReferenceException("Не задан путь к фалу"), file.FileName);
+                        string filePath = Path.Combine((webRootPath ?? throw new NullReferenceException("Не задан путь к фалу")) + uploadFileModel.FolderName, file.FileName);
                         using Stream fileStream = new FileStream(filePath, FileMode.Create);
                         await file.CopyToAsync(fileStream);
                     }
