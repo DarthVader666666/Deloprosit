@@ -59,7 +59,7 @@ namespace Deloprosit.Server.Controllers
                 {
                     directoryNodes.Add(new DirectoryNode
                     {
-                        Key = "../",
+                        Key = "docs",
                         Label = "",
                         Icon = "pi pi-ellipsis-h",
                         Children = files.Select(f => new DocumentNode
@@ -75,11 +75,11 @@ namespace Deloprosit.Server.Controllers
                     .GetDirectories()
                         .Select(d => new DirectoryNode
                         {
-                            Key = d.FullName,
+                            Key = d.Name,
                             Label = d.Name,
                             Children = d.GetFiles().Select(f => new DocumentNode
                             {
-                                Key = $"{d.FullName}-{f.Name}",
+                                Key = $"{d.Name}-{f.FullName}",
                                 Label = f.Name,
                                 Data = $"docs/{d.Name}/{f.Name}"
                             }).ToArray()
@@ -99,7 +99,7 @@ namespace Deloprosit.Server.Controllers
         public async Task<IActionResult> Delete()
         {
             var reader = new StreamReader(HttpContext.Request.Body);
-            var filePath = JsonConvert.DeserializeObject<FilePathModel>(await reader.ReadToEndAsync())?.FilePath;
+            var filePath = JsonConvert.DeserializeObject<FilePathModel>(await reader.ReadToEndAsync())?.FilePath?.Split('-')[1];
 
             try
             {

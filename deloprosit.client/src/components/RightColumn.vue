@@ -142,7 +142,7 @@ async function deleteFile(filePath) {
                 </div>
                 <div v-if="showUploadMenu" class="right-column-menu">
                     <span>Выберите путь:</span>
-                    <Select :options="documentNodes.map(x => x.label)" v-model="folderName"></Select>
+                    <Select :options="documentNodes.map(x => x.key)" v-model="folderName"></Select>
                     <div class="buttons">
                         <FileUpload
                             mode="basic" 
@@ -169,8 +169,8 @@ async function deleteFile(filePath) {
             <Tree :value="documentNodes" class="tree" v-model:selectionKeys="selectedKey" selectionMode="single" @nodeSelect="download">
                 <template #url="{ node }">
                     <div>
-                        <span>{{ node.label }}</span>                    
-                        <Button v-if="isAdmin || isOwner" @click="deleteFile(node.data)" severity="danger" text rounded icon="pi pi-times"/>
+                        <span>{{ node.label }}</span>
+                        <Button v-if="isAdmin || isOwner" @click="deleteFile(node.key)" severity="danger" text rounded icon="pi pi-times"/>
                     </div>
                 </template>
             </Tree>
