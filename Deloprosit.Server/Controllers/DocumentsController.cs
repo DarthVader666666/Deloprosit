@@ -55,21 +55,18 @@ namespace Deloprosit.Server.Controllers
                 var directoryInfo = new DirectoryInfo(webRootPath ?? throw new NullReferenceException("Не задан путь к файлу"));
                 var files = directoryInfo.GetFiles();
 
-                if (files.Any())
+                directoryNodes.Add(new DirectoryNode
                 {
-                    directoryNodes.Add(new DirectoryNode
+                    Key = "",
+                    Label = "",
+                    Icon = "pi pi-ellipsis-h",
+                    Children = files.Select(f => new DocumentNode
                     {
-                        Key = "docs",
-                        Label = "",
-                        Icon = "pi pi-ellipsis-h",
-                        Children = files.Select(f => new DocumentNode
-                        {
-                            Key = $"{webRootPath}-{f.FullName}",
-                            Label = f.Name,
-                            Data = $"docs/{f.Name}"
-                        }).ToArray()
-                    });
-                }
+                        Key = $"docs-{f.FullName}",
+                        Label = f.Name,
+                        Data = $"docs/{f.Name}"
+                    }).ToArray()
+                });
 
                 directoryNodes.AddRange(directoryInfo
                     .GetDirectories()
