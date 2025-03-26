@@ -19,7 +19,7 @@ const selectedKey = ref(null);
 const showNewFolderMenu = ref(false);
 const showUploadMenu = ref(false);
 const newFolderName = ref(null);
-const folderName = ref(null);
+const folderName = ref('');
 
 function createFolder() {
     if(!newFolderName.value) {
