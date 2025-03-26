@@ -23,7 +23,7 @@ const folderName = ref('');
 
 function createFolder() {
     if(!newFolderName.value) {
-        newFolderName.value = null;
+        newFolderName.value = '';
         return;
     }
 
@@ -34,7 +34,7 @@ function createFolder() {
     )
     .then( async response => {
         if(response.status === 200) {
-            newFolderName.value = null;
+            newFolderName.value = '';
             showNewFolderMenu.value = false;
             toast.success('Папка успешно создана');
             await store.dispatch('downloadDocumentNodes');
