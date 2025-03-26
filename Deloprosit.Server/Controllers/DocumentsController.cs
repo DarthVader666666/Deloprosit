@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
 
-using System.IO;
-
 namespace Deloprosit.Server.Controllers
 {
     [Route("api/[controller]")]
@@ -66,9 +64,9 @@ namespace Deloprosit.Server.Controllers
                         Icon = "pi pi-ellipsis-h",
                         Children = files.Select(f => new DocumentNode
                         {
-                            Key = $"root-{f.FullName}",
+                            Key = $"docs-{f.FullName}",
                             Label = f.Name,
-                            Data = f.FullName
+                            Data = $"docs/{f.Name}"
                         }).ToArray()
                     });
                 }
@@ -81,9 +79,9 @@ namespace Deloprosit.Server.Controllers
                             Label = d.Name,
                             Children = d.GetFiles().Select(f => new DocumentNode
                             {
-                                Key = $"{d.FullName}-{f.FullName}",
+                                Key = $"{d.FullName}-{f.Name}",
                                 Label = f.Name,
-                                Data = f.FullName
+                                Data = $"docs/{d.Name}/{f.Name}"
                             }).ToArray()
                         }).ToList());
             }

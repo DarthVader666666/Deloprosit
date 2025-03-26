@@ -115,7 +115,6 @@ using var scope = provider?.CreateScope();
 await MigrateSeedDatabase(scope, jsonFileCreated);
 CreateFolders();
 
-
 var app = builder.Build();
 
 app.UseStatusCodePagesWithReExecute("/error", "?status={0}");
