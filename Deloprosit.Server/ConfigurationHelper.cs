@@ -10,9 +10,7 @@
         {
             Configuration = configuration;
             WebHostEnvironment = webHostEnvironment;
-            WebRootPath = webHostEnvironment.EnvironmentName == "Development" 
-                ? webHostEnvironment.WebRootPath + "\\docs\\"
-                : "\\docs";
+            WebRootPath = webHostEnvironment.WebRootPath + "\\docs\\";
         }
     }
 }

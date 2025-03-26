@@ -54,7 +54,7 @@ namespace Deloprosit.Server.Controllers
 
             try
             {
-                var directoryInfo = new DirectoryInfo(webRootPath ?? throw new NullReferenceException("Не задан путь к фалу"));
+                var directoryInfo = new DirectoryInfo(webRootPath ?? throw new NullReferenceException("Не задан путь к файлу"));
                 var files = directoryInfo.GetFiles();
 
                 if (files.Any())
@@ -63,7 +63,7 @@ namespace Deloprosit.Server.Controllers
                     {
                         Key = "../",
                         Label = "",
-                        //Icon = "pi pi-ellipsis-h",
+                        Icon = "pi pi-ellipsis-h",
                         Children = files.Select(f => new DocumentNode
                         {
                             Key = $"root-{f.FullName}",

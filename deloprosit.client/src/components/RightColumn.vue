@@ -237,6 +237,7 @@ async function deleteFile(filePath) {
     }
 
     .tree:deep(span button) {
+        padding-top: 2px;
         margin-left: 10px;
         height: 16px;
         width: 16px;
