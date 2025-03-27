@@ -222,10 +222,6 @@ async function deleteFile(filePath) {
         font-weight: bold;
     }
 
-    .tree:deep(li) {
-        font-weight: bold;
-    }
-
     .tree:deep(*) {
         padding: 0;
         margin: 0;
