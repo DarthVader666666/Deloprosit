@@ -16,7 +16,6 @@ const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const documentNodes = computed(() => store.getters.getDocumentNodes);
 
-const selectedKey = ref(null);
 const showNewFolderMenu = ref(false);
 const showUploadMenu = ref(false);
 const newFolderName = ref(null);
@@ -174,11 +173,11 @@ async function deleteFile(filePath) {
                 </div>
             </div>
             <hr/>
-            <Tree :value="documentNodes" class="tree" v-model:selectionKeys="selectedKey" selectionMode="single" @nodeSelect="download">
+            <Tree :value="documentNodes" class="tree">
                 <template #url="{ node }">
                     <div>
-                        <span>{{ node.label }}</span>
-                        <Button v-if="isAdmin || isOwner" @click="deleteFile(node.key)" severity="danger" text rounded icon="pi pi-times"/>
+                        <span @click="download(node)" class="file-name">{{ node.label }}</span>
+                        <Button v-if="isAdmin || isOwner" @click="deleteFile(node.key)" severity="danger" text rounded title="Удалить файл" icon="pi pi-times"/>
                     </div>
                 </template>
             </Tree>
@@ -246,6 +245,11 @@ async function deleteFile(filePath) {
     
     .tree:deep(span button span) {
         font-size: x-small;
+    }
+
+    .tree:deep(.file-name:hover) {
+        cursor: pointer;
+        text-decoration: underline;
     }
 
     .right-column-menu {
