@@ -21,16 +21,16 @@ const nickname = computed(() => store.state.nickname);
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 
-const remember = ref (false);
+const remember = ref(false);
 const showLogin = ref(false);
 const showMenu = ref(false);
 const showAccountSettings = ref(false);
 const header = ref(null)
 
 onMounted(() => {
-    window.addEventListener('click', closeLogin);
-    window.addEventListener('click', closeMenu);
-    window.addEventListener('click', closeAccountSettings);
+    window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['login-form', 'login-button'])) showLogin.value = false });
+    window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['menu', 'burger-button'])) showMenu.value = false });
+    window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['account-settings', 'account-button'])) showAccountSettings.value = false });
     window.addEventListener('resize', handleScreenSizeChange);
 })
 
@@ -46,54 +46,6 @@ watch(showMenu, (oldValue, newValue) => {
         menu.classList.add('slide-container');        
     }
 });
-
-function anyChildren(event, element) {
-    if(element && element.children.length) {
-        if(event.target === element) {
-            return true;
-        }
-
-        for (let i = 0; i < element.children.length; i++) {
-            if(event.target === element.children[i]) {
-                return true;
-            }
-            else {
-                if(anyChildren(event, element.children[i])) {
-                    return true;
-                }
-            }
-        }        
-    }
-
-    return false;
-}
-
-const closeLogin = (event) => {
-    var isValidClick = anyChildren(event, document.getElementById('login-button')) || 
-        anyChildren(event, document.getElementById('login-form'));
-
-    if (!isValidClick) {
-        showLogin.value = false;
-    }
-};
-
-const closeMenu = (event) => {
-    var isValidClick = anyChildren(event, document.getElementById('menu'))
-    || anyChildren(event, document.getElementById('burger-button'));
-
-    if (!isValidClick) {
-        showMenu.value = false;
-    }
-};
-
-const closeAccountSettings = (event) => {
-    var isValidClick = anyChildren(event, document.getElementById('account-settings'))
-    || anyChildren(event, document.getElementById('account-button'));
-
-    if (!isValidClick) {
-        showAccountSettings.value = false;
-    }
-};
 
 const handleScreenSizeChange = () => {
     if(document.documentElement.clientWidth > 800) {

@@ -4,10 +4,11 @@ import Button from 'primevue/button';
 import Tree from 'primevue/tree';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import axios from 'axios';
+import { helper } from '@/helper/helper';
 
 const store = useStore();
 const toast = useToast();
@@ -20,6 +21,11 @@ const showNewFolderMenu = ref(false);
 const showUploadMenu = ref(false);
 const newFolderName = ref(null);
 const folderName = ref('');
+
+onMounted(() => {
+    window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['create-folder-menu', 'create-folder-button'])) showNewFolderMenu.value = false });
+    window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['upload-file-menu', 'upload-file-button', 'folder-select'], true)) showUploadMenu.value = false });
+});
 
 function createFolder() {
     if(!newFolderName.value) {
@@ -117,6 +123,7 @@ async function deleteFile(filePath) {
                 <strong>Документы:</strong>
                 <Button v-if="isAdmin || isOwner"
                     @click="showNewFolderMenu = !showNewFolderMenu"
+                    id="create-folder-button"
                     severity="secondary"
                     raised
                     icon="pi pi-folder-plus"
@@ -125,24 +132,25 @@ async function deleteFile(filePath) {
                 />
                 <Button v-if="isAdmin || isOwner"
                     @click="showUploadMenu = !showUploadMenu"
+                    id="upload-file-button"
                     severity="secondary"
                     raised
                     icon="pi pi-upload"
                     title="Выбрать файл"
                     style="height: 30px; min-width: 40px;"
                 />
-                <div v-if="showNewFolderMenu" class="right-column-menu">
+                <div v-if="showNewFolderMenu" class="right-column-menu" id="create-folder-menu">
                     <span>Новая папка:</span>
                     <InputText v-model="newFolderName" placeholder="Имя папки">
                     </InputText>
                     <div class="buttons">
                         <Button severity="secondary" @click="createFolder" @keydown.enter="createFolder" raised label="Создать"/>
-                        <Button severity="contrast" @click="() => { newFolderName = null; showNewFolderMenu = false }" label="Отмена"/>
+                        <Button severity="contrast" @click="() => { newFolderName = null; showNewFolderMenu = false }" raised label="Отмена"/>
                     </div>
                 </div>
-                <div v-if="showUploadMenu" class="right-column-menu">
+                <div v-if="showUploadMenu" class="right-column-menu" id="upload-file-menu">
                     <span>Выберите путь:</span>
-                    <Select :options="documentNodes.map(x => x.key)" v-model="folderName"></Select>
+                    <Select :options="documentNodes.map(x => x.key)" v-model="folderName" id="folder-select"></Select>
                     <div class="buttons">
                         <FileUpload
                             mode="basic" 
@@ -161,7 +169,7 @@ async function deleteFile(filePath) {
                             title="Выгрузить файл"
                             @select="uploadFiles"
                         />
-                        <Button severity="contrast" @click="() => { folderName = null; showUploadMenu = false }" label="Отмена"/>
+                        <Button severity="contrast" raised @click="() => { folderName = null; showUploadMenu = false }" label="Отмена"/>
                     </div>
                 </div>
             </div>
@@ -174,13 +182,6 @@ async function deleteFile(filePath) {
                     </div>
                 </template>
             </Tree>
-            <!-- <div class="link" v-for="(document, index) in documents" :key="index">
-                <span @click.prevent="download(document.path, document.name)">
-                    <i class="pi pi-file"></i>
-                    {{ document.name }} 
-                </span>                
-                <Button v-if="isAdmin || isOwner" @click.prevent="deleteFile(document.name)" severity="danger" text rounded><i class="pi pi-times"></i></Button>
-           </div> -->
         </div>
     </div>        
 </template>
@@ -268,6 +269,12 @@ async function deleteFile(filePath) {
         justify-content: end;
         gap: 15px;
         padding-top: 15px;
+    }
+
+    .buttons button {
+        height: 38px;
+        padding-left: 8px;
+        padding-right: 8px;
     }
 
     @media (max-width: 1500px) {

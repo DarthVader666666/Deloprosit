@@ -34,10 +34,7 @@ export const helper = {
         }
         else {
             return date.toLocaleDateString('ru-RU', {day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'});
-        }
-        
-
-        
+        }        
     },
     getQueryString(array, key) {
         const queryString = array.map(value => `${key}=${value}&`).join('').slice(0, -1);
@@ -56,9 +53,43 @@ export const helper = {
         
             document.getElementById(`listItem_${themeId}`).classList.add('active');
         }
+    },
+    closeMenu(event, ids, hasSelect = false) {
+        var isValidClick = false;
+
+        if(hasSelect) {
+            var select = document.getElementsByClassName('p-select-list-container')[0];
+
+            if(anyChildren(event, select)) 
+                isValidClick = true;
+        }
         
+        ids.forEach(id => {
+            if(anyChildren(event, document.getElementById(id))) 
+                isValidClick = true;
+        });
+
+        return isValidClick;
+
+        function anyChildren(event, element) {
+            if(element && element.children.length) {
+                if(event.target === element) {
+                    return true;
+                }
         
-        // var top = document.getElementById(`theme_${themeId}`).offsetTop;
-        // window.scrollTo(0, top);
+                for (let i = 0; i < element.children.length; i++) {
+                    if(event.target === element.children[i]) {
+                        return true;
+                    }
+                    else {
+                        if(anyChildren(event, element.children[i])) {
+                            return true;
+                        }
+                    }
+                }        
+            }
+        
+            return false;
+        }
     }
 }

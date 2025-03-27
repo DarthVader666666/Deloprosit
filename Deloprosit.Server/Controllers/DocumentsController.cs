@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Deloprosit.Server.Controllers
 {
@@ -96,7 +97,14 @@ namespace Deloprosit.Server.Controllers
         public async Task<IActionResult> Delete()
         {
             var reader = new StreamReader(HttpContext.Request.Body);
-            var filePath = JsonConvert.DeserializeObject<FilePathModel>(await reader.ReadToEndAsync())?.FilePath?.Split('-')[1];
+            var filePathModel = JsonConvert.DeserializeObject<FilePathModel>(await reader.ReadToEndAsync());
+
+            if (filePathModel == null || filePathModel.FilePath == null)
+            {
+                return Problem(statusCode: 500, detail: "Ошибка при удалении файла");
+            }
+
+            var filePath = string.Join("", filePathModel.FilePath.Split('-')[1..]);
 
             try
             {
@@ -124,7 +132,8 @@ namespace Deloprosit.Server.Controllers
         public async Task<IActionResult> AddFolder()
         {
             var reader = new StreamReader(HttpContext.Request.Body);
-            var folderFullName = webRootPath + JsonConvert.DeserializeObject<FolderNameModel>(await reader.ReadToEndAsync())?.FolderName;
+            var folderFullName = webRootPath + JsonConvert.DeserializeObject<FolderNameModel>(await reader.ReadToEndAsync())?
+                .FolderName?.Replace('-', ' ');
 
             try
             {
