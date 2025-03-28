@@ -94,7 +94,7 @@ namespace Deloprosit.Server.Controllers
         [HttpPost]
         [Route("[action]")]
         [Authorize(Roles = "Owner, Admin")]
-        public async Task<IActionResult> Delete()
+        public async Task<IActionResult> DeleteFile()
         {
             var reader = new StreamReader(HttpContext.Request.Body);
             var filePathModel = JsonConvert.DeserializeObject<FilePathModel>(await reader.ReadToEndAsync());
@@ -104,7 +104,7 @@ namespace Deloprosit.Server.Controllers
                 return Problem(statusCode: 500, detail: "Ошибка при удалении файла");
             }
 
-            var filePath = string.Join("", filePathModel.FilePath.Split('-')[1..]);
+            var filePath = string.Join('-', filePathModel.FilePath.Split('-')[1..]);
 
             try
             {
@@ -168,12 +168,9 @@ namespace Deloprosit.Server.Controllers
             {
                 foreach (IFormFile file in uploadFileModel.Files)
                 {
-                    if (file.Length > 0)
-                    {
-                        string filePath = Path.Combine((webRootPath ?? throw new NullReferenceException("Не задан путь к фалу")) + uploadFileModel.FolderName, file.FileName);
-                        using Stream fileStream = new FileStream(filePath, FileMode.Create);
-                        await file.CopyToAsync(fileStream);
-                    }
+                    string filePath = Path.Combine((webRootPath ?? throw new NullReferenceException("Не задан путь к фалу")) + uploadFileModel.FolderName, file.FileName);
+                    using Stream fileStream = new FileStream(filePath, FileMode.Create);
+                    await file.CopyToAsync(fileStream);
                 }
             }
             catch

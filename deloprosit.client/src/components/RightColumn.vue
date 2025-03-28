@@ -2,6 +2,8 @@
 import FileUpload from 'primevue/fileupload';
 import Button from 'primevue/button';
 import Tree from 'primevue/tree';
+import TreeTable from 'primevue/treetable';
+import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import { computed, onMounted, ref } from 'vue';
@@ -20,6 +22,32 @@ const showNewFolderMenu = ref(false);
 const showUploadMenu = ref(false);
 const newFolderName = ref(null);
 const folderName = ref('');
+
+const nodes = {
+    key: '0',
+    label: 'Documents',
+    data: 'Documents Folder',
+    icon: 'pi pi-fw pi-inbox',
+    children: [
+        {
+            key: '0-0',
+            label: 'Work',
+            data: 'Work Folder',
+            icon: 'pi pi-fw pi-cog',
+            children: [
+                { key: '0-0-0', label: 'Expenses.doc', icon: 'pi pi-fw pi-file', data: 'Expenses Document' },
+                { key: '0-0-1', label: 'Resume.doc', icon: 'pi pi-fw pi-file', data: 'Resume Document' }
+            ]
+        },
+        {
+            key: '0-1',
+            label: 'Home',
+            data: 'Home Folder',
+            icon: 'pi pi-fw pi-home',
+            children: [{ key: '0-1-0', label: 'Invoices.txt', icon: 'pi pi-fw pi-file', data: 'Invoices for this month' }]
+        }
+    ]
+}
 
 onMounted(() => {
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['create-folder-menu', 'create-folder-button'])) showNewFolderMenu.value = false });
@@ -93,7 +121,7 @@ async function deleteFile(filePath) {
         return;
     }
 
-    await axios.post(`${store.state.serverUrl}/documents/delete`,
+    await axios.post(`${store.state.serverUrl}/documents/deletefile`,
         {
             filePath: filePath
         }
@@ -173,14 +201,36 @@ async function deleteFile(filePath) {
                 </div>
             </div>
             <hr/>
-            <Tree :value="documentNodes" class="tree">
+            <TreeTable :value="nodes" tableStyle="min-width: 50rem">
+                <template #header>
+                    <div class="text-xl font-bold">File Viewer</div>
+                </template>
+                <Column field="name" header="Name" expander style="width: 250px"></Column>
+                <Column field="size" header="Size" style="width: 150px"></Column>
+                <Column field="type" header="Type" style="width: 150px"></Column>
+                <Column style="width: 10rem">
+                    <template #body>
+                        <div class="flex flex-wrap gap-2">
+                            <Button type="button" icon="pi pi-search" rounded />
+                            <Button type="button" icon="pi pi-pencil" rounded severity="success" />
+                        </div>
+                    </template>
+                </Column>
+                <template #footer>
+                    <div class="flex justify-start">
+                        <Button icon="pi pi-refresh" label="Reload" severity="warn" />
+                    </div>
+                </template>
+            </TreeTable>
+
+            <!-- <Tree :value="documentNodes" class="tree">
                 <template #url="{ node }">
                     <div>
                         <span @click="download(node)" class="file-name">{{ node.label }}</span>
                         <Button v-if="isAdmin || isOwner" @click="deleteFile(node.key)" severity="danger" text rounded title="Удалить файл" icon="pi pi-times"/>
                     </div>
                 </template>
-            </Tree>
+            </Tree> -->
         </div>
     </div>        
 </template>
