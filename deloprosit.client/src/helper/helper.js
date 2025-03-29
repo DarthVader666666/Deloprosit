@@ -45,7 +45,7 @@ export const helper = {
     },
     scrollToTheme(themeId) {
         if(themeId) {
-            var links = document.getElementsByClassName('link active');
+            let links = document.getElementsByClassName('link active');
 
             for (let item of links) {
                 item.classList.remove('active');
@@ -55,10 +55,10 @@ export const helper = {
         }
     },
     closeMenu(event, ids, hasSelect = false) {
-        var isValidClick = false;
+        let isValidClick = false;
 
         if(hasSelect) {
-            var select = document.getElementsByClassName('p-select-list-container')[0];
+            let select = document.getElementsByClassName('p-select-list-container')[0];
 
             if(anyChildren(event, select)) 
                 isValidClick = true;

@@ -1,7 +1,6 @@
 <script setup>
 import FileUpload from 'primevue/fileupload';
 import Button from 'primevue/button';
-import Tree from 'primevue/tree';
 import TreeTable from 'primevue/treetable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
@@ -22,32 +21,6 @@ const showNewFolderMenu = ref(false);
 const showUploadMenu = ref(false);
 const newFolderName = ref(null);
 const folderName = ref('');
-
-const nodes = {
-    key: '0',
-    label: 'Documents',
-    data: 'Documents Folder',
-    icon: 'pi pi-fw pi-inbox',
-    children: [
-        {
-            key: '0-0',
-            label: 'Work',
-            data: 'Work Folder',
-            icon: 'pi pi-fw pi-cog',
-            children: [
-                { key: '0-0-0', label: 'Expenses.doc', icon: 'pi pi-fw pi-file', data: 'Expenses Document' },
-                { key: '0-0-1', label: 'Resume.doc', icon: 'pi pi-fw pi-file', data: 'Resume Document' }
-            ]
-        },
-        {
-            key: '0-1',
-            label: 'Home',
-            data: 'Home Folder',
-            icon: 'pi pi-fw pi-home',
-            children: [{ key: '0-1-0', label: 'Invoices.txt', icon: 'pi pi-fw pi-file', data: 'Invoices for this month' }]
-        }
-    ]
-}
 
 onMounted(() => {
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['create-folder-menu', 'create-folder-button'])) showNewFolderMenu.value = false });
@@ -84,14 +57,19 @@ function createFolder() {
 }
 
 function download(node) {
-    if(node.data)
-        window.open(node.data);
+    if(node.data.path)
+        window.open(node.data.path);
 }
 
 async function uploadFiles(event) {
     const files = event.files;
     let formData = new FormData();
     files.forEach(file => formData.append("files", file));
+
+    if(!folderName.value) {
+        folderName.value = '';
+    }
+
     formData.append("folderName", folderName.value);
 
     await axios.post(`${store.state.serverUrl}/documents/upload`, formData, {
@@ -108,7 +86,7 @@ async function uploadFiles(event) {
     })
     .catch(error => {
         if(error.response) {
-            toast.error(error.response.data);
+            toast.error(error.response.data.detail);
         }
         else {
             toast.error("Ошибка загрузки файла");
@@ -116,28 +94,29 @@ async function uploadFiles(event) {
     })
 }
 
-async function deleteFile(filePath) {
-    if(!window.confirm('Файл будет удален, вы уверены')) {
+async function deleteDocument(node) {
+    if(!window.confirm(`${(node.data.type === 'file' ? 'Файл будет удален' : 'Папка и всё её содержимое будет удалено')}, вы уверены`)) {
         return;
     }
 
-    await axios.post(`${store.state.serverUrl}/documents/deletefile`,
+    await axios.post(`${store.state.serverUrl}/documents/delete`,
         {
-            filePath: filePath
+            path: node.data.path,
+            type: node.data.type
         }
     )
     .then( async response => {
         if(response.status === 200) {
-            toast.success('Файл успешно удален');
+            toast.success('Документ успешно удален');
             await store.dispatch('downloadDocumentNodes');
         }
     })
     .catch(error => {
-        if(error.response) {
-            toast.error(error.response.data);
+        if(error.response.status) {
+            toast.error(error.response.status === 404 ? error.response.data.errorText : error.response.data.detail);
         }
         else {
-            toast.error("Ошибка при удалении файла");
+            toast.error("Ошибка при удалении документа");
         }
     })
 }
@@ -147,7 +126,7 @@ async function deleteFile(filePath) {
     <div class="right-container">
         <div class="items">
             <div class="items-header">
-                <strong>Документы:</strong>
+                <strong style="margin: 5px 0 6px 0;">Документы:</strong>
                 <Button v-if="isAdmin || isOwner"
                     @click="showNewFolderMenu = !showNewFolderMenu"
                     id="create-folder-button"
@@ -177,7 +156,7 @@ async function deleteFile(filePath) {
                 </div>
                 <div v-if="showUploadMenu" class="right-column-menu" id="upload-file-menu">
                     <span>Выберите путь:</span>
-                    <Select :options="documentNodes.map(x => x.key)" v-model="folderName" id="folder-select"></Select>
+                    <Select :options="documentNodes.map(node => node.data.name)" v-model="folderName" id="folder-select"></Select>
                     <div class="buttons">
                         <FileUpload
                             mode="basic" 
@@ -196,41 +175,29 @@ async function deleteFile(filePath) {
                             title="Выгрузить файл"
                             @select="uploadFiles"
                         />
-                        <Button severity="contrast" raised @click="() => { folderName = null; showUploadMenu = false }" label="Отмена"/>
+                        <Button severity="contrast" raised @click="() => { folderName = ''; showUploadMenu = false }" label="Отмена"/>
                     </div>
                 </div>
             </div>
             <hr/>
-            <TreeTable :value="nodes" tableStyle="min-width: 50rem">
-                <template #header>
-                    <div class="text-xl font-bold">File Viewer</div>
-                </template>
-                <Column field="name" header="Name" expander style="width: 250px"></Column>
-                <Column field="size" header="Size" style="width: 150px"></Column>
-                <Column field="type" header="Type" style="width: 150px"></Column>
-                <Column style="width: 10rem">
-                    <template #body>
-                        <div class="flex flex-wrap gap-2">
-                            <Button type="button" icon="pi pi-search" rounded />
-                            <Button type="button" icon="pi pi-pencil" rounded severity="success" />
-                        </div>
+            <TreeTable :value="documentNodes" class="tree-table">
+                <Column field="name" expander style="width: 90%">
+                    <template #body="{ node }">
+                        <i :class="node.icon" style="font-size: small;"></i>
+                        <span :title="node.data.size"
+                            :class="node.data.type"
+                            @click="node.data.type === 'file' ? download(node) : null"
+                            :style="node.data.type === 'folder' ? 'font-weight:bold;' : 'font-weight:normal;'">
+                            {{ node.data.name }}
+                        </span>
                     </template>
                 </Column>
-                <template #footer>
-                    <div class="flex justify-start">
-                        <Button icon="pi pi-refresh" label="Reload" severity="warn" />
-                    </div>
-                </template>
+                <Column v-if="isAdmin || isOwner" style="width: 10%">
+                    <template #body="{node}">
+                        <Button v-if="node.data.type != 'root'" @click="deleteDocument(node)" class="delete-button" icon="pi pi-times" severity="danger" text rounded />
+                    </template>
+                </Column>
             </TreeTable>
-
-            <!-- <Tree :value="documentNodes" class="tree">
-                <template #url="{ node }">
-                    <div>
-                        <span @click="download(node)" class="file-name">{{ node.label }}</span>
-                        <Button v-if="isAdmin || isOwner" @click="deleteFile(node.key)" severity="danger" text rounded title="Удалить файл" icon="pi pi-times"/>
-                    </div>
-                </template>
-            </Tree> -->
         </div>
     </div>        
 </template>
@@ -238,7 +205,7 @@ async function deleteFile(filePath) {
 <style scoped>
     .items {        
         text-align: start;
-        padding: 1rem;
+        padding: 10px;
     }
 
     .items-header {
@@ -247,6 +214,7 @@ async function deleteFile(filePath) {
         justify-content: space-between;
         align-items: center;
         min-height: 30px;
+        padding: 6px 0 0 0;
     }
 
     .items-header button {
@@ -258,44 +226,40 @@ async function deleteFile(filePath) {
         color: black;
     }
 
-    .tree {
+    .tree-table {
+        font-size: small;        
+    }
+
+    .tree-table:deep(th) {
+        display: none;
+    }
+
+    .tree-table:deep(td) {
         padding: 0;
-        font-size: small;
-        background: var(--COLUMNS-BCKGND-CLR);
+        border: none;
     }
 
-    .tree:deep(div) {
-        padding: 1px;
+    .tree-table:deep(button) {
+        height: 25px;
+        width: 25px;
     }
 
-    .tree:deep(li) {
-        font-weight: bold;
+    .tree-table:deep(.delete-button) {
+        height: 20px;
+        width: 20px;
     }
 
-    .tree:deep(*) {
-        padding: 0;
-        margin: 0;
-        font-size: small;
-    }
-
-    .tree:deep(span span) {
-        font-weight: normal;
-    }
-
-    .tree:deep(span button) {
-        padding-top: 2px;
-        margin-left: 10px;
-        height: 16px;
-        width: 16px;
-    }
-    
-    .tree:deep(span button span) {
+    .tree-table:deep(.delete-button span) {
         font-size: x-small;
     }
 
-    .tree:deep(.file-name:hover) {
+    .tree-table:deep(.file:hover) {
         cursor: pointer;
         text-decoration: underline;
+    }
+
+    .tree-table:deep(*) {
+        background: var(--COLUMNS-BCKGND-CLR);
     }
 
     .right-column-menu {

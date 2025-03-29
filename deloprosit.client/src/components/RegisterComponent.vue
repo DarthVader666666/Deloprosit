@@ -89,8 +89,8 @@ const handleSend = () => {
 async function doesUserExist (nickname, email) {
     await helper.timeoutAsync(500);
 
-    var url = `${store.getters.serverUrl}/register/userExists?` + (nickname ? `nickname=${nickname}` : `email=${email}`);
-    var response = await axios.get(url);
+    let url = `${store.getters.serverUrl}/register/userExists?` + (nickname ? `nickname=${nickname}` : `email=${email}`);
+    let response = await axios.get(url);
 
     if(response.status === 200) {
         return response.data.userExists;

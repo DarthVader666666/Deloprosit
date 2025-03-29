@@ -1,10 +1,10 @@
-﻿using Deloprosit.Server.Models;
+﻿using Deloprosit.Server.Enums;
+using Deloprosit.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
-using System.Linq;
 
 namespace Deloprosit.Server.Controllers
 {
@@ -13,11 +13,15 @@ namespace Deloprosit.Server.Controllers
     [ApiController]
     public class DocumentsController : ControllerBase
     {
+        private readonly string? docsPath;
+        private readonly string? documentsDirectoryName;
         private readonly string? webRootPath;
 
         public DocumentsController()
         {
+            docsPath = ConfigurationHelper.DocsPath;
             webRootPath = ConfigurationHelper.WebRootPath;
+            documentsDirectoryName = ConfigurationHelper.DocumentsDirectoryName;
         }
 
         [HttpGet]
@@ -28,12 +32,12 @@ namespace Deloprosit.Server.Controllers
 
             try
             {
-                documentResponseModels = new DirectoryInfo(webRootPath ?? throw new NullReferenceException("Не задан путь к фалу")).GetFiles()
+                documentResponseModels = new DirectoryInfo(docsPath ?? throw new NullReferenceException("Не задан путь к фалу")).GetFiles()
                 .Select(x =>
                     new DocumentResponseModel
                     {
                         Name = x.Name,
-                        Path = webRootPath
+                        Path = docsPath
                     }
                 );
             }
@@ -49,37 +53,59 @@ namespace Deloprosit.Server.Controllers
         [Route("[action]")]
         public IActionResult GetNodes()
         {
-            List<DirectoryNode> directoryNodes = [];
+            List<DocumentNode> documentNodes = [];
 
             try
             {
-                var directoryInfo = new DirectoryInfo(webRootPath ?? throw new NullReferenceException("Не задан путь к файлу"));
+                var directoryInfo = new DirectoryInfo(docsPath ?? throw new NullReferenceException("Не задан путь к файлу"));
                 var files = directoryInfo.GetFiles();
 
-                directoryNodes.Add(new DirectoryNode
+                documentNodes.Add(new DocumentNode
                 {
-                    Key = "",
-                    Label = "",
+                    Key = $"{documentsDirectoryName}",
                     Icon = "pi pi-ellipsis-h",
+                    Data = new TreeNode 
+                    {
+                        Path = $"{documentsDirectoryName}",
+                        Type = nameof(DocumentType.Root).ToLower(),
+                    },
                     Children = files.Select(f => new DocumentNode
                     {
-                        Key = $"docs-{f.FullName}",
-                        Label = f.Name,
-                        Data = $"docs/{f.Name}"
+                        Key = $"{documentsDirectoryName}-{f.FullName}",
+                        Icon = "pi pi-file",
+                        Data = new TreeNode 
+                        {
+                            Name = f.Name,
+                            Path = $"{documentsDirectoryName}/{f.Name}",
+                            Type = nameof(DocumentType.File).ToLower(),
+                            Size = ByteLengthToSizeString(f.Length), 
+                        }
                     }).ToArray()
                 });
 
-                directoryNodes.AddRange(directoryInfo
+                documentNodes.AddRange(directoryInfo
                     .GetDirectories()
-                        .Select(d => new DirectoryNode
+                        .Select(d => new DocumentNode
                         {
                             Key = d.Name,
-                            Label = d.Name,
+                            Icon = "pi pi-folder",
+                            Data = new TreeNode 
+                            { 
+                                Name = d.Name,
+                                Path = $"{documentsDirectoryName}/{d.Name}",
+                                Type = nameof(DocumentType.Folder).ToLower(),
+                            },
                             Children = d.GetFiles().Select(f => new DocumentNode
                             {
                                 Key = $"{d.Name}-{f.FullName}",
-                                Label = f.Name,
-                                Data = $"docs/{d.Name}/{f.Name}"
+                                Icon = "pi pi-file",
+                                Data = new TreeNode 
+                                { 
+                                    Name = f.Name,
+                                    Path = $"{documentsDirectoryName}/{d.Name}/{f.Name}",
+                                    Type = nameof(DocumentType.File).ToLower(),
+                                    Size = ByteLengthToSizeString(f.Length), 
+                                }
                             }).ToArray()
                         }).ToList());
             }
@@ -88,33 +114,52 @@ namespace Deloprosit.Server.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
 
-            return Ok(directoryNodes);
+            return Ok(documentNodes);
         }
 
         [HttpPost]
         [Route("[action]")]
         [Authorize(Roles = "Owner, Admin")]
-        public async Task<IActionResult> DeleteFile()
+        public async Task<IActionResult> Delete()
         {
             var reader = new StreamReader(HttpContext.Request.Body);
-            var filePathModel = JsonConvert.DeserializeObject<FilePathModel>(await reader.ReadToEndAsync());
+            var documentPathModel = JsonConvert.DeserializeObject<DocumentPathModel>(await reader.ReadToEndAsync());
 
-            if (filePathModel == null || filePathModel.FilePath == null)
+            if (documentPathModel == null || documentPathModel.Path == null || documentPathModel.Type == null)
             {
                 return Problem(statusCode: 500, detail: "Ошибка при удалении файла");
             }
 
-            var filePath = string.Join('-', filePathModel.FilePath.Split('-')[1..]);
-
             try
             {
-                if (System.IO.File.Exists(filePath))
+                var path = Path.Combine(webRootPath ?? string.Empty, documentPathModel.Path);
+
+                if (documentPathModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase))
                 {
-                    System.IO.File.Delete(filePath ?? throw new NullReferenceException());
+                    if (System.IO.File.Exists(path))
+                    {
+                        System.IO.File.Delete(path);
+                    }
+                    else
+                    {
+                        return NotFound(new { errorText = "Файл не найден" });
+                    }
                 }
                 else
                 {
-                    return NotFound();
+                    if (Directory.Exists(path))
+                    {
+                        foreach (var filePath in Directory.GetFiles(path))
+                        {
+                            System.IO.File.Delete(filePath);
+                        }
+
+                        Directory.Delete(path);
+                    }
+                    else
+                    {
+                        return NotFound(new { errorText = "Папка не найдена" });
+                    }
                 }
             }
             catch
@@ -132,7 +177,7 @@ namespace Deloprosit.Server.Controllers
         public async Task<IActionResult> AddFolder()
         {
             var reader = new StreamReader(HttpContext.Request.Body);
-            var folderFullName = webRootPath + JsonConvert.DeserializeObject<FolderNameModel>(await reader.ReadToEndAsync())?
+            var folderFullName = docsPath + JsonConvert.DeserializeObject<FolderNameModel>(await reader.ReadToEndAsync())?
                 .FolderName?.Replace('-', ' ');
 
             try
@@ -168,7 +213,8 @@ namespace Deloprosit.Server.Controllers
             {
                 foreach (IFormFile file in uploadFileModel.Files)
                 {
-                    string filePath = Path.Combine((webRootPath ?? throw new NullReferenceException("Не задан путь к фалу")) + uploadFileModel.FolderName, file.FileName);
+                    string filePath = Path.Combine(docsPath ?? throw new NullReferenceException("Не задан путь к фалу"), 
+                        uploadFileModel.FolderName ?? string.Empty, file.FileName);
                     using Stream fileStream = new FileStream(filePath, FileMode.Create);
                     await file.CopyToAsync(fileStream);
                 }
@@ -179,6 +225,16 @@ namespace Deloprosit.Server.Controllers
             }
             
             return Ok();
+        }
+
+        private static string? ByteLengthToSizeString(long? length)
+        {
+            return length switch
+            {
+                >= 1000 and < 999999 => $"{length / 1000} Кб",
+                >= 1000000 and < 999999999 => $"{length / 1000000} Mб",
+                _ => $"{length} Байт",
+            };
         }
     }
 }

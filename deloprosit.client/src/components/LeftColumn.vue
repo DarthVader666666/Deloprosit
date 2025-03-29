@@ -71,6 +71,11 @@ function handleThemeClick(node) {
         background: var(--COLUMNS-BCKGND-CLR);
     }
 
+    .tree:deep(button) {
+        height: 26px;
+        width: 22px;
+    }
+
     .tree:deep(div) {
         padding: 1px;
     }
