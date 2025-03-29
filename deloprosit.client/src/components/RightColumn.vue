@@ -61,6 +61,34 @@ function createFolder() {
     })
 }
 
+function showRenameInput(node) {
+    const names = document.querySelectorAll('[id$=_name]');
+    const inputs = document.querySelectorAll('[id$=_input]');
+    const editButtons = document.querySelectorAll('[id$=_edit-button]');
+    const buttons = document.querySelectorAll('[id$=_buttons]');
+    
+    names.forEach(name => name.style.display = 'block');
+    inputs.forEach(input => input.style.display = 'none');
+    editButtons.forEach(editButton => editButton.style.display = 'inline-flex');
+    buttons.forEach(button => button.style.display = 'none');
+
+    document.getElementById(`${node.data.path}_${node.data.type}_edit-button`).style.display = 'none';
+    document.getElementById(`${node.data.path}_${node.data.type}_name`).style.display = 'none';
+    document.getElementById(`${node.data.path}_${node.data.type}_input`).style.display = 'block';
+    document.getElementById(`${node.data.path}_${node.data.type}_buttons`).style.display = 'flex';
+}
+
+function updateName(node) {
+    
+}
+
+function cancelEdit(node) {
+    document.getElementById(`${node.data.path}_${node.data.type}_input`).style.display = 'none';
+    document.getElementById(`${node.data.path}_${node.data.type}_name`).style.display = 'block';
+    document.getElementById(`${node.data.path}_${node.data.type}_edit-button`).style.display = 'inline-flex';
+    document.getElementById(`${node.data.path}_${node.data.type}_buttons`).style.display = 'none';
+}
+
 function download(node) {
     if(node.data.path)
         window.open(node.data.path);
@@ -192,14 +220,25 @@ async function deleteDocument(node) {
                         <span :title="node.data.size"
                             :class="node.data.type"
                             @click="node.data.type === 'file' ? download(node) : null"
-                            :style="node.data.type === 'folder' ? 'font-weight:bold;' : 'font-weight:normal;'">
+                            :style="node.data.type === 'folder' ? 'font-weight:bold;' : 'font-weight:normal;'" :id="`${node.data.path}_${node.data.type}_name`">
                             {{ node.data.name }}
                         </span>
+                        <input type="text" v-model="node.data.name" class="rename-input" style="display: none;" :id="`${node.data.path}_${node.data.type}_input`">
+                        <Button v-if="node.data.type != 'root'" @click="showRenameInput(node)" :id="`${node.data.path}_${node.data.type}_edit-button`"
+                            class="document-button" text rounded severity="contrast" icon="pi pi-pencil"></Button>
+
+                        <div v-if="node.data.type != 'root'" style="display: none;" :id="`${node.data.path}_${node.data.type}_buttons`">
+                            <Button @click="cancelEdit(node)"
+                                class="document-button" rounded severity="danger" text icon="pi pi-ban"></Button>
+                           <Button @click="updateName(node)"
+                                class="document-button" rounded severity="primary" text icon="pi pi-check"></Button>
+                        </div>                        
                     </template>
                 </Column>
                 <Column v-if="isAdmin || isOwner" style="width: 10%">
                     <template #body="{node}">
-                        <Button v-if="node.data.type != 'root'" @click="deleteDocument(node)" class="delete-button" icon="pi pi-times" severity="danger" text rounded />
+                        <Button v-if="node.data.type != 'root'" @click="deleteDocument(node)" 
+                            class="document-button" rounded severity="danger" text icon="pi pi-times"/>
                     </template>
                 </Column>
             </TreeTable>
@@ -249,12 +288,16 @@ async function deleteDocument(node) {
         width: 25px;
     }
 
-    .tree-table:deep(.delete-button) {
+    .tree-table:deep(.document-button) {
         height: 20px;
-        width: 20px;
+        width: 17px;
     }
 
     .tree-table:deep(.delete-button span) {
+        font-size: x-small;
+    }
+
+    .tree-table:deep(.document-button span) {
         font-size: x-small;
     }
 
@@ -280,6 +323,10 @@ async function deleteDocument(node) {
         border-radius: 5px;
         right: 0;
         top: 60px;
+    }
+
+    .rename-input {
+        max-width: 100px;
     }
 
     .buttons {
