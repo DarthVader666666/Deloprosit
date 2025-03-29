@@ -47,8 +47,13 @@ function createFolder() {
         }
     })
     .catch(error => {
-        if(error.response) {
-            toast.error(error.response.data);
+        if(error.response.status) {
+            if(error.response.status === 400) {
+                toast.error(error.response.data.errorText);
+            }
+            if(error.response.status === 500) {
+                toast.error(error.response.data.detail);
+            }
         }
         else {
             toast.error(error.message);
@@ -147,10 +152,10 @@ async function deleteDocument(node) {
                 />
                 <div v-if="showNewFolderMenu" class="right-column-menu" id="create-folder-menu">
                     <span>Новая папка:</span>
-                    <InputText v-model="newFolderName" placeholder="Имя папки">
+                    <InputText v-model="newFolderName" placeholder="Имя папки" @keydown.enter="createFolder">
                     </InputText>
                     <div class="buttons">
-                        <Button severity="secondary" @click="createFolder" @keydown.enter="createFolder" raised label="Создать"/>
+                        <Button severity="secondary" @click="createFolder" raised label="Создать"/>
                         <Button severity="contrast" @click="() => { newFolderName = null; showNewFolderMenu = false }" raised label="Отмена"/>
                     </div>
                 </div>
