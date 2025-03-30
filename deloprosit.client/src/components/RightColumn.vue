@@ -79,7 +79,7 @@ function showRenameInput(node) {
 }
 
 function updateName(node) {
-    
+
 }
 
 function cancelEdit(node) {
@@ -224,21 +224,21 @@ async function deleteDocument(node) {
                             {{ node.data.name }}
                         </span>
                         <input type="text" v-model="node.data.name" class="rename-input" style="display: none;" :id="`${node.data.path}_${node.data.type}_input`">
-                        <Button v-if="node.data.type != 'root'" @click="showRenameInput(node)" :id="`${node.data.path}_${node.data.type}_edit-button`"
-                            class="document-button" text rounded severity="contrast" icon="pi pi-pencil"></Button>
+                        <Button v-if="node.data.type != 'root' && (isAdmin || isOwner)" @click="showRenameInput(node)" :id="`${node.data.path}_${node.data.type}_edit-button`"
+                            class="document-button" text rounded severity="contrast" icon="pi pi-pencil" title="Переименовать"></Button>
 
-                        <div v-if="node.data.type != 'root'" style="display: none;" :id="`${node.data.path}_${node.data.type}_buttons`">
+                        <div v-if="node.data.type != 'root' && (isAdmin || isOwner)" style="display: none;" :id="`${node.data.path}_${node.data.type}_buttons`">
                             <Button @click="cancelEdit(node)"
-                                class="document-button" rounded severity="danger" text icon="pi pi-ban"></Button>
+                                class="document-button" rounded severity="danger" text icon="pi pi-ban" title="Отмена"></Button>
                            <Button @click="updateName(node)"
-                                class="document-button" rounded severity="primary" text icon="pi pi-check"></Button>
+                                class="document-button" rounded severity="primary" text icon="pi pi-check" title="Ок"></Button>
                         </div>                        
                     </template>
                 </Column>
                 <Column v-if="isAdmin || isOwner" style="width: 10%">
                     <template #body="{node}">
                         <Button v-if="node.data.type != 'root'" @click="deleteDocument(node)" 
-                            class="document-button" rounded severity="danger" text icon="pi pi-times"/>
+                            class="document-button" rounded severity="danger" text icon="pi pi-times" title="Удалить"/>
                     </template>
                 </Column>
             </TreeTable>
