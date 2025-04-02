@@ -143,8 +143,9 @@ function handleBurgerClick() {
         <div class="logo">
             <RouterLink to="/"><h1>DP</h1></RouterLink>            
         </div>
-        <div class="account-and-menu">            
+        <div class="account-and-menu">
             <div class="menu-burger" >
+                <span v-if="nickname">{{ nickname }}</span>
                 <Button
                     @click="handleBurgerClick" 
                     security="contrast" rounded text
@@ -152,8 +153,18 @@ function handleBurgerClick() {
                 >
                     <i class="pi pi-bars"></i>
                 </Button>
-            </div>        
+            </div>
             <div class="menu" id="menu">
+                <div v-if="nickname" class="account">
+                    <Button 
+                        @click="() => showAccountSettings = !showAccountSettings"
+                        severity="secondary" rounded
+                        id="account-button"
+                    >
+                    <i class="pi pi-user" style="font-size: x-large;"></i>
+                    </Button>
+                    <span>{{ nickname }}</span>
+                </div>
                 <Button
                     @click="() => { showMenu = false; router.push('/'); }" 
                     severity="contrast" text label="Главная" 
@@ -180,18 +191,8 @@ function handleBurgerClick() {
                 <Button v-if="!nickname" @click="() => { showMenu = false; showLogin = !showLogin; }" 
                     severity="contrast" text label="Войти" icon="pi pi-sign-in"
                     id="login-button"
-                />            
-            </div>
-            <div v-if="nickname" class="account">
-                <Button 
-                    @click="() => showAccountSettings = !showAccountSettings"
-                    severity="secondary" rounded
-                    id="account-button"
-                >
-                <i class="pi pi-user" style="font-size: x-large;"></i>
-                </Button>
-                <span>{{ nickname }}</span>                
-            </div>
+                />
+            </div>            
             <div v-if="nickname && showAccountSettings" class="slide-container" id="account-settings">
                 <span style="font-size: large;">
                     {{ nickname }}
@@ -229,7 +230,7 @@ function handleBurgerClick() {
     .header-container {
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
+      justify-content: center;
       background-image: var(--BCKGND-GRADIENT);
       box-shadow: var(--COMPONENT-BOX-SHADOW);
       border-radius: 0 0 5px 5px;
@@ -242,18 +243,19 @@ function handleBurgerClick() {
     }
 
     .account {
+        position: absolute;
+        right: 20px;
+        padding-bottom: 8px;
         display: flex;
         flex-direction: column;
         font-size: medium;
         align-items: center;
-        padding-top: 20px;
-        padding-right: 15px;
-        padding-left: 15px;
     }
 
     .account button {
         height: 50px;
         width: 50px;
+        border-radius: 50%;
     }
 
     .slide-container {
@@ -278,9 +280,8 @@ function handleBurgerClick() {
     .menu {
         display: flex;
         flex-direction: row;
-        justify-content: end;
         align-items: end;
-        padding: 8px;
+        gap: 10px;
     }
 
     .slide-container button:deep(span) {
@@ -309,7 +310,7 @@ function handleBurgerClick() {
         font-size: x-large;
     }
 
-    .menu button {
+    .menu button:not(.account button)  {
         border-radius: 0;
     }
 
@@ -363,6 +364,8 @@ function handleBurgerClick() {
     }
 
     .logo {
+        position: absolute;
+        left: 0;
         text-shadow: 3px 3px rgba(22, 22, 22, 0.651);
         height: 18px;
         margin-left: 10px;
@@ -384,12 +387,23 @@ function handleBurgerClick() {
     }
 
     @media(max-width: 800px) {
+        .header-container {
+            justify-content: end;
+        }
+
         .menu {
             display: none;
         }
 
         .menu-burger {
             display: block;
+        }
+
+        .account {
+            position: relative;
+            padding: 0;
+            right: 0;
+            margin: auto;
         }
 
         .account-and-menu {
