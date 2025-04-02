@@ -21,6 +21,7 @@ const showNewFolderMenu = ref(false);
 const showUploadMenu = ref(false);
 const newFolderName = ref(null);
 const folderName = ref('');
+const newName = ref(null);
 
 onMounted(() => {
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['create-folder-menu', 'create-folder-button'])) showNewFolderMenu.value = false });
@@ -48,11 +49,8 @@ function createFolder() {
     })
     .catch(error => {
         if(error.response.status) {
-            if(error.response.status === 400) {
+            if(error.response) {
                 toast.error(error.response.data.errorText);
-            }
-            if(error.response.status === 500) {
-                toast.error(error.response.data.detail);
             }
         }
         else {
@@ -62,6 +60,8 @@ function createFolder() {
 }
 
 function showRenameInput(node) {
+    newName.value = node.data.name;
+
     const names = document.querySelectorAll('[id$=_name]');
     const inputs = document.querySelectorAll('[id$=_input]');
     const editButtons = document.querySelectorAll('[id$=_edit-button]');
@@ -78,15 +78,40 @@ function showRenameInput(node) {
     document.getElementById(`${node.data.path}_${node.data.type}_buttons`).style.display = 'flex';
 }
 
-function updateName(node) {
-
-}
-
 function cancelEdit(node) {
+    newName.value = null;
+
     document.getElementById(`${node.data.path}_${node.data.type}_input`).style.display = 'none';
     document.getElementById(`${node.data.path}_${node.data.type}_name`).style.display = 'block';
     document.getElementById(`${node.data.path}_${node.data.type}_edit-button`).style.display = 'inline-flex';
     document.getElementById(`${node.data.path}_${node.data.type}_buttons`).style.display = 'none';
+}
+
+function updateName(node) {
+    axios.put(`${store.state.serverUrl}/documents/update`, 
+        {
+            newName: newName.value,
+            oldName: node.data.name,
+            path: node.data.path,
+            type: node.data.type
+        }
+    )
+    .then( async response => {
+        newName.value = null;
+        if(response.status === 200) {
+            showUploadMenu.value = false;
+            toast.success(response.data.okText);
+            await store.dispatch('downloadDocumentNodes');
+        }
+    })
+    .catch(error => {
+        if(error.response) {
+            toast.error(error.response.data.errorText);
+        }
+        else {
+            toast.error("Ошибка обновления имени");
+        }
+    })
 }
 
 function download(node) {
@@ -113,13 +138,13 @@ async function uploadFiles(event) {
     .then( async response => {
         if(response.status === 200) {
             showUploadMenu.value = false;
-            toast.success('Файл успешно загружен');
+            toast.success(response.data.okText);
             await store.dispatch('downloadDocumentNodes');
         }
     })
     .catch(error => {
         if(error.response) {
-            toast.error(error.response.data.detail);
+            toast.error(error.response.data.errorText);
         }
         else {
             toast.error("Ошибка загрузки файла");
@@ -140,13 +165,13 @@ async function deleteDocument(node) {
     )
     .then( async response => {
         if(response.status === 200) {
-            toast.success('Документ успешно удален');
+            toast.success(response.data.okText);
             await store.dispatch('downloadDocumentNodes');
         }
     })
     .catch(error => {
-        if(error.response.status) {
-            toast.error(error.response.status === 404 ? error.response.data.errorText : error.response.data.detail);
+        if(error.response) {
+            toast.error(error.response.data.errorText);
         }
         else {
             toast.error("Ошибка при удалении документа");
@@ -223,7 +248,7 @@ async function deleteDocument(node) {
                             :style="node.data.type === 'folder' ? 'font-weight:bold;' : 'font-weight:normal;'" :id="`${node.data.path}_${node.data.type}_name`">
                             {{ node.data.name }}
                         </span>
-                        <input type="text" v-model="node.data.name" class="rename-input" style="display: none;" :id="`${node.data.path}_${node.data.type}_input`">
+                        <input type="text" v-model="newName" @keydown.enter="updateName(node)" class="rename-input" style="display: none;" :id="`${node.data.path}_${node.data.type}_input`">
                         <Button v-if="node.data.type != 'root' && (isAdmin || isOwner)" @click="showRenameInput(node)" :id="`${node.data.path}_${node.data.type}_edit-button`"
                             class="document-button" text rounded severity="contrast" icon="pi pi-pencil" title="Переименовать"></Button>
 

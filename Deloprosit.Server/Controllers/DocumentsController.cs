@@ -43,7 +43,7 @@ namespace Deloprosit.Server.Controllers
             }
             catch(Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { errorText = ex.Message });
             }            
 
             return Ok(documentResponseModels);
@@ -111,7 +111,7 @@ namespace Deloprosit.Server.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { errorText = ex.Message });
             }
 
             return Ok(documentNodes);
@@ -127,7 +127,7 @@ namespace Deloprosit.Server.Controllers
 
             if (documentPathModel == null || documentPathModel.Path == null || documentPathModel.Type == null)
             {
-                return Problem(statusCode: 500, detail: "Ошибка при удалении файла");
+                return StatusCode( 500, new { errorText = "Ошибка при удалении файла" });
             }
 
             try
@@ -164,10 +164,10 @@ namespace Deloprosit.Server.Controllers
             }
             catch
             {
-                return Problem(statusCode: 500, detail: "Ошибка при удалении файла");
+                return StatusCode( StatusCodes.Status500InternalServerError, new { errorText = "Ошибка при удалении файла" });
             }
 
-            return Ok();
+            return Ok(new { okText = "Документ успешно удален" });
         }
 
 
@@ -193,10 +193,47 @@ namespace Deloprosit.Server.Controllers
             }
             catch
             {
-                return Problem(statusCode: 500, detail: "Ошибка при создании папки");
+                return StatusCode( StatusCodes.Status500InternalServerError, new { errorText = "Ошибка при создании папки" });
             }
 
-            return Ok();
+            return Ok(new { okText = "Папка успешно создана" });
+        }
+
+        [HttpPut]
+        [Route("[action]")]
+        [Authorize(Roles = "Owner, Admin")]
+        public IActionResult Update([FromBody] UpdateDocumentModel? updateDocumentModel)
+        {
+            if (updateDocumentModel == null || updateDocumentModel.NewName == null || updateDocumentModel.Path == null || updateDocumentModel.Type == null)
+            {
+                return BadRequest(new { errorText = "Запрос не полный" });
+            }
+
+            try
+            {
+                var path = Path.Combine(webRootPath ?? string.Empty, Path.Combine(updateDocumentModel.Path.Split('/')[..^1]));
+                var sourcePath = Path.Combine(webRootPath ?? string.Empty, updateDocumentModel.Path);
+                var destPath = Path.Combine(path, updateDocumentModel.NewName);
+
+                if (updateDocumentModel.Type.Equals(nameof(DocumentType.Folder), StringComparison.OrdinalIgnoreCase))
+                {
+                    Directory.Move(sourcePath, destPath);
+                }
+                else if (updateDocumentModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase))
+                {
+                    System.IO.File.Move(sourcePath, destPath);
+                }
+                else
+                {
+                    return BadRequest(new { errorText = "Не указан тип документа" });
+                }
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { errorText = "Папка уже существует" });
+            }
+
+            return Ok(new { okText = "Имя успешно обновлено" });
         }
 
         [HttpPost]
@@ -221,10 +258,10 @@ namespace Deloprosit.Server.Controllers
             }
             catch
             {
-                return Problem(statusCode: 500, detail: "Ошибка загрузки файла");
+                return StatusCode( StatusCodes.Status500InternalServerError, new { errorText = "Ошибка загрузки файла" });
             }
             
-            return Ok();
+            return Ok(new { okText = "Файл успешно загружен" });
         }
 
         private static string? ByteLengthToSizeString(long? length)
