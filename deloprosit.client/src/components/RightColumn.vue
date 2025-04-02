@@ -181,7 +181,7 @@ async function deleteDocument(node) {
 
 </script>
 <template>
-    <div class="right-container">
+    <div class="right-container" id="right-column">
         <div class="items">
             <div class="items-header">
                 <strong style="margin: 5px 0 6px 0;">Документы:</strong>

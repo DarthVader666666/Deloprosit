@@ -145,7 +145,7 @@ function handleBurgerClick() {
         </div>
         <div class="account-and-menu">
             <div class="menu-burger" >
-                <span v-if="nickname">{{ nickname }}</span>
+                <span v-if="nickname" style="font-weight: bold;">{{ nickname }}</span>
                 <Button
                     @click="handleBurgerClick" 
                     security="contrast" rounded text
@@ -194,9 +194,12 @@ function handleBurgerClick() {
                 />
             </div>            
             <div v-if="nickname && showAccountSettings" class="slide-container" id="account-settings">
-                <span style="font-size: large;">
-                    {{ nickname }}
-                </span>
+                <div>
+                    <span style="font-size: large;">
+                        {{ nickname }}
+                    </span>
+                    <Button @click="showAccountSettings = false" severity="contrast" rounded text icon="pi pi-times" style="position: absolute; right: 0; top: 0;"></Button>
+                </div>                
                 <Button 
                     @click="handleLogout" 
                     severity="secondary" label="Выйти"
@@ -292,7 +295,6 @@ function handleBurgerClick() {
     .menu-burger {
         display: none;
         align-content: center;
-        padding: 0;
     }
 
     .menu-burger button {
@@ -396,7 +398,8 @@ function handleBurgerClick() {
         }
 
         .menu-burger {
-            display: block;
+            display: flex;
+            align-items: center;
         }
 
         .account {

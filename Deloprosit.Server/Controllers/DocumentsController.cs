@@ -92,7 +92,7 @@ namespace Deloprosit.Server.Controllers
                             Data = new TreeNode 
                             { 
                                 Name = d.Name,
-                                Path = $"{documentsDirectoryName}/{d.Name}",
+                                Path = Path.Combine(documentsDirectoryName ?? string.Empty, d.Name),
                                 Type = nameof(DocumentType.Folder).ToLower(),
                             },
                             Children = d.GetFiles().Select(f => new DocumentNode
@@ -102,7 +102,7 @@ namespace Deloprosit.Server.Controllers
                                 Data = new TreeNode 
                                 { 
                                     Name = f.Name,
-                                    Path = $"{documentsDirectoryName}/{d.Name}/{f.Name}",
+                                    Path = Path.Combine(documentsDirectoryName ?? string.Empty, d.Name, f.Name),
                                     Type = nameof(DocumentType.File).ToLower(),
                                     Size = ByteLengthToSizeString(f.Length), 
                                 }
@@ -252,6 +252,7 @@ namespace Deloprosit.Server.Controllers
                 {
                     string filePath = Path.Combine(docsPath ?? throw new NullReferenceException("Не задан путь к фалу"), 
                         uploadFileModel.FolderName ?? string.Empty, file.FileName);
+
                     using Stream fileStream = new FileStream(filePath, FileMode.Create);
                     await file.CopyToAsync(fileStream);
                 }
