@@ -96,7 +96,7 @@ function hideDocuments() {
 
     #central-container {
       width: 100%;
-      padding: 10px 0 0 0;
+      padding: 10px;
     }
 
     #right-container {
