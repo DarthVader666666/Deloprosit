@@ -26,7 +26,7 @@ function previousTheme() {
 function nextTheme() {
     const themeIndex = themeIds.value.indexOf(theme.value.themeId);
 
-    if(!(themeIndex >= themeIds.value.length)) {
+    if(!(themeIndex >= (themeIds.value.length - 1))) {
         router.push(`/chapters/${theme.value.chapterId}/${themeIds.value[themeIndex + 1]}`);
     }
 }
