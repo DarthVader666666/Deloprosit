@@ -21,35 +21,28 @@ onMounted(() => {
 function showDocuments() {
     showRightColumn.value = true;
 
-    const centralComponent = document.getElementById('central-container');
-    centralComponent.style.position = 'absolute';
-
     const rightColumn = document.getElementById('right-container');
     rightColumn.style.position = 'fixed';
     rightColumn.style.right = '0';
     rightColumn.style.display = 'block';
+    rightColumn.style.boxShadow = '0px 0px 10px 0px black';
     rightColumn.style.width = window.innerWidth < 360 ? `${window.innerWidth}px` : '360px';
 }
 
 function hideDocuments() {
     showRightColumn.value = false;
 
-    const centralComponent = document.getElementById('central-container');
-    centralComponent.style.display = 'block';
-    centralComponent.style.removeProperty('position');
-
     const rightColumn = document.getElementById('right-container');
+    rightColumn.style.removeProperty('box-shadow');
     rightColumn.style.position = 'sticky';
-    rightColumn.style.height = '100vh';
     rightColumn.style.width = '17%';
-    rightColumn.style.top = 0;
 
     if(window.innerWidth > 1100) {
         rightColumn.style.display = 'block'
     }
     else {
         rightColumn.style.display = 'none'
-    }    
+    }
 }
 
 </script>
@@ -61,7 +54,7 @@ function hideDocuments() {
         <RouterView id="central-container"/>
         <RightColumnView/>
         <div class="document-button">
-            <Button v-if="!showRightColumn" @click="showDocuments"  severity="secondary" raised icon="pi pi-caret-left"></Button>
+            <Button v-if="!showRightColumn" @click="showDocuments" severity="secondary" raised icon="pi pi-caret-left"></Button>
             <Button v-else @click="hideDocuments" severity="contrast" raised icon="pi pi-caret-right"></Button>
         </div>
     </div>

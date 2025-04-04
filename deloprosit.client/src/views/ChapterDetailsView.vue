@@ -31,6 +31,10 @@ const theme = computed(() => store.getters.getTheme);
         <hr/>    
     </div>
     <ThemeComponent v-if="theme" :theme="theme"></ThemeComponent>
+    <div class="theme-buttons">
+        <Button icon="pi pi-arrow-left" rounded raised></Button>
+        <Button icon="pi pi-arrow-right" rounded raised></Button>
+    </div>
 </div>
 
 </template>
@@ -71,6 +75,28 @@ const theme = computed(() => store.getters.getTheme);
     margin: 10px 0 10px 0;
     float: right;
     width: 90px;
+}
+
+.theme-buttons {
+    display: none;
+}
+
+.theme-buttons button {
+    height: 50px;
+    width: 50px;
+    background-color: #10b9818f;
+}
+
+@media (max-width: 1100px) {
+    .theme-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        width: inherit;
+        position: fixed;
+        z-index: 1;
+        bottom: 50px;
+    }
 }
 
 @media (max-width: 800px) {
