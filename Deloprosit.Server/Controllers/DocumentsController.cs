@@ -76,11 +76,11 @@ namespace Deloprosit.Server.Controllers
                         Data = new TreeNode 
                         {
                             Name = f.Name,
-                            Path = $"{documentsDirectoryName}/{f.Name}",
+                            Path = Path.Combine(documentsDirectoryName ?? string.Empty, f.Name),
                             Type = nameof(DocumentType.File).ToLower(),
                             Size = ByteLengthToSizeString(f.Length), 
                         }
-                    }).ToArray()
+                    })
                 });
 
                 documentNodes.AddRange(directoryInfo
@@ -99,15 +99,15 @@ namespace Deloprosit.Server.Controllers
                             {
                                 Key = $"{d.Name}-{f.FullName}",
                                 Icon = "pi pi-file",
-                                Data = new TreeNode 
-                                { 
+                                Data = new TreeNode
+                                {
                                     Name = f.Name,
                                     Path = Path.Combine(documentsDirectoryName ?? string.Empty, d.Name, f.Name),
                                     Type = nameof(DocumentType.File).ToLower(),
                                     Size = ByteLengthToSizeString(f.Length), 
                                 }
-                            }).ToArray()
-                        }).ToList());
+                            })
+                        }));
             }
             catch (Exception ex)
             {
@@ -164,10 +164,10 @@ namespace Deloprosit.Server.Controllers
             }
             catch
             {
-                return StatusCode( StatusCodes.Status500InternalServerError, new { errorText = "Ошибка при удалении файла" });
+                return StatusCode( StatusCodes.Status500InternalServerError, new { errorText = "Ошибка при удалении" });
             }
 
-            return Ok(new { okText = "Документ успешно удален" });
+            return Ok(new { okText = documentPathModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase) ? "Файл успешно удален" : "Папка успешно удалена" });
         }
 
 
@@ -211,7 +211,7 @@ namespace Deloprosit.Server.Controllers
 
             try
             {
-                var path = Path.Combine(webRootPath ?? string.Empty, Path.Combine(updateDocumentModel.Path.Split('/')[..^1]));
+                var path = Path.Combine(webRootPath ?? string.Empty, Path.Combine(updateDocumentModel.Path.Split('\\')[..^1]));
                 var sourcePath = Path.Combine(webRootPath ?? string.Empty, updateDocumentModel.Path);
                 var destPath = Path.Combine(path, updateDocumentModel.NewName);
 

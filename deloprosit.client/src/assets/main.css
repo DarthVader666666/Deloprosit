@@ -56,20 +56,6 @@ body {
   min-height: var(--MAIN-COMPONENT-MIN-HEIGHT);
 }
 
-.central-container {
-  width: var(--CENTRAL-COLUMN_WIDTH);
-  background-color: var(--CENTRAL-BCKGND-CLR);
-  padding: 10px;
-}
-
-.right-container {
-  width: var(--RIGHT-COLUMN-WIDTH);
-  background-color: var(--COLUMNS-BCKGND-CLR);
-  position: sticky;
-  height: 100vh;
-  top:0;
-}
-
 .left-container {
   width: var(--LEFT-COLUMN-WIDTH);
   background-color: var(--COLUMNS-BCKGND-CLR);
@@ -143,16 +129,7 @@ body {
 }
 
 @media(max-width: 1100px) {
-  .central-container {
-    width: 100%;
-    padding: 10px 0 0 0;
-  }
-
   .left-container {
-    display: none;
-  }
-
-  .right-container {
     display: none;
   }
 
