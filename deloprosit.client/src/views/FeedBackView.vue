@@ -68,7 +68,7 @@ async function handleSendProcess(promise) {
 }
 
 function sendMessage() {
-    if(!(messageForm.value.email && messageForm.value.phone)) {
+    if(!(messageForm.value.email || messageForm.value.phone)) {
         invalid.value = true;
         const email = document.getElementById('email');
         const phone = document.getElementById('phone');
