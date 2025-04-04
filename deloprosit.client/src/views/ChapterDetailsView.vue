@@ -13,6 +13,23 @@ const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const chapter = computed(() => store.getters.getChapter);
 const theme = computed(() => store.getters.getTheme);
+const themeIds = computed(() => store.getters.getThemes.map(x => x.themeId));
+
+function previousTheme() {
+    const themeIndex = themeIds.value.indexOf(theme.value.themeId);
+
+    if(themeIndex != 0) {
+        router.push(`/chapters/${theme.value.chapterId}/${themeIds.value[themeIndex - 1]}`);
+    }
+}
+
+function nextTheme() {
+    const themeIndex = themeIds.value.indexOf(theme.value.themeId);
+
+    if(!(themeIndex >= themeIds.value.length)) {
+        router.push(`/chapters/${theme.value.chapterId}/${themeIds.value[themeIndex + 1]}`);
+    }
+}
 
 </script>
 
@@ -32,8 +49,8 @@ const theme = computed(() => store.getters.getTheme);
     </div>
     <ThemeComponent v-if="theme" :theme="theme"></ThemeComponent>
     <div class="theme-buttons">
-        <Button icon="pi pi-arrow-left" rounded raised></Button>
-        <Button icon="pi pi-arrow-right" rounded raised></Button>
+        <Button @click="previousTheme" icon="pi pi-arrow-left" rounded raised></Button>
+        <Button @click="nextTheme" icon="pi pi-arrow-right" rounded raised></Button>
     </div>
 </div>
 
@@ -95,7 +112,7 @@ const theme = computed(() => store.getters.getTheme);
         width: inherit;
         position: fixed;
         z-index: 1;
-        bottom: 50px;
+        bottom: 30px;
     }
 }
 
