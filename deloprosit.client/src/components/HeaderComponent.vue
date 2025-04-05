@@ -198,7 +198,7 @@ function handleBurgerClick() {
                     <span style="font-size: large;">
                         {{ nickname }}
                     </span>
-                    <Button @click="showAccountSettings = false" severity="contrast" rounded text icon="pi pi-times" style="position: absolute; right: 0; top: 0;"></Button>
+                    <Button @click="showAccountSettings = false" severity="contrast" rounded text icon="pi pi-times" style="position: absolute; right: 5px; top: 5px; height: 25px; width: 25px"></Button>
                 </div>                
                 <Button 
                     @click="handleLogout" 
