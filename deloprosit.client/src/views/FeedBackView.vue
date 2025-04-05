@@ -10,6 +10,8 @@ import { useRouter } from 'vue-router';
 import { helper } from '@/helper/helper';
 import SpinningCircle from '@/components/SpinningCircle.vue';
 
+const placeholder = 'Должен быть указан Email и/или Номер телефона';
+
 const store = useStore();
 const toast = useToast();
 const router = useRouter();
@@ -73,8 +75,8 @@ function sendMessage() {
         const email = document.getElementById('email');
         const phone = document.getElementById('phone');
 
-        email.setAttribute('placeholder', 'Должен быть указан Email и/или Номер телефона');
-        phone.setAttribute('placeholder', 'Должен быть указан Email и/или Номер телефона');
+        email.setAttribute('placeholder', placeholder);
+        phone.setAttribute('placeholder', placeholder);
         
         return;
     }
@@ -130,8 +132,8 @@ function sendMessage() {
 </template>
 
 <style scoped>
-.feedback-container {
-    padding: 30px;
+.feedback-container form {
+    padding: 10px;
 }
 
 .feedback-container h1 {

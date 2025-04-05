@@ -23,6 +23,7 @@ function showDocuments() {
 
     const rightColumn = document.getElementById('right-container');
     rightColumn.style.position = 'fixed';
+    rightColumn.style.zIndex = '1';
     rightColumn.style.right = '0';
     rightColumn.style.display = 'block';
     rightColumn.style.boxShadow = '0px 0px 10px 0px black';
@@ -36,6 +37,7 @@ function hideDocuments() {
     rightColumn.style.removeProperty('box-shadow');
     rightColumn.style.position = 'sticky';
     rightColumn.style.width = '17%';
+    rightColumn.style.zIndex = '0';
 
     if(window.innerWidth > 1100) {
         rightColumn.style.display = 'block'
@@ -67,6 +69,7 @@ function hideDocuments() {
     margin-bottom: auto;
     right: 0;
     display: none;
+    z-index: 2;
 }
 
 .document-button button {
@@ -87,6 +90,9 @@ function hideDocuments() {
   position: sticky;
   height: 100vh;
   top: 0;
+  animation-name: slide;
+  animation-duration: 0.2s;
+  transform: translateX(0%);
 }
 
 @media (max-width: 1100px) {
@@ -96,7 +102,7 @@ function hideDocuments() {
 
     #central-container {
       width: 100%;
-      padding: 10px;
+      padding: 10px 0 0 0;
     }
 
     #right-container {

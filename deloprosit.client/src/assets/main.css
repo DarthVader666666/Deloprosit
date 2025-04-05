@@ -157,3 +157,9 @@ body {
     width: 100%;
   }
 }
+
+@keyframes slide {
+  0% {
+      transform: translateX(100%);
+  }
+}

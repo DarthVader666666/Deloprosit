@@ -25,14 +25,14 @@ const remember = ref(false);
 const showLogin = ref(false);
 const showMenu = ref(false);
 const showAccountSettings = ref(false);
-const header = ref(null)
+const header = ref(null);
 
 onMounted(() => {
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['login-form', 'login-button'])) showLogin.value = false });
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['menu', 'burger-button'])) showMenu.value = false });
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['account-settings', 'account-button'])) showAccountSettings.value = false });
     window.addEventListener('resize', handleScreenSizeChange);
-})
+});
 
 watch(showMenu, (oldValue, newValue) => {
     const menu = document.getElementById('menu');
@@ -51,7 +51,7 @@ const handleScreenSizeChange = () => {
     if(document.documentElement.clientWidth > 800) {
         showMenu.value = false;
     }
-}
+};
 
 const handleLogin = () => {
     const nicknameValue = helper.validateEmail(loginRequestForm.value.nicknameOrEmail) ? '' : loginRequestForm.value.nicknameOrEmail
@@ -107,8 +107,8 @@ const handleLogin = () => {
 
         loginRequestForm.value.nicknameOrEmail = null;
         loginRequestForm.value.password = null;
-    });
-}
+    })
+};
 
 const handleLogout = () => {
     if(window.confirm('Вы уверены, что хотите выйти?'))
@@ -168,29 +168,29 @@ function handleBurgerClick() {
                 <Button
                     @click="() => { showMenu = false; router.push('/'); }" 
                     severity="contrast" text label="Главная" 
-                    id="home-button"
+                    id="home-button" style="border-radius: 0"
                 />
                 <Button v-if="!(isAdmin || isOwner)"
                     @click="() => { showMenu = false; router.push('/feedback'); }" 
                     severity="contrast" text label="Обратная связь"
-                    id="feedback-button"
+                    id="feedback-button" style="border-radius: 0"
                 />
                 <Button v-if="isAdmin || isOwner"
                     @click="() => { showMenu = false; router.push('/chapters/create'); }"
                     severity="contrast" text label="Создать раздел"
-                    id="create-chapter-button"
+                    id="create-chapter-button" style="border-radius: 0"
                 />
                 <Button v-if="isOwner" @click="() => { showMenu = false; router.push('/messages'); }" 
                     severity="contrast" text label="Сообщения"
-                    id="messages-button"
+                    id="messages-button" style="border-radius: 0"
                 />   
                 <Button v-if="!nickname" @click="() => { showMenu = false; showLogin = false; router.push('/register'); }" 
                     severity="contrast" text label="Регистрация"
-                    id="register-button"
+                    id="register-button" style="border-radius: 0"
                 />
                 <Button v-if="!nickname" @click="() => { showMenu = false; showLogin = !showLogin; }" 
                     severity="contrast" text label="Войти" icon="pi pi-sign-in"
-                    id="login-button"
+                    id="login-button" style="border-radius: 0"
                 />
             </div>            
             <div v-if="nickname && showAccountSettings" class="slide-container" id="account-settings">
@@ -285,6 +285,10 @@ function handleBurgerClick() {
         flex-direction: row;
         align-items: end;
         gap: 10px;
+    }
+
+    .slide-container:deep(button) {
+        width: 100%;
     }
 
     .slide-container button:deep(span) {
@@ -411,12 +415,6 @@ function handleBurgerClick() {
 
         .account-and-menu {
             flex-direction: row-reverse;
-        }
-    }
-
-    @keyframes slide {
-        0% {
-            transform: translateX(100%);
         }
     }
 </style>
