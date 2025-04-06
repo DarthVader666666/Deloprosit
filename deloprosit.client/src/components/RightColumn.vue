@@ -248,7 +248,7 @@ async function deleteDocument(node) {
                             :style="node.data.type === 'folder' ? 'font-weight:bold;' : 'font-weight:normal;'" :id="`${node.data.path}_${node.data.type}_name`">
                             {{ node.data.name }}
                         </span>
-                        <input type="text" v-model="newName" @keydown.enter="updateName(node)" class="rename-input" style="display: none;" :id="`${node.data.path}_${node.data.type}_input`">
+                        <input type="text" v-model="newName" @keydown.esc="cancelEdit(node)" @keydown.enter="updateName(node)" class="rename-input" style="display: none;" :id="`${node.data.path}_${node.data.type}_input`">
                         <Button v-if="node.data.type != 'root' && (isAdmin || isOwner)" @click="showRenameInput(node)" :id="`${node.data.path}_${node.data.type}_edit-button`"
                             class="document-button" text rounded severity="contrast" icon="pi pi-pencil" title="Переименовать"></Button>
 
