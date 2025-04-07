@@ -49,18 +49,26 @@ namespace Deloprosit.Server.Controllers
                 return BadRequest(new { errorText = "Такой пользователь уже зарегестрирован" });
             }
 
-            var user = _automapper.Map<User>(userRegister);
-
-            var result = await _userManager.RegisterAsync(user, HttpContext.Request.GetDisplayUrl());
-
-            if (result)
+            try
             {
-                return Ok();
+                var user = _automapper.Map<User>(userRegister);
+
+                var result = await _userManager.RegisterAsync(user, HttpContext.Request.GetDisplayUrl());
+
+                if (result)
+                {
+                    return Ok(new { okText = "Письмо отправлено" });
+                }
+                else
+                {
+                    return BadRequest(new { errorText = "Ошибка регистрации"});
+                }
             }
-            else
-            {
-                return BadRequest();
+            catch (Exception ex)
+            { 
+                return StatusCode(500, new { errorText = ex.Message });
             }
+
         }
 
         [HttpGet]
@@ -88,7 +96,7 @@ namespace Deloprosit.Server.Controllers
         [Route("[action]")]
         public async Task<IActionResult> UserExists([FromQuery] string? nickname, [FromQuery] string? email) 
         {
-            var userExists = false;
+            bool userExists;
 
             if (nickname == null)
             {

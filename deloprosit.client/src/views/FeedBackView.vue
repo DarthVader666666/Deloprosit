@@ -4,11 +4,12 @@ import Textarea from 'primevue/textarea';
 import Button from 'primevue/button'
 import axios from 'axios';
 import { useStore } from 'vuex';
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
 import { helper } from '@/helper/helper';
 import SpinningCircle from '@/components/SpinningCircle.vue';
+import CaptchaComponent from '@/components/CaptchaComponent.vue';
 
 const placeholder = 'Должен быть указан Email и/или Номер телефона';
 
@@ -16,10 +17,7 @@ const store = useStore();
 const toast = useToast();
 const router = useRouter();
 
-const captcha = computed(() => store.state.captcha);
-
 const isCaptchaMatch = ref(false);
-const captchaNumber = ref(Math.floor(Math.random() * 10) + 1);
 const pending = ref(false);
 const invalid = ref(false);
 const messageForm = ref(
@@ -101,15 +99,9 @@ function sendMessage() {
     handleSendProcess(promise);
 }
 
-function checkCaptchaMatch(event) {
-    if(event.target.value === store.state.captcha[captchaNumber.value]) {
-        isCaptchaMatch.value = true;
-    }
-    else {
-        isCaptchaMatch.value = false;
-    }
+function setCaptchaMatch(isMatch) {
+    isCaptchaMatch.value = isMatch;
 }
-
 </script>
 
 <template>
@@ -132,11 +124,7 @@ function checkCaptchaMatch(event) {
                 <span>Ваше сообщение:</span>
                 <Textarea v-model="messageForm.text" required></Textarea>
             </div>        
-            <div style="display: flex; gap: 10px; align-content: center;">
-                <img :src="`/src/assets/captcha/${captchaNumber}.png`">
-                <InputText style="width: 100px" type="text" @input="checkCaptchaMatch"></InputText>
-                <i v-if="isCaptchaMatch" class="pi pi-check" style="color:green; margin-top:8px;font-size: large;"></i>
-            </div>
+            <CaptchaComponent @captcha-match="setCaptchaMatch"></CaptchaComponent>
             <div>
                 <Button severity="secondary" :disabled="!isCaptchaMatch" type="submit" raised>Отправить</Button>
                 <Button severity="contrast" raised @click="router.push('/')">Отменить</Button>

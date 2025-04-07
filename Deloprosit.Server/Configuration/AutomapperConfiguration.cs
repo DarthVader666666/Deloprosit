@@ -18,12 +18,7 @@ namespace Deloprosit.Server.Configurations
                     autoMapperConfig.CreateMap<RegisterRequestModel, User>()
                         .ForMember(dest => dest.Nickname, opts => opts.MapFrom(src => EncodeUTF8(src.Nickname)))
                         .ForMember(dest => dest.FirstName, opts => opts.MapFrom(src => EncodeUTF8(src.FirstName)))
-                        .ForMember(dest => dest.LastName, opts => opts.MapFrom(src => EncodeUTF8(src.LastName)))
                         .ForMember(dest => dest.Password, opts => opts.MapFrom(src => EncodeUTF8(src.Password)))
-                        .ForMember(dest => dest.UserTitle, opts => opts.MapFrom(src => EncodeUTF8(src.Title)))
-                        .ForMember(dest => dest.Country, opts => opts.MapFrom(src => EncodeUTF8(src.Country)))
-                        .ForMember(dest => dest.City, opts => opts.MapFrom(src => EncodeUTF8(src.City)))
-                        .ForMember(dest => dest.Info, opts => opts.MapFrom(src => EncodeUTF8(src.Info)))
                         .ForMember(dest => dest.IsConfirmed, opts => opts.Ignore());
 
                     autoMapperConfig.CreateMap<Chapter, ChapterResponseModel>()
