@@ -6,6 +6,18 @@ const toast = useToast();
 
 const store = createStore({
     state: {
+        captcha: { 
+            1: '82297',
+            2: '59472',
+            3: '58095',
+            4: '85018',
+            5: '16254',
+            6: '14885',
+            7: '01618',
+            8: '58495',
+            9: '36461',
+            10: '92145'
+        },
         serverUrl: import.meta.env.VITE_API_SERVER_URL,
         environment: import.meta.env.VITE_API_ENVIRONMENT,
         roles: [],

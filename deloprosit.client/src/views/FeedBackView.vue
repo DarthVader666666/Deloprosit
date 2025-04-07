@@ -4,7 +4,7 @@ import Textarea from 'primevue/textarea';
 import Button from 'primevue/button'
 import axios from 'axios';
 import { useStore } from 'vuex';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
 import { helper } from '@/helper/helper';
@@ -16,6 +16,10 @@ const store = useStore();
 const toast = useToast();
 const router = useRouter();
 
+const captcha = computed(() => store.state.captcha);
+
+const isCaptchaMatch = ref(false);
+const captchaNumber = ref(Math.floor(Math.random() * 10) + 1);
 const pending = ref(false);
 const invalid = ref(false);
 const messageForm = ref(
@@ -97,6 +101,15 @@ function sendMessage() {
     handleSendProcess(promise);
 }
 
+function checkCaptchaMatch(event) {
+    if(event.target.value === store.state.captcha[captchaNumber.value]) {
+        isCaptchaMatch.value = true;
+    }
+    else {
+        isCaptchaMatch.value = false;
+    }
+}
+
 </script>
 
 <template>
@@ -119,14 +132,18 @@ function sendMessage() {
                 <span>Ваше сообщение:</span>
                 <Textarea v-model="messageForm.text" required></Textarea>
             </div>        
+            <div style="display: flex; gap: 10px; align-content: center;">
+                <img :src="`/src/assets/captcha/${captchaNumber}.png`">
+                <InputText style="width: 100px" type="text" @input="checkCaptchaMatch"></InputText>
+                <i v-if="isCaptchaMatch" class="pi pi-check" style="color:green; margin-top:8px;font-size: large;"></i>
+            </div>
             <div>
-                <Button severity="secondary" type="submit" raised>Отправить</Button>
+                <Button severity="secondary" :disabled="!isCaptchaMatch" type="submit" raised>Отправить</Button>
                 <Button severity="contrast" raised @click="router.push('/')">Отменить</Button>
-            </div>        
+            </div>
         </form>
     </div>
     <SpinningCircle v-else title="Сообщение отправляется..."></SpinningCircle>
-
 </div>
 
 </template>
