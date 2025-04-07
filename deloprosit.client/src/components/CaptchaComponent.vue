@@ -31,7 +31,7 @@ function refreshCaptcha() {
 </script>
 <template>
     <div style="display: flex; gap: 10px; align-content: center;">
-        <img :src="`/src/assets/captcha/${captchaNumber}.png`">
+        <img :src="`src/assets/images/${captchaNumber}.png`">
         <InputText style="width: 100px" type="text" @input="checkCaptchaMatch" id="captcha-input"></InputText>
         <Button v-if="!isCaptchaMatch" @click="refreshCaptcha" title="Другую картинку"
             text severity="contrast" icon="pi pi-refresh" rounded style="width:25px;height:25px;top:4px;">
