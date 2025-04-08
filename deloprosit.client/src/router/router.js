@@ -93,8 +93,13 @@ router.afterEach(async (to) => {
     }
 
     if(to.name === 'register') {
-        store.commit('setTitle', 'Заполните форму регистрации');
-        document.getElementById('captcha-input').value = null;
+        store.commit('setTitle', 'Заполните форму регистрации');        
+        const captchaInput =  document.getElementById('captcha-input');
+
+        if(captchaInput) {
+            captchaInput.value = null;
+        }
+
         await store.dispatch('downloadCaptcha');
     }
 
@@ -103,9 +108,14 @@ router.afterEach(async (to) => {
     }
 
     if(to.name === 'feedback') {
-       store.commit('setTitle', 'Напишите ваше сообщение');
-       document.getElementById('captcha-input').value = null;
-       await store.dispatch('downloadCaptcha');
+        store.commit('setTitle', 'Напишите ваше сообщение');
+        const captchaInput =  document.getElementById('captcha-input');
+
+        if(captchaInput) {
+            captchaInput.value = null;
+        }
+
+        await store.dispatch('downloadCaptcha');
     }
 
     if(to.name === 'messages') {
