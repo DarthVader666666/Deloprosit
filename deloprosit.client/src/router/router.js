@@ -94,6 +94,8 @@ router.afterEach(async (to) => {
 
     if(to.name === 'register') {
         store.commit('setTitle', 'Заполните форму регистрации');
+        document.getElementById('captcha-input').value = null;
+        await store.dispatch('downloadCaptcha');
     }
 
     if(to.name === 'home') {
@@ -101,7 +103,9 @@ router.afterEach(async (to) => {
     }
 
     if(to.name === 'feedback') {
-       store.commit('setTitle', 'Напишите ваше сообщение'); 
+       store.commit('setTitle', 'Напишите ваше сообщение');
+       document.getElementById('captcha-input').value = null;
+       await store.dispatch('downloadCaptcha');
     }
 
     if(to.name === 'messages') {

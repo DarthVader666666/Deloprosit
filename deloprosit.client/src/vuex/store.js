@@ -6,18 +6,7 @@ const toast = useToast();
 
 const store = createStore({
     state: {
-        captcha: { 
-            1: '82297',
-            2: '59472',
-            3: '58095',
-            4: '85018',
-            5: '16254',
-            6: '14885',
-            7: '01618',
-            8: '58495',
-            9: '36461',
-            10: '92145'
-        },
+        captcha: null,
         serverUrl: import.meta.env.VITE_API_SERVER_URL,
         environment: import.meta.env.VITE_API_ENVIRONMENT,
         roles: [],
@@ -85,6 +74,9 @@ const store = createStore({
         },
         getShowChapterList(state) {
             return state.showChapterList;
+        },
+        getCaptcha(state) {
+            return state.captcha;
         }
     },
     mutations: {
@@ -131,6 +123,9 @@ const store = createStore({
         },
         setShowChapterList(state, value) {
             state.showChapterList = value;
+        },
+        setCaptcha(state, value) {
+            state.captcha = value;
         }
     },
     actions: {
@@ -209,6 +204,17 @@ const store = createStore({
 
             commit('setChapterSearchResult', chapterSearchResult);
         },
+        async downloadCaptcha({commit, state}) {
+            const captcha = (await axios.get(`${state.serverUrl}/captcha/get`)
+            .then(response => response.data)
+            .catch(error => {
+                if(error.response) {
+                    toast.error(error.response.data.errorText)
+                }
+            }));
+
+            commit('setCaptcha', captcha);
+        }
     }
 });
 

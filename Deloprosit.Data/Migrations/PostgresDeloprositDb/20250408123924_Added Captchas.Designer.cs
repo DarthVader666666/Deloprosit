@@ -3,6 +3,7 @@ using System;
 using Deloprosit.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Deloprosit.Data.Migrations.PostgresDeloprositDb
 {
     [DbContext(typeof(PostgresDeloprositDbContext))]
-    partial class PostgresDeloprositDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250408123924_Added Captchas")]
+    partial class AddedCaptchas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -356,24 +359,6 @@ namespace Deloprosit.Data.Migrations.PostgresDeloprositDb
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            Email = "mHdyjukniQqXvq8Ulori1g==",
-                            IsConfirmed = true,
-                            Nickname = "alex",
-                            Password = "eK+Th1R1aYQxoYblzPPL8w=="
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            Email = "JtfP1IxKgKVGB4ADFXFnvA==",
-                            IsConfirmed = true,
-                            Nickname = "admin",
-                            Password = "efavXKTzRTFnR7w69A7OJA=="
-                        });
                 });
 
             modelBuilder.Entity("Deloprosit.Data.Entities.UserRole", b =>
@@ -389,18 +374,6 @@ namespace Deloprosit.Data.Migrations.PostgresDeloprositDb
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            RoleId = 1
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            RoleId = 2
-                        });
                 });
 
             modelBuilder.Entity("Deloprosit.Data.Entities.Chapter", b =>
