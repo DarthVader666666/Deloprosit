@@ -131,6 +131,8 @@ namespace Deloprosit.Data
                 message.HasOne(x => x.UserReceiver).WithMany(x => x.Messages).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
                 message.Property(x => x.Email).HasMaxLength(maxNameLength).IsRequired(false);
                 message.Property(x => x.Phone).HasMaxLength(maxNameLength).IsRequired(false);
+                message.Property(x => x.IsRead).HasDefaultValue(false);
+                message.Property(x => x.UserId).HasDefaultValue(1);
             });
             modelBuilder.Entity<Captcha>(captcha =>
             {
