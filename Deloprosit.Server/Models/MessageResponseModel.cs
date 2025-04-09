@@ -2,6 +2,7 @@
 {
     public class MessageResponseModel
     {
+        public int MessageId { get; set; }
         public string? Name { get; set; }
         public string? Contacts { get; set; }
         public string? Text { get; set; }
