@@ -20,6 +20,7 @@ const router = useRouter();
 const nickname = computed(() => store.state.nickname);
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
+const unreadMessagesCount = computed(() => store.getters.getUnreadMessagesCount);
 
 const remember = ref(false);
 const showLogin = ref(false);
@@ -27,7 +28,7 @@ const showMenu = ref(false);
 const showAccountSettings = ref(false);
 const header = ref(null);
 
-onMounted(() => {
+onMounted(async () => {
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['login-form', 'login-button'])) showLogin.value = false });
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['menu', 'burger-button'])) showMenu.value = false });
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['account-settings', 'account-button'])) showAccountSettings.value = false });
@@ -181,9 +182,12 @@ function handleBurgerClick() {
                     id="create-chapter-button" style="border-radius: 0"
                 />
                 <Button v-if="isOwner" @click="() => { showMenu = false; router.push('/messages'); }" 
-                    severity="contrast" text label="Сообщения"
+                    severity="contrast" text
                     id="messages-button" style="border-radius: 0"
-                />   
+                >
+                    <span>Сообщения</span>
+                    <span class="unread-messages-count" :style="unreadMessagesCount ? '' : 'display: none;'">{{ unreadMessagesCount }}</span>
+                </Button>
                 <Button v-if="!nickname" @click="() => { showMenu = false; showLogin = false; router.push('/register'); }" 
                     severity="contrast" text label="Регистрация"
                     id="register-button" style="border-radius: 0"
@@ -356,6 +360,18 @@ function handleBurgerClick() {
         padding: 8px;
         margin-left: 22px;
         border-radius: 4px;
+    }
+
+    .unread-messages-count {
+        right: 0;
+        background:red;
+        color:white !important;
+        font-size: small;
+        font-weight:normal !important; 
+        padding:3px 0 0 0;
+        border-radius:50%;
+        height:20px;
+        width:20px;
     }
 
     .remember {

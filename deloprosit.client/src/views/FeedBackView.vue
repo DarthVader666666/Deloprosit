@@ -56,14 +56,9 @@ async function handleSendProcess(promise) {
                 }
             })
             .catch(error => {
-                const status = error.response.status;
-                
-                if(status === 400) {
+                if(error.response) {
                     toast.error(error.response.data.errorText);
-                }
-
-                if (status === 500) {
-                    toast.error(error.response.data.errorText);
+                    isCaptchaMatch.value = false;                    
                 }
         });
     }
@@ -81,6 +76,14 @@ function sendMessage() {
         phone.setAttribute('placeholder', placeholder);
         
         return;
+    }
+
+    if(!messageForm.value.email) {
+        messageForm.value.email = '';
+    }
+
+    if(!messageForm.value.phone) {
+        messageForm.value.phone = '';
     }
 
     var formData = new FormData();

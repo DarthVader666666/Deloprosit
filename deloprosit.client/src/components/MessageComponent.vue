@@ -14,9 +14,9 @@ const emit = defineEmits(['message-shown']);
 </script>
 
 <template>    
-<div class="messagee">
+<div class="message">
     <div style="display: flex; justify-content: end; padding-bottom: 10px;">
-        <Button @click.prevent="emit('message-shown')" style="width: 25px; height: 25px; margin-top: 10px;" severity="contrast" rounded text icon="pi pi-times"/>
+        <Button @click.prevent="emit('message-shown')" style="width: 25px; height: 25px; margin-top: 10px;" severity="secondary" raised rounded icon="pi pi-times"/>
     </div>
     <div>
         {{ props.message.text }}
@@ -25,14 +25,14 @@ const emit = defineEmits(['message-shown']);
         <span>{{ props.message.name }}</span>
         <span>{{ helper.getDateString(props.message.dateSent) }}</span>
     </div>
-    <div style="padding: 20px 0 0 20px;">
+    <div style="white-space: pre-wrap; padding: 20px 0 0 20px;">
         {{ props.message.contacts }}
     </div>
 </div>
 </template>
 
 <style scoped>
-.messagee {
+.message {
     max-height: 100%;
     width: 70%;
     box-shadow: var(--COMPONENT-BOX-SHADOW);
@@ -46,7 +46,7 @@ const emit = defineEmits(['message-shown']);
 }
 
 @media (max-width: 1100px) {
-    .messagee {
+    .message {
         font-size: small;
         height: 100%;
         width: 90%;
@@ -54,7 +54,7 @@ const emit = defineEmits(['message-shown']);
 }
 
 @media (max-width: 800px) {
-    .messagee {
+    .message {
         font-size: x-small;
         padding: 10px;
         width: 100%;

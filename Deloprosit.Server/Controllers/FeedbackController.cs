@@ -50,13 +50,10 @@ namespace Deloprosit.Server.Controllers
                 return StatusCode(500, new { errorText = "Не найден email для отсылки сообщения" });
             }
 
-            var result = Task.FromResult(false);
+            await _emailSender.SendEmailAsync(email, $"{messageForm.Name} прислал сообщение в Deloprosit",
+                $"<div>{messageForm.Text}</div><div>Email: {messageForm.Email}</div><div>Телефон: {messageForm.Phone}</div>");
 
-            if (!messageForm.Email.IsNullOrEmpty())
-            {
-                result = _emailSender.SendEmailAsync(email, $"{messageForm.Name} прислал сообщение в Deloprosit",
-                    $"<div>{messageForm.Text}</div><div>Email: {messageForm.Email}</div><div>Телефон: {messageForm.Phone}</div>");
-            }
+            Message? createdMessage = null;
 
             try
             {
@@ -70,20 +67,20 @@ namespace Deloprosit.Server.Controllers
                 message.Phone = _cryptoService.Encrypt(message.Phone);
                 message.Text = _cryptoService.Encrypt(message.Text);
 
-                await _messageRepository.CreateAsync(message);
+                createdMessage = await _messageRepository.CreateAsync(message);
             }
-            catch
+            catch (Exception ex)
             {
-                return StatusCode(500, new { errorText = "Ошибка сервера" });
+                return StatusCode(500, new { errorText = ex.Message });
             }
 
-            if (await result)
+            if (createdMessage != null)
             {
                 return Ok();
             }
             else
             {
-                return StatusCode(500, new { errorText = "Ошибка отправки письма на email" });
+                return StatusCode(500, new { errorText = "Ошибка отправки сообщения" });
             }
         }
 

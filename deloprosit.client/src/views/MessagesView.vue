@@ -48,6 +48,8 @@ async function onRowSelect(event) {
         await store.dispatch('downloadMessages', isRead.value);
         showMessage.value = true;
     }
+
+    await store.dispatch('downloadUnreadMessagesCount');
 }
 
 function closeMessageModal() {

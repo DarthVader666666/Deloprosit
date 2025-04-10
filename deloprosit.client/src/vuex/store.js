@@ -20,6 +20,7 @@ const store = createStore({
         documentNodes: [],
         messages: [],
         message: null,
+        unreadMessagesCount: 0,
         chapterSearchResult: [],
         showSearchBar: true,
         title: null,
@@ -60,6 +61,9 @@ const store = createStore({
         },
         getMessage(state) {
             return state.message;
+        },
+        getUnreadMessagesCount(state) {
+            return state.unreadMessagesCount;
         },
         getChapterSearchResult(state) {
             return state.chapterSearchResult;
@@ -124,6 +128,9 @@ const store = createStore({
         },
         setMessage(state, message) {
             state.message = message;
+        },
+        setUnreadMessagesCount(state, count) {
+            state.unreadMessagesCount = count;
         },
         setMessageById(state, messageId) {
             state.message = state.messages.find(x => x.messageId === messageId);
@@ -210,6 +217,16 @@ const store = createStore({
                 });
 
             commit('setMessage', message);
+        },
+        async downloadUnreadMessagesCount({commit, state}) {
+            const count = await axios.get(`${state.serverUrl}/feedback/getunreadmessagescount`)
+                .then(response => {
+                    if(response.status == 200) {
+                        return response.data;
+                    }
+                });
+
+            commit('setUnreadMessagesCount', count);
         },
         async downloadChapterSearchResult({commit, state}, searchLine) {
             const chapterSearchResult = (await axios.post(`${state.serverUrl}/chapters/search`,

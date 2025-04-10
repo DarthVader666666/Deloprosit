@@ -80,9 +80,9 @@ namespace Deloprosit.Server.Configurations
         {
             return (email, phone) switch
             {
-                (var e, var p) when !e.IsNullOrEmpty() && !p.IsNullOrEmpty() => $"Email: {e}\nТел.: {p}",
-                (var e, var p) when e.IsNullOrEmpty() && !p.IsNullOrEmpty() => $"Email: {e}",
-                (var e, var p) when !e.IsNullOrEmpty() && p.IsNullOrEmpty() => $"Тел.: {p}",
+                (var e, var p) when !e.IsNullOrEmpty() && !p.IsNullOrEmpty() => $"Email: {e}\n\rТел.: {p}",
+                (var e, var p) when e.IsNullOrEmpty() && !p.IsNullOrEmpty() => $"Тел.: {p}",
+                (var e, var p) when !e.IsNullOrEmpty() && p.IsNullOrEmpty() => $"Email: {e}",
                 _ => null
             };
         }
