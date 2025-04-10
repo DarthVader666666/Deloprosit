@@ -45,15 +45,17 @@ namespace Deloprosit.Server.Controllers
 
             var email = _configuration["OwnerEmail"];
 
-            if (email == null)
+            if (email != null)
             {
-                return StatusCode(500, new { errorText = "Не найден email для отсылки сообщения" });
+                await _emailSender.SendEmailAsync(email, 
+                    $"{messageForm.Name} прислал сообщение в Deloprosit",
+                    $"<div>{messageForm.Text}</div>" +
+                    (messageForm.Email.IsNullOrEmpty() ? "" : $"<div>Email: {messageForm.Email}</div>") +
+                    (messageForm.Phone.IsNullOrEmpty() ? "" : $"<div>Телефон: {messageForm.Phone}</div>")
+                );
             }
 
-            await _emailSender.SendEmailAsync(email, $"{messageForm.Name} прислал сообщение в Deloprosit",
-                $"<div>{messageForm.Text}</div><div>Email: {messageForm.Email}</div><div>Телефон: {messageForm.Phone}</div>");
-
-            Message? createdMessage = null;
+            Message? createdMessage;
 
             try
             {
