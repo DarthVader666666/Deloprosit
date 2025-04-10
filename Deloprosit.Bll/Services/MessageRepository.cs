@@ -45,7 +45,24 @@ namespace Deloprosit.Bll.Services
 
         public Task<Message?> GetAsync(int? id)
         {
-            throw new NotImplementedException();
+            if (id == null)
+            {
+                return Task.FromResult<Message?>(null);
+            }
+
+            Message? message;
+
+            try
+            {
+                message = _dbContext.Messages.FirstOrDefault(x => id == x.MessageId);
+            }
+            catch (SqlException)
+            {
+                return Task.FromResult<Message?>(null);
+            }
+
+
+            return Task.FromResult(message);
         }
 
         public Task<IEnumerable<Message?>> GetListAsync(int? id = null)
@@ -70,9 +87,17 @@ namespace Deloprosit.Bll.Services
             return Task.FromResult(messages);
         }
 
-        public Task<Message?> UpdateAsync(Message? item)
+        public async Task<Message?> UpdateAsync(Message? item)
         {
-            throw new NotImplementedException();
+            if (item == null)
+            {
+                return null;
+            }
+
+            var updatedMessage = _dbContext.Messages.Update(item).Entity;
+            await _dbContext.SaveChangesAsync();
+
+            return updatedMessage;
         }
     }
 }

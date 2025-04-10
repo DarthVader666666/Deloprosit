@@ -119,7 +119,7 @@ router.afterEach(async (to) => {
     }
 
     if(to.name === 'messages') {
-        await store.dispatch('downloadMessages');
+        await store.dispatch('downloadMessages', false);
         store.commit('setTitle', 'Сообщения');
      }
 

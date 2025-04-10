@@ -88,29 +88,114 @@ namespace Deloprosit.Server.Controllers
         }
 
         [HttpGet]
-        [Route("[action]")]
+        [Route("[action]/{isRead:bool}")]
         [Authorize(Roles = "Owner")]
-        public async Task<IActionResult> GetList()
+        public async Task<IActionResult> GetList([FromRoute] bool isRead)
         {
             var user = await _userManager.GetCurrentUserAsync(HttpContext);
-            var messages = (await _messageRepository.GetListAsync(user?.UserId)).Select(message =>
-            {
-                if (message == null)
+            var messages = (await _messageRepository.GetListAsync(user?.UserId)).Where(message => message?.IsRead == isRead)
+                .Select(message =>
                 {
-                    return null;
+                    if (message == null)
+                    {
+                        return null;
+                    }
+
+                    message.Name = _cryptoService.Decrypt(message.Name);
+                    message.Email = _cryptoService.Decrypt(message.Email);
+                    message.Phone = _cryptoService.Decrypt(message.Phone);
+                    message.Text = _cryptoService.Decrypt(message.Text);
+
+                    return message;
+                });
+
+            try
+            {
+                var messageResponseModels = _mapper.Map<IEnumerable<MessageResponseModel>>(messages);
+                return Ok(messageResponseModels);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { errorText = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("[action]/{messageId:int}")]
+        [Authorize(Roles = "Owner")]
+        public async Task<IActionResult> Get([FromRoute] int messageId)
+        {
+            var message = await _messageRepository.GetAsync(messageId);
+
+            if (message == null)
+            {
+                return NotFound(new { errorText = "Сообщение не найдено" });
+            }
+
+            message.Name = _cryptoService.Decrypt(message.Name);
+            message.Email = _cryptoService.Decrypt(message.Email);
+            message.Phone = _cryptoService.Decrypt(message.Phone);
+            message.Text = _cryptoService.Decrypt(message.Text);
+
+            try
+            {
+                var messageResponseModel = _mapper.Map<MessageResponseModel>(message);
+                return Ok(messageResponseModel);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { errorText = ex.Message });
+            }
+        }
+
+        [HttpPut]
+        [Route("[action]/{messageId:int}")]
+        [Authorize(Roles = "Owner")]
+        public async Task<IActionResult> Update([FromRoute] int messageId)
+        {
+            var message = await _messageRepository.GetAsync(messageId);
+
+            if (message == null)
+            {
+                return NotFound(new { errorText = "Сообщение не найдено" });
+            }
+
+            try
+            {
+                message.IsRead = true;
+                var messageResult = await _messageRepository.UpdateAsync(message);
+
+                if (messageResult != null)
+                {
+                    return Ok();
                 }
+                else 
+                {
+                    return StatusCode(500, new { errorText = "Ошибка сервера" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { errorText = ex.Message });
+            }
+        }
 
-                message.Name = _cryptoService.Decrypt(message.Name);
-                message.Email = _cryptoService.Decrypt(message.Email);
-                message.Phone = _cryptoService.Decrypt(message.Phone);
-                message.Text = _cryptoService.Decrypt(message.Text);
+        [HttpGet]
+        [Route("[action]")]
+        [Authorize(Roles = "Owner")]
+        public async Task<IActionResult> GetUnreadMessagesCount()
+        {
+            try
+            {
+                var user = await _userManager.GetCurrentUserAsync(HttpContext);
+                var count = (await _messageRepository.GetListAsync(user?.UserId)).Count(message => !(message?.IsRead ?? true));
 
-                return message;
-            });
-
-            var messageResponseModels = _mapper.Map<IEnumerable<MessageResponseModel>>(messages);
-
-            return Ok(messageResponseModels);
+                return Ok(count);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { errorText = ex.Message });
+            }
         }
     }
 }

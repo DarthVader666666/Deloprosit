@@ -19,6 +19,7 @@ const store = createStore({
         documents: [],
         documentNodes: [],
         messages: [],
+        message: null,
         chapterSearchResult: [],
         showSearchBar: true,
         title: null,
@@ -56,6 +57,9 @@ const store = createStore({
         },
         getMessages(state) {
             return state.messages;
+        },
+        getMessage(state) {
+            return state.message;
         },
         getChapterSearchResult(state) {
             return state.chapterSearchResult;
@@ -118,6 +122,12 @@ const store = createStore({
         setMessages(state, messages) {
             state.messages = messages;
         },
+        setMessage(state, message) {
+            state.message = message;
+        },
+        setMessageById(state, messageId) {
+            state.message = state.messages.find(x => x.messageId === messageId);
+        },
         setChapterSearchResult(state, chapterSearchResult) {
             state.chapterSearchResult = chapterSearchResult;
         },
@@ -175,16 +185,31 @@ const store = createStore({
 
             commit('setDocumentNodes', documentNodes);
         },
-        async downloadMessages({commit, state}) {
-            const messages = (await axios.get(`${state.serverUrl}/feedback/getlist`)
+        async downloadMessages({commit, state}, isRead) {
+            const messages = (await axios.get(`${state.serverUrl}/feedback/getlist/${isRead}`)
                 .then(response => response.data)
                 .catch(error => {
-                    if(error.response.status === 500) {
-                        toast.error(error.response.data.message)
+                    if(error.response) {
+                        toast.error(error.response.data.errorText)
                     }
                 }));
 
             commit('setMessages', messages);
+        },
+        async downloadMessage({commit, state}, messageId) {
+            const message = await axios.get(`${state.serverUrl}/feedback/get/${messageId}`)
+                .then(response => {
+                    if(response.status == 200) {
+                        return response.data;
+                    }
+                })
+                .catch(error => {
+                    if(error.response) {
+                        toast.error(error.response.data.errorText);
+                    }
+                });
+
+            commit('setMessage', message);
         },
         async downloadChapterSearchResult({commit, state}, searchLine) {
             const chapterSearchResult = (await axios.post(`${state.serverUrl}/chapters/search`,
