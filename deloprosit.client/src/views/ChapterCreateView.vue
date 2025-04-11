@@ -36,14 +36,8 @@ async function createChapter(newChapter) {
             }
         })
         .catch(error => {
-            const status = error.response.status;
-
-            if(status === 400) {
-                toast.error("Не удалось создать раздел");
-            }
-
-            if(status === 500) {
-                toast.error("Ошибка сервера")
+            if(error.response) {
+                toast.error(error.response.data.errorText)
             }
         }
     );

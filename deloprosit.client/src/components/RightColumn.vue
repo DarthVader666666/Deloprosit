@@ -48,13 +48,8 @@ function createFolder() {
         }
     })
     .catch(error => {
-        if(error.response.status) {
-            if(error.response) {
-                toast.error(error.response.data.errorText);
-            }
-        }
-        else {
-            toast.error(error.message);
+        if(error.response) {
+            toast.error(error.response.data.errorText)
         }
     })
 }
@@ -106,10 +101,7 @@ function updateName(node) {
     })
     .catch(error => {
         if(error.response) {
-            toast.error(error.response.data.errorText);
-        }
-        else {
-            toast.error("Ошибка обновления имени");
+            toast.error(error.response.data.errorText)
         }
     })
 }
@@ -144,10 +136,7 @@ async function uploadFiles(event) {
     })
     .catch(error => {
         if(error.response) {
-            toast.error(error.response.data.errorText);
-        }
-        else {
-            toast.error("Ошибка загрузки файла");
+            toast.error(error.response.data.errorText)
         }
     })
 }
@@ -171,10 +160,7 @@ async function deleteDocument(node) {
     })
     .catch(error => {
         if(error.response) {
-            toast.error(error.response.data.errorText);
-        }
-        else {
-            toast.error("Ошибка при удалении документа");
+            toast.error(error.response.data.errorText)
         }
     })
 }

@@ -69,7 +69,7 @@ namespace Deloprosit.Server.Controllers
 
             if (user.Identity == null || !user.Identity.IsAuthenticated)
             {
-                return Ok("Пользователь не аутентифицирован");
+                return Ok(new { okText = "Пользователь не аутентифицирован" });
             }
 
             var claims = user.Claims;
@@ -94,7 +94,7 @@ namespace Deloprosit.Server.Controllers
             }
             catch (Exception ex)
             {
-                return Problem($"Logout failed. {ex.Message}", statusCode: 500);
+                return StatusCode(500, new { errorText = $"Logout failed. {ex.Message}" });
             }
         }
     }

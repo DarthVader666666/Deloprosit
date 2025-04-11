@@ -174,8 +174,8 @@ const store = createStore({
             const documents = (await axios.get(`${state.serverUrl}/documents/getlist`)
                 .then(response => response.data)
                 .catch(error => {
-                    if(error.response.status === 500) {
-                        toast.error(error.response.data.message)
+                    if(error.response) {
+                        toast.error(error.response.data.errorText)
                     }
                 }));
 
@@ -185,8 +185,8 @@ const store = createStore({
             const documentNodes = (await axios.get(`${state.serverUrl}/documents/getnodes`)
                 .then(response => response.data)
                 .catch(error => {
-                    if(error.response.status === 500) {
-                        toast.error(error.response.data.message)
+                    if(error.response) {
+                        toast.error(error.response.data.errorText)
                     }
                 }));
 
@@ -212,7 +212,7 @@ const store = createStore({
                 })
                 .catch(error => {
                     if(error.response) {
-                        toast.error(error.response.data.errorText);
+                        toast.error(error.response.data.errorText)
                     }
                 });
 
@@ -236,11 +236,8 @@ const store = createStore({
             )
                 .then(response => response.data)
                 .catch(error => {
-                    if(error.response.status === 500) {
-                        toast.error(error.response.data.message)
-                    }
-                    else {
-                        toast.error('Что-то пошло не так')
+                    if(error.response) {
+                        toast.error(error.response.data.errorText)
                     }
                 }));
 

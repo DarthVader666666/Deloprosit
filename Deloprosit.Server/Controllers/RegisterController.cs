@@ -84,7 +84,7 @@ namespace Deloprosit.Server.Controllers
 
             if (confirmedUser == null)
             {
-                return Problem("Ошибка подтверждения", statusCode: 500);
+                return StatusCode(500, new { errorText = "Ошибка подтверждения" });
             }
 
             await _userManager.LogIn(confirmedUser, HttpContext);

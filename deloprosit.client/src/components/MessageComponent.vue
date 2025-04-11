@@ -48,7 +48,7 @@ const emit = defineEmits(['message-shown']);
 @media (max-width: 1100px) {
     .message {
         font-size: small;
-        height: 100%;
+        height: 90%;
         width: 90%;
     }
 }
@@ -57,7 +57,6 @@ const emit = defineEmits(['message-shown']);
     .message {
         font-size: x-small;
         padding: 10px;
-        width: 100%;
     }
 }
 </style>

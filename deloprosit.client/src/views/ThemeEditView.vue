@@ -41,7 +41,9 @@ async function updateTheme() {
         }
     })
     .catch(error => {
-        toast.error('Ошибка при обновлении темы: ' + error.message);
+        if(error.response) {
+            toast.error(error.response.data.errorText)
+        }
     });
 }
 

@@ -49,12 +49,8 @@ async function removeTheme(themeId) {
         }
     })
     .catch(error => {
-        const status = error.response.status;
-        if(status == 400) {
-            toast.error('Не выбрана тема')
-        }
-        else {
-            toast.error('Ошибка при удалении темы')
+        if(error.response) {
+            toast.error(error.response.data.errorText)
         }
     });
 
@@ -91,13 +87,8 @@ async function addNewTheme() {
         }
     })
     .catch(error => {
-        const data = error.response.data;
-
-        if(data) {
-            toast.error(data.detail);
-        }
-        else {
-            toast.error('Ошибка при добавлении темы')
+        if(error.response) {
+            toast.error(error.response.data.errorText);
         }
     });
 
@@ -131,13 +122,8 @@ function handleDeleteChapter() {
             }
         })
         .catch(error => {
-            const response =  error.response
-            if(response.status === 500) {
-                toast.error('Ошибка базы данных')
-            }
-            
-            if(response.status === 400) {
-                toast.error(response.data.errorText);
+            if(error.response) {
+                toast.error(error.response.data.errorText)
             }
         });
 }
@@ -164,13 +150,8 @@ async function updateChapter(updatedChapter) {
         }
     })
     .catch(error => {
-        const data = error.response.data;
-
-        if(data) {
-            toast.error(data.detail);
-        }
-        else {
-            toast.error('Ошибка обновления раздела')
+        if(error.response) {
+            toast.error(error.response.data.errorText)
         }
     });
 }

@@ -59,7 +59,7 @@ namespace Deloprosit.Server.Controllers
             }
             catch (SqlException)
             {
-                return Problem(statusCode: 500);
+                return StatusCode(500, new { errorText = "Ошибка Базы данных" });
             }
 
             return Ok();
@@ -72,7 +72,7 @@ namespace Deloprosit.Server.Controllers
         {
             if (themeId == null)
             {
-                return BadRequest();
+                return BadRequest(new { errorText = "Запрос неверен" });
             }
 
             try
@@ -81,7 +81,7 @@ namespace Deloprosit.Server.Controllers
             }
             catch (SqlException)
             {
-                return Problem(statusCode: 500);
+                return StatusCode(500, new { errorText = "Ошибка базы данных" });
             }
 
             return Ok();
@@ -100,7 +100,7 @@ namespace Deloprosit.Server.Controllers
             }
             catch (SqlException)
             {
-                return Problem(statusCode: 500, detail: "Ошибка базы данных");
+                return StatusCode(500, new { errorText = "Ошибка базы данных" });
             }
 
             return Ok();
