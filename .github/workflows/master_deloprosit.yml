@@ -24,8 +24,9 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Create appsettings.Production.json with secrets
+        shell: pwsh
         run: |
-          cat > appsettings.Production.json <<EOF
+          @"
           {
             "Logging": {
               "LogLevel": {
@@ -37,10 +38,10 @@ jobs:
             "CorsOrigins": [
               "https://deloprosit.azurewebsites.net"
             ],
-            "GoogleSecrets": ${{ secrets.GOOGLESECRETS }},
-            "GoogleDrive": ${{ secrets.GOOGLEDRIVE }},
+            "GoogleSecrets": "${{ secrets.GOOGLESECRETS }}",
+            "GoogleDrive": "${{ secrets.GOOGLEDRIVE }}",
           }
-          EOF
+          "@ | Out-File -FilePath appsettings.Production.json -Encoding utf8
           
       - name: Build with dotnet
         run: dotnet build Deloprosit.sln --configuration Release
