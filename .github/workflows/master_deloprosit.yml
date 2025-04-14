@@ -28,20 +28,22 @@ jobs:
         run: |
           @"
           {
-            "Logging": {
-              "LogLevel": {
-              "Default": "Information",
-              "Microsoft.AspNetCore": "Warning"
+            `"Logging`": {
+              `"LogLevel`": {
+              `"Default`": `"Information`",
+              `"Microsoft.AspNetCore`": `"Warning`"
               }
             },
-            "ClientUrl": "https://deloprosit.azurewebsites.net",
-            "CorsOrigins": [
-              "https://deloprosit.azurewebsites.net"
+            `"ClientUrl`": `"https://deloprosit.azurewebsites.net`",
+            `"CorsOrigins`": [
+              `"https://deloprosit.azurewebsites.net`"
             ],
-            "GoogleSecrets": "${{ secrets.GOOGLESECRETS }}",
-            "GoogleDrive": "${{ secrets.GOOGLEDRIVE }}",
+            `"GoogleSecrets`": `"$($env:GOOGLESECRETS)`",
+            `"GoogleDrive`": `"$($env:GOOGLEDRIVE)`",
           }
           "@ | Out-File -FilePath appsettings.Production.json -Encoding utf8
+
+          Get-Content appsettings.Production.json
           
       - name: Build with dotnet
         run: dotnet build Deloprosit.sln --configuration Release
