@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using static Google.Apis.Drive.v3.DriveService;
@@ -107,9 +106,8 @@ builder.Services.AddScoped<DriveService>(provider =>
 {
     var cryptoService = provider.GetService<CryptoService>();
 
-    using var stream = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "google-secrets.txt"), FileMode.Open, FileAccess.Read);
-    using var reader = new StreamReader(stream);
-    var decryptedContent = cryptoService?.Decrypt(reader.ReadToEnd());
+    var secrets = builder.Configuration["GoogleSecrets"];
+    var decryptedContent = cryptoService?.Decrypt(secrets);
 
     var credential = GoogleCredential.FromJson(decryptedContent);
 
