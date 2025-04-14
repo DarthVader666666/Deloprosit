@@ -25,7 +25,7 @@ jobs:
 
       - name: Create appsettings.Production.json with secrets
         run: |
-          cat > appsettings.Production.json << EOF
+          cat << 'EOF' > appsettings.Production.json
           {
             "Logging": {
               "LogLevel": {
