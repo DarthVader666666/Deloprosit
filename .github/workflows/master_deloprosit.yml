@@ -23,6 +23,25 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: Create appsettings.Production.json with secrets
+        run: |
+          cat > appsettings.Production.json <<EOF
+          {
+            "Logging": {
+              "LogLevel": {
+              "Default": "Information",
+              "Microsoft.AspNetCore": "Warning"
+              }
+            },
+            "ClientUrl": "https://deloprosit.azurewebsites.net",
+            "CorsOrigins": [
+              "https://deloprosit.azurewebsites.net"
+            ],
+            "GoogleSecrets": "${{ secrets.GOOGLESECRETS }}",
+            "GoogleDrive": "${{ secrets.GOOGLEDRIVE }}",
+          }
+          EOF
+          
       - name: Build with dotnet
         run: dotnet build Deloprosit.sln --configuration Release
 
