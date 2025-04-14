@@ -105,22 +105,13 @@ builder.Services.AddScoped<EmailSender>();
 builder.Services.AddScoped<UserManager>();
 builder.Services.AddScoped<DriveService>(provider =>
 {
-    var section = builder.Configuration.GetSection("GoogleSecrets");
-    var credential = GoogleCredential.FromJson(JsonSerializer.Serialize(new 
-    {
-        type = section["type"],
-        project_id = section["project_id"],
-        private_key_id = section["private_key_id"],
-        private_key = section["private_key"],
-        client_email = section["client_email"],
-        client_id = section["client_id"],
-        auth_uri = section["auth_uri"],
-        token_uri = section["token_uri"],
-        auth_provider_x509_cert_url = section["auth_provider_x509_cert_url"],
-        client_x509_cert_url = section["client_x509_cert_url"],
-        universe_domain = section["universe_domain"]
+    var cryptoService = provider.GetService<CryptoService>();
 
-    }));
+    using var stream = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "google-secrets.txt"), FileMode.Open, FileAccess.Read);
+    using var reader = new StreamReader(stream);
+    var decryptedContent = cryptoService?.Decrypt(reader.ReadToEnd());
+
+    var credential = GoogleCredential.FromJson(decryptedContent);
 
     if (credential.IsCreateScopedRequired)
     {
@@ -130,7 +121,7 @@ builder.Services.AddScoped<DriveService>(provider =>
     var driveService = new DriveService(new BaseClientService.Initializer()
     {
         HttpClientInitializer = credential,
-        ApplicationName = builder.Configuration["GoogleDrive:ApplicationName"] ?? ""
+        ApplicationName = builder.Configuration["GoogleDrive:ApplicationName"] ?? string.Empty
     });
 
     return driveService;
@@ -204,5 +195,5 @@ void MigrateSeedDatabase(IServiceScope? scope)
 void UploadDocuments(IServiceScope? scope)
 {
     var driveService = scope?.ServiceProvider.GetRequiredService<GoogleDriveService>();
-    driveService!.GetDocumentsAsync(ConfigurationHelper.DocsPath);
+    driveService.GetDocumentsAsync(ConfigurationHelper.DocsPath);
 }
