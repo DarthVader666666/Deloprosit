@@ -23,6 +23,37 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: Replace appsettings.Production.json
+        shell: pwsh
+        run: |
+          $jsonContent = @"
+          {
+            "Loggin": {
+              "LogLevel": {
+              "Default": "Information",
+              "Microsoft.AspNetCore": "Warning"
+              }
+            },
+            "ClientUrl": "https://deloprosit.azurewebsites.net",
+            "CorsOrigins": [
+              "https://deloprosit.azurewebsites.net"
+            ],
+            "GoogleSecrets": "$($env:GOOGLESECRETS)",
+            "GoogleDrive": "$($env:GOOGLEDRIVE)",
+          }
+          "@
+
+          # Save to file with proper encoding
+          $jsonContent | Out-File -FilePath "appsettings.Production.json" -Encoding utf8 -Force
+        
+          # Verify file was created
+          Get-ChildItem "appsettings.Production.json"
+          Write-Output "File content:"
+          Get-Content "appsettings.Production.json"
+        env:
+          GOOGLESECRETS: ${{ secrets.GOOGLESECRETS }}
+          GOOGLEDRIVE: ${{ secrets.GOOGLEDRIVE }}
+          
       - name: Build with dotnet
         run: dotnet build Deloprosit.sln --configuration Release
 
