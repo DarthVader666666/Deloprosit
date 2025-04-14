@@ -15,7 +15,7 @@ namespace Deloprosit.Bll
             Configuration = configuration;
             DocumentsDirectoryName = configuration["DocumentsDirectoryName"];
             WebRootPath = webRootPath;
-            DocsPath = webRootPath + $"\\{DocumentsDirectoryName}\\";
+            DocsPath = Path.Combine(webRootPath, DocumentsDirectoryName ?? string.Empty);
             DocumentsDirectoryId = Configuration["GoogleDrive:FolderId"];
         }
     }

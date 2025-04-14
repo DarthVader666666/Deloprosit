@@ -132,7 +132,7 @@ builder.Services.ConfigureAutomapper();
 var provider = builder?.Services?.BuildServiceProvider();
 using var scope = provider?.CreateScope();
 MigrateSeedDatabase(scope);
-//UploadDocuments(scope);
+UploadDocuments(scope);
 
 var app = builder.Build();
 
