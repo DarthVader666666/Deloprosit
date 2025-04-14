@@ -37,8 +37,8 @@ jobs:
             "CorsOrigins": [
               "https://deloprosit.azurewebsites.net"
             ],
-            "GoogleSecrets": "${{ secrets.GOOGLESECRETS }}",
-            "GoogleDrive": "${{ secrets.GOOGLEDRIVE }}",
+            "GoogleSecrets": ${{ secrets.GOOGLESECRETS }},
+            "GoogleDrive": ${{ secrets.GOOGLEDRIVE }},
           }
           EOF
           
