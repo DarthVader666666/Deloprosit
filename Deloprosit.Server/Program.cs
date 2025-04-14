@@ -102,28 +102,28 @@ else if (builder.Environment.EnvironmentName.Equals(azureEnvironment, StringComp
 builder.Services.AddScoped<CryptoService>();
 builder.Services.AddScoped<EmailSender>();
 builder.Services.AddScoped<UserManager>();
-//builder.Services.AddScoped<DriveService>(provider =>
-//{
-//    var cryptoService = provider.GetService<CryptoService>();
+builder.Services.AddScoped<DriveService>(provider =>
+{
+    var cryptoService = provider.GetService<CryptoService>();
 
-//    var secrets = builder.Configuration["GoogleSecrets"];
-//    var decryptedContent = cryptoService?.Decrypt(secrets);
+    var secrets = builder.Configuration["GoogleSecrets"];
+    var decryptedContent = cryptoService?.Decrypt(secrets);
 
-//    var credential = GoogleCredential.FromJson(decryptedContent);
+    var credential = GoogleCredential.FromJson(decryptedContent);
 
-//    if (credential.IsCreateScopedRequired)
-//    {
-//        credential = credential.CreateScoped(ScopeConstants.DriveFile, ScopeConstants.DriveReadonly);
-//    }
+    if (credential.IsCreateScopedRequired)
+    {
+        credential = credential.CreateScoped(ScopeConstants.DriveFile, ScopeConstants.DriveReadonly);
+    }
 
-//    var driveService = new DriveService(new BaseClientService.Initializer()
-//    {
-//        HttpClientInitializer = credential,
-//        ApplicationName = builder.Configuration["GoogleDrive:ApplicationName"] ?? string.Empty
-//    });
+    var driveService = new DriveService(new BaseClientService.Initializer()
+    {
+        HttpClientInitializer = credential,
+        ApplicationName = builder.Configuration["GoogleDrive:ApplicationName"] ?? string.Empty
+    });
 
-//    return driveService;
-//});
+    return driveService;
+});
 
 builder.Services.AddScoped<GoogleDriveService>();
 
