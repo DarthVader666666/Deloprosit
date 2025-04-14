@@ -127,7 +127,9 @@ router.afterEach(async (to) => {
     await store.dispatch('downloadChapterNodes');
     await store.dispatch('downloadDocuments');
     await store.dispatch('downloadDocumentNodes');
-    await store.dispatch('downloadUnreadMessagesCount');
+    
+    if(store.getters.isOwner)
+        await store.dispatch('downloadUnreadMessagesCount');
 
     window.scrollTo(0, 0);
 });

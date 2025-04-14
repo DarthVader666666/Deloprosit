@@ -1,61 +1,80 @@
-﻿using System.Text;
-
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Drive.v3;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
-
-using Microsoft.Extensions.Configuration;
+﻿using Google.Apis.Drive.v3;
 
 namespace Deloprosit.Bll.Services
 {
     public class GoogleDriveService
     {
-        private readonly string? _token;
-        private readonly string? _appName;
+        private readonly DriveService _driveService;
 
-        private UserCredential _credentials;
-        private readonly string[]? _scopes = { DriveService.Scope.Drive };
-
-        private DriveService? _driveService;
-
-        public GoogleDriveService(IConfiguration config)
+        public GoogleDriveService(DriveService driveService)
         {
-            _token = config["GoogleDriveToken"];
-            _appName = config["GoogleCloudAppName"];
+            _driveService = driveService;
         }
 
-        public async Task<bool> Start() 
+        public async Task GetDocumentsAsync(string? docsPath)
         {
-            var credentialPath = Path.Combine(Environment.CurrentDirectory, ".credentials", _appName ?? "");
-
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(_token ?? ""));
+            if (!Directory.Exists(docsPath))
+            {
+                Directory.CreateDirectory(docsPath!);
+            }
 
             try
             {
-                _credentials = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    clientSecrets: GoogleClientSecrets.FromStream(stream).Secrets,
-                    scopes: _scopes,
-                    user: "user",
-                    taskCancellationToken: CancellationToken.None,
-                    new FileDataStore(credentialPath, true)
-                );
-
-                _driveService = new DriveService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = _credentials,
-                    ApplicationName = _appName,
-                });
-
-                var request = _driveService.Files.List();
-                var response = request.Execute();
+                await DownloadFolderContentsAsync(ConfigurationHelper.DocumentsDirectoryId, docsPath);
             }
             catch (Exception ex)
             {
+                throw ex;
             }
-            
+        }
 
-            return true;
+        public async Task Delete(string? path)
+        {
+            var fileName = Path.GetFileNameWithoutExtension(path);
+            var folderName = fileName == null ? Path.GetDirectoryName(path)?.Split('\\').Last() : null;
+
+            var request = _driveService.Files.List();
+            request.Q = $"name = '{fileName}' and trashed = false";
+            request.Fields = "files(id, name)";
+
+            var result = await request.ExecuteAsync();
+            var id = result.Files.FirstOrDefault()?.Id;
+
+            try
+            {
+
+                var folder = result.Files.FirstOrDefault(x => x.MimeType == "application/vnd.google-apps.folder" && x.Name == folderName);
+                var file = result.Files.FirstOrDefault(x => x.MimeType == "application/vnd.google-apps.file" && x.Name == fileName);
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
+
+        public async Task DownloadFolderContentsAsync(string? path, string? localPath)
+        {
+            var request = _driveService.Files.List();
+            request.Q = $"'{path}' in parents and trashed = false";
+            request.Fields = "files(id, name, mimeType)";
+            var result = await request.ExecuteAsync();
+
+            foreach (var item in result.Files)
+            {
+                var itemPath = Path.Combine(localPath ?? "", item.Name);
+
+                if (item.MimeType == "application/vnd.google-apps.folder")
+                {
+                    Directory.CreateDirectory(itemPath);
+                    await DownloadFolderContentsAsync(item.Id, itemPath);
+                }
+                else
+                {
+                    using var fileStream = new FileStream(itemPath, FileMode.Create, FileAccess.Write);
+                    await _driveService.Files.Get(item.Id).DownloadAsync(fileStream);
+                }
+            }
         }
     }
 }
