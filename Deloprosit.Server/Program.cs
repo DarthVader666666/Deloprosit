@@ -1,13 +1,12 @@
-using Deloprosit.Bll;
 using Deloprosit.Bll.Interfaces;
 using Deloprosit.Bll.Services;
 using Deloprosit.Data;
 using Deloprosit.Data.Entities;
 using Deloprosit.Server;
 using Deloprosit.Server.Configurations;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Drive.v3;
-using Google.Apis.Services;
+
+using Google.Apis.Auth.AspNetCore3;
+
 using JsonFlatFileDataStore;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -15,7 +14,6 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Text.Json.Serialization;
-using static Google.Apis.Drive.v3.DriveService;
 
 internal class Program
 {
@@ -25,7 +23,7 @@ internal class Program
         var jsonFileCreated = false;
         var builder = WebApplication.CreateBuilder(args);
 
-        ConfigurationHelper.Initialize(builder.Configuration, builder.Environment.WebRootPath);
+        ConfigurationHelper.Initialize(builder.Configuration, builder.Environment);
 
         builder.Services.AddLogging(logs =>
         {
@@ -37,6 +35,8 @@ internal class Program
 
         builder.Services.AddAuthentication(o =>
             {
+                o.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+                o.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
                 o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -50,6 +50,12 @@ internal class Program
                     return Task.CompletedTask;
                 };
                 options.Cookie.HttpOnly = false;
+            })
+            .AddGoogleOpenIdConnect(options =>
+            {
+                options.ClientId = builder.Configuration["Google:ClientId"];
+                options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+                options.Scope.Add(Google.Apis.Drive.v3.DriveService.Scope.Drive);
             });
 
         builder.Services.AddAuthorization();
@@ -122,26 +128,6 @@ internal class Program
         builder.Services.AddScoped<CryptoService>();
         builder.Services.AddScoped<EmailSender>();
         builder.Services.AddScoped<UserManager>();
-        builder.Services.AddScoped<DriveService>(provider =>
-        {
-            var googleDriveFolderPath = Path.Combine(Directory.GetCurrentDirectory(), builder.Configuration["Google:KeyFileName"] ?? "");
-            using var stream = new FileStream(googleDriveFolderPath, FileMode.Open, FileAccess.Read);
-            var credential = GoogleCredential.FromStream(stream);
-
-            if (credential.IsCreateScopedRequired)
-            {
-                credential = credential.CreateScoped(ScopeConstants.DriveFile, ScopeConstants.DriveReadonly);
-            }
-
-            var driveService = new DriveService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = builder.Configuration["Google:ApplicationName"] ?? ""
-            });
-
-            return driveService;
-        });
-
         builder.Services.AddScoped<GoogleDriveService>();
 
         builder.Services.ConfigureAutomapper();
@@ -149,7 +135,7 @@ internal class Program
         var provider = builder?.Services?.BuildServiceProvider();
         using var scope = provider?.CreateScope();
         await MigrateSeedDatabase(scope, jsonFileCreated);
-        UploadDocuments(scope);
+        CreateFolders();
 
         var app = builder.Build();
 
@@ -216,10 +202,14 @@ internal class Program
         {
         }
 
-        async Task UploadDocuments(IServiceScope? scope)
-        { 
-            var driveService = scope?.ServiceProvider.GetRequiredService<GoogleDriveService>();
-            await driveService!.GetDocumentsAsync(ConfigurationHelper.DocsPath);
+        void CreateFolders()
+        {
+            var path = $"{Directory.GetCurrentDirectory()}\\wwwroot\\docs";
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
     }
 }

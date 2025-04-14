@@ -1,11 +1,9 @@
-﻿using Deloprosit.Bll;
-using Deloprosit.Bll.Services;
-using Deloprosit.Server.Enums;
+﻿using Deloprosit.Server.Enums;
 using Deloprosit.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+
 using Newtonsoft.Json;
 
 namespace Deloprosit.Server.Controllers
@@ -18,14 +16,12 @@ namespace Deloprosit.Server.Controllers
         private readonly string? docsPath;
         private readonly string? documentsDirectoryName;
         private readonly string? webRootPath;
-        private readonly GoogleDriveService? _googleDriveService;
 
-        public DocumentsController(GoogleDriveService googleDriveService)
+        public DocumentsController()
         {
             docsPath = ConfigurationHelper.DocsPath;
             webRootPath = ConfigurationHelper.WebRootPath;
             documentsDirectoryName = ConfigurationHelper.DocumentsDirectoryName;
-            _googleDriveService = googleDriveService;
         }
 
         [HttpGet]
@@ -142,8 +138,7 @@ namespace Deloprosit.Server.Controllers
                 {
                     if (System.IO.File.Exists(path))
                     {
-                        _googleDriveService.Delete(path);
-                        System.IO.File.Delete(path);                        
+                        System.IO.File.Delete(path);
                     }
                     else
                     {

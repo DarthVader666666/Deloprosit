@@ -5,6 +5,10 @@ using Deloprosit.Bll.Services;
 using Deloprosit.Data.Entities;
 using Deloprosit.Server.Models;
 
+using Google.Apis.Auth.AspNetCore3;
+using Google.Apis.Drive.v3;
+using Google.Apis.Services;
+
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -20,12 +24,14 @@ namespace Deloprosit.Server.Controllers
     [ApiController]
     public class ChaptersController : ControllerBase
     {
+        private readonly IGoogleAuthProvider _auth;
         private readonly UserManager _userManager;
         private readonly IRepository<Chapter> _chapterRepository;
         private readonly IMapper _mapper;
 
-        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository, IMapper mapper)
+        public ChaptersController(UserManager userManager, IRepository<Chapter> chapterRepository, IMapper mapper, IGoogleAuthProvider auth)
         {
+            _auth = auth;
             _userManager = userManager;
             _chapterRepository = chapterRepository;
             _mapper = mapper;
@@ -36,6 +42,22 @@ namespace Deloprosit.Server.Controllers
         [Route("[action]")]
         public async Task<IActionResult> Create([FromForm] ChapterCreateModel chapterCreateModel)
         {
+            //var creds = _auth.GetCredentialAsync().Result;
+
+            //var service = new DriveService(new BaseClientService.Initializer()
+            //{
+            //    HttpClientInitializer = creds,
+            //    ApplicationName = "DeloprositDocs"
+            //});
+
+            //var request = service.Files.List();
+            //request.PageSize = 10;
+            //request.Fields = "nextPageToken, files(id, name)";
+
+            //var result = request.Execute();
+
+
+
             if (chapterCreateModel == null || chapterCreateModel.ChapterTitle.IsNullOrEmpty() || chapterCreateModel.DateCreated == null)
             {
                 return BadRequest(new { errorText = "Неверные данные для создания раздела" } );
