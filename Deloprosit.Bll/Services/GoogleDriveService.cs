@@ -11,7 +11,7 @@ namespace Deloprosit.Bll.Services
             _driveService = driveService;
         }
 
-        public async Task GetDocumentsAsync(string? docsPath)
+        public void RestoreAllDocuments(string? docsPath)
         {
             if (!Directory.Exists(docsPath))
             {
@@ -20,7 +20,7 @@ namespace Deloprosit.Bll.Services
 
             try
             {
-                await DownloadFolderContentsAsync(ConfigurationHelper.DocumentsDirectoryId, docsPath);
+                DownloadFolderContentsAsync(ConfigurationHelper.DocumentsDirectoryId, docsPath);
             }
             catch (Exception ex)
             {
