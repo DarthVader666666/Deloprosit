@@ -1,4 +1,5 @@
 ﻿using Deloprosit.Bll;
+using Deloprosit.Bll.Services;
 using Deloprosit.Server.Enums;
 using Deloprosit.Server.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -18,11 +19,14 @@ namespace Deloprosit.Server.Controllers
         private readonly string? documentsDirectoryName;
         private readonly string? webRootPath;
 
-        public DocumentsController()
+        private readonly GoogleDriveService _googleDriveService;
+
+        public DocumentsController(GoogleDriveService googleDriveService)
         {
             docsPath = ConfigurationHelper.DocsPath;
             webRootPath = ConfigurationHelper.WebRootPath;
             documentsDirectoryName = ConfigurationHelper.DocumentsDirectoryName;
+            _googleDriveService = googleDriveService;   
         }
 
         [HttpGet]
@@ -134,6 +138,7 @@ namespace Deloprosit.Server.Controllers
             try
             {
                 var path = Path.Combine(webRootPath ?? string.Empty, documentPathModel.Path);
+                await _googleDriveService.Delete(path);
 
                 if (documentPathModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase))
                 {
@@ -163,9 +168,9 @@ namespace Deloprosit.Server.Controllers
                     }
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                return StatusCode( StatusCodes.Status500InternalServerError, new { errorText = "Ошибка при удалении" });
+                return StatusCode( StatusCodes.Status500InternalServerError, new { errorText = $"Ошибка при удалении\n\r{ex.Message}" });
             }
 
             return Ok(new { okText = documentPathModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase) ? "Файл успешно удален" : "Папка успешно удалена" });

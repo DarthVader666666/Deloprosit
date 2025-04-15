@@ -113,7 +113,7 @@ builder.Services.AddScoped<DriveService>(provider =>
 
     if (credential.IsCreateScopedRequired)
     {
-        credential = credential.CreateScoped(ScopeConstants.DriveFile, ScopeConstants.DriveReadonly);
+        credential = credential.CreateScoped(ScopeConstants.Drive, ScopeConstants.DriveFile);
     }
 
     var driveService = new DriveService(new BaseClientService.Initializer()

@@ -5,6 +5,7 @@ namespace Deloprosit.Bll.Services
     public class GoogleDriveService
     {
         private readonly DriveService _driveService;
+        const string folderMimeType = "application/vnd.google-apps.folder";
 
         public GoogleDriveService(DriveService driveService)
         {
@@ -32,27 +33,56 @@ namespace Deloprosit.Bll.Services
 
         public async Task Delete(string? path)
         {
-            var fileName = Path.GetFileNameWithoutExtension(path);
-            var folderName = fileName == null ? Path.GetDirectoryName(path)?.Split('\\').Last() : null;
+            var id = await GetIdAsync(path);
+            var request = _driveService.Files.Delete(id);
+            request.SupportsAllDrives = true;
 
+            var permissions = await _driveService.Permissions.List(id).ExecuteAsync();
+
+            var result = request.Execute();
+        }
+
+        private async Task<string?> GetIdAsync(string? path)
+        {
+            var files = await GetFileListAsync();
+
+            if (Directory.Exists(path))
+            {
+                var folderName = Path.GetDirectoryName(path)?.Split('\\').Last();
+                return files.FirstOrDefault(x => x.MimeType == folderMimeType && x.Name == folderName)?.Id;
+            }
+            else if (File.Exists(path))
+            {
+                var fileName = Path.GetFileName(path);
+                return files.FirstOrDefault(x => x.MimeType != folderMimeType && x.Name == fileName)?.Id;
+            }
+            else 
+            {
+                return null;
+            }
+        }
+
+        private async Task<IList<Google.Apis.Drive.v3.Data.File>> GetFileListAsync()
+        {
             var request = _driveService.Files.List();
-            request.Q = $"name = '{fileName}' and trashed = false";
-            request.Fields = "files(id, name)";
-
+            request.Q = $"'{ConfigurationHelper.GoogleDriveFolderId}' in parents and trashed = false";
+            request.Fields = "files(id, name, mimeType)";
             var result = await request.ExecuteAsync();
-            var id = result.Files.FirstOrDefault()?.Id;
 
-            try
+            return result.Files;
+        }
+
+        private async Task LoopFolderContentsAsync(string? folderId, Action driveAction)
+        {
+            var request = _driveService.Files.List();
+            request.Q = $"'{folderId}' in parents and trashed = false";
+            request.Fields = "files(id, name, mimeType)";
+            var result = await request.ExecuteAsync();
+
+            foreach (var item in result.Files)
             {
-
-                var folder = result.Files.FirstOrDefault(x => x.MimeType == "application/vnd.google-apps.folder" && x.Name == folderName);
-                var file = result.Files.FirstOrDefault(x => x.MimeType == "application/vnd.google-apps.file" && x.Name == fileName);
+                await LoopFolderContentsAsync(item.Id, driveAction);
             }
-            catch (Exception ex)
-            {
-
-            }
-
         }
 
         public async Task DownloadFolderContentsAsync(string? folderId, string? localPath)
