@@ -11,16 +11,16 @@ namespace Deloprosit.Bll.Services
             _driveService = driveService;
         }
 
-        public void RestoreAllDocuments(string? docsPath)
+        public void RestoreAllDocuments()
         {
-            if (!Directory.Exists(docsPath))
+            if (!Directory.Exists(ConfigurationHelper.DocsPath))
             {
-                Directory.CreateDirectory(docsPath!);
+                Directory.CreateDirectory(ConfigurationHelper.DocsPath ?? throw new ArgumentNullException(nameof(ConfigurationHelper.DocsPath), "Путь к папке документов null"));
             }
 
             try
             {
-                DownloadFolderContentsAsync(ConfigurationHelper.DocumentsDirectoryId, docsPath);
+                DownloadFolderContentsAsync(ConfigurationHelper.GoogleDriveFolderId, ConfigurationHelper.DocsPath);
             }
             catch (Exception ex)
             {
@@ -53,10 +53,10 @@ namespace Deloprosit.Bll.Services
 
         }
 
-        public async Task DownloadFolderContentsAsync(string? path, string? localPath)
+        public async Task DownloadFolderContentsAsync(string? folderId, string? localPath)
         {
             var request = _driveService.Files.List();
-            request.Q = $"'{path}' in parents and trashed = false";
+            request.Q = $"'{folderId}' in parents and trashed = false";
             request.Fields = "files(id, name, mimeType)";
             var result = await request.ExecuteAsync();
 

@@ -193,5 +193,5 @@ void MigrateSeedDatabase(IServiceScope? scope)
 void UploadDocuments(IServiceScope? scope)
 {
     var driveService = scope?.ServiceProvider.GetRequiredService<GoogleDriveService>();
-    driveService?.RestoreAllDocuments(ConfigurationHelper.DocsPath);
+    driveService?.RestoreAllDocuments();
 }
