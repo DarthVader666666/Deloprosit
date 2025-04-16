@@ -138,12 +138,12 @@ namespace Deloprosit.Server.Controllers
             try
             {
                 var path = Path.Combine(webRootPath ?? string.Empty, documentPathModel.Path);
-                await _googleDriveService.Delete(path);
 
                 if (documentPathModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase))
                 {
                     if (System.IO.File.Exists(path))
                     {
+                        _googleDriveService.Delete(Path.GetFileName(path));
                         System.IO.File.Delete(path);
                     }
                     else
@@ -155,6 +155,8 @@ namespace Deloprosit.Server.Controllers
                 {
                     if (Directory.Exists(path))
                     {
+                        _googleDriveService.Delete(path.Split('\\').Last(), isFolder: true);
+
                         foreach (var filePath in Directory.GetFiles(path))
                         {
                             System.IO.File.Delete(filePath);
@@ -176,21 +178,20 @@ namespace Deloprosit.Server.Controllers
             return Ok(new { okText = documentPathModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase) ? "Файл успешно удален" : "Папка успешно удалена" });
         }
 
-
         [HttpPost]
         [Route("[action]")]
         [Authorize(Roles = "Owner, Admin")]
         public async Task<IActionResult> AddFolder()
         {
             var reader = new StreamReader(HttpContext.Request.Body);
-            var folderFullName = docsPath + JsonConvert.DeserializeObject<FolderNameModel>(await reader.ReadToEndAsync())?
-                .FolderName?.Replace('-', ' ');
+            var path = Path.Combine(docsPath ?? "", JsonConvert.DeserializeObject<FolderNameModel>(await reader.ReadToEndAsync())?.FolderName?.Replace('-', ' ') ?? "");
 
             try
             {
-                if (!Directory.Exists(folderFullName))
+                if (!Directory.Exists(path))
                 {
-                    Directory.CreateDirectory(folderFullName ?? throw new NullReferenceException());
+                    Directory.CreateDirectory(path ?? throw new NullReferenceException());
+                    _googleDriveService.CreateFolderAsync(path);
                 }
                 else
                 {
@@ -254,14 +255,21 @@ namespace Deloprosit.Server.Controllers
 
             try 
             {
+                var filePath = "";
+
                 foreach (IFormFile file in uploadFileModel.Files)
                 {
-                    string filePath = Path.Combine(docsPath ?? throw new NullReferenceException("Не задан путь к фалу"), 
+                    filePath = Path.Combine(docsPath ?? throw new NullReferenceException("Не задан путь к фалу"), 
                         uploadFileModel.FolderName ?? string.Empty, file.FileName);
 
                     using Stream fileStream = new FileStream(filePath, FileMode.Create);
                     await file.CopyToAsync(fileStream);
+                    fileStream.Close();
                 }
+
+                if(System.IO.File.Exists(filePath))
+                    _googleDriveService.CreateFileAsync(filePath);
+
             }
             catch
             {

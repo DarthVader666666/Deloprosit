@@ -102,11 +102,11 @@ else if (builder.Environment.EnvironmentName.Equals(azureEnvironment, StringComp
 builder.Services.AddScoped<CryptoService>();
 builder.Services.AddScoped<EmailSender>();
 builder.Services.AddScoped<UserManager>();
-builder.Services.AddScoped<DriveService>(provider =>
+builder.Services.AddTransient<DriveService>(provider =>
 {
     var cryptoService = provider.GetService<CryptoService>();
 
-    var secrets = builder.Configuration["GoogleSecrets"];
+    var secrets = builder.Configuration["GoogleDrive:Secrets"];
     var decryptedContent = cryptoService?.Decrypt(secrets);
 
     var credential = GoogleCredential.FromJson(decryptedContent);
