@@ -55,7 +55,7 @@ namespace Deloprosit.Bll.Services
             {
                 var request = _driveService.Files.Create(folderMetadata);
                 request.Fields = "id, name, webViewLink";
-                var folder = request.Execute();
+                request.Execute();
             }
             catch (Exception ex)
             {
@@ -101,7 +101,7 @@ namespace Deloprosit.Bll.Services
         {
             if (path == null)
             {
-                throw new ArgumentNullException(nameof(path));
+                throw new ArgumentNullException(nameof(path), "Не указано");
             }
 
             if (newName == null)
