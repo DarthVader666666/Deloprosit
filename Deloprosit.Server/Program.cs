@@ -139,8 +139,6 @@ app.UseStatusCodePagesWithReExecute("/error", "?status={0}");
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// Configure the HTTP request pipeline.
-
 app.UseHttpsRedirection();
 
 app.UseCors("AllowClient");
@@ -191,5 +189,5 @@ void MigrateSeedDatabase(IServiceScope? scope)
 void UploadDocuments(IServiceScope? scope)
 {
     var driveService = scope?.ServiceProvider.GetRequiredService<GoogleDriveService>();
-    driveService?.RestoreAllDocuments();
+    Task.Run(() => driveService?.RestoreAllDocuments());
 }
