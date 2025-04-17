@@ -152,7 +152,7 @@ namespace Deloprosit.Bll.Services
 
             if (isFolder)
             {
-                id = GetIdCode(path?.Split(separator).Last());
+                id = GetIdCore(path?.Split(separator).Last());
             }
             else
             {
@@ -162,13 +162,13 @@ namespace Deloprosit.Bll.Services
                     ? ConfigurationHelper.DocsFolderId
                     : GetId(parentFolderName, isFolder: true);
 
-                id = GetIdCode(Path.GetFileName(path), folderId);
+                id = GetIdCore(Path.GetFileName(path), folderId);
             }
 
             return id;
 
 
-            string? GetIdCode(string? name, string? folderId = null)
+            string? GetIdCore(string? name, string? folderId = null)
             {
                 try
                 {
