@@ -228,7 +228,7 @@ namespace Deloprosit.Server.Controllers
 
                 foreach (IFormFile file in uploadFileModel.Files)
                 {
-                    filePath = Path.Combine(docsPath ?? throw new NullReferenceException("Не задан путь к фалу"),
+                    filePath = Path.Combine(docsPath ?? throw new NullReferenceException("Не задан путь к файлу"),
                         uploadFileModel.FolderName ?? string.Empty, file.FileName);
 
                     using Stream fileStream = new FileStream(filePath, FileMode.Create);
