@@ -105,15 +105,13 @@ builder.Services.AddScoped<UserManager>();
 builder.Services.AddTransient<DriveService>(provider =>
 {
     var cryptoService = provider.GetService<CryptoService>();
-
     var secrets = builder.Configuration["GoogleDrive:Secrets"];
     var decryptedContent = cryptoService?.Decrypt(secrets);
-
     var credential = GoogleCredential.FromJson(decryptedContent);
 
     if (credential.IsCreateScopedRequired)
     {
-        credential = credential.CreateScoped(ScopeConstants.Drive, ScopeConstants.DriveFile);
+        credential = credential.CreateScoped(ScopeConstants.DriveFile);
     }
 
     var driveService = new DriveService(new BaseClientService.Initializer()

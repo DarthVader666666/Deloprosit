@@ -2,6 +2,9 @@
 using Deloprosit.Bll.Services;
 using Deloprosit.Server.Enums;
 using Deloprosit.Server.Models;
+
+using Google;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -191,12 +194,16 @@ namespace Deloprosit.Server.Controllers
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path ?? throw new NullReferenceException());
-                    _googleDriveService.CreateFolderAsync(path);
+                    _googleDriveService.CreateFolder(path);
                 }
                 else
                 {
                     return BadRequest(new { errorText = "Папка уже существует" });
                 }
+            }
+            catch (GoogleApiException ex)
+            {
+                return StatusCode(StatusCodes.Status304NotModified, new { warningText = "Папка не была создана в облаке" });
             }
             catch
             {
@@ -204,6 +211,47 @@ namespace Deloprosit.Server.Controllers
             }
 
             return Ok(new { okText = "Папка успешно создана" });
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        [Authorize(Roles = "Owner, Admin")]
+        public async Task<IActionResult> Upload([FromForm] UploadFileModel? uploadFileModel)
+        {
+            if (uploadFileModel == null || uploadFileModel.Files == null || !uploadFileModel.Files.Any())
+            {
+                return BadRequest(new { errorText = "Нет выбранных файлов" });
+            }
+
+            try
+            {
+                var filePath = "";
+
+                foreach (IFormFile file in uploadFileModel.Files)
+                {
+                    filePath = Path.Combine(docsPath ?? throw new NullReferenceException("Не задан путь к фалу"),
+                        uploadFileModel.FolderName ?? string.Empty, file.FileName);
+
+                    using Stream fileStream = new FileStream(filePath, FileMode.Create);
+                    await file.CopyToAsync(fileStream);
+                    fileStream.Close();
+
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        _googleDriveService.CreateFile(filePath);
+                    }
+                }
+            }
+            catch (GoogleApiException ex)
+            {
+                return StatusCode(StatusCodes.Status304NotModified, new { warningText = "Файл не был создан в облаке" });
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { errorText = "Ошибка загрузки файла" });
+            }
+
+            return Ok(new { okText = "Файл успешно загружен" });
         }
 
         [HttpPut]
@@ -241,42 +289,6 @@ namespace Deloprosit.Server.Controllers
             }
 
             return Ok(new { okText = "Имя успешно обновлено" });
-        }
-
-        [HttpPost]
-        [Route("[action]")]
-        [Authorize(Roles = "Owner, Admin")]
-        public async Task<IActionResult> Upload([FromForm] UploadFileModel? uploadFileModel)
-        {
-            if (uploadFileModel == null || uploadFileModel.Files == null || !uploadFileModel.Files.Any())
-            {
-                return BadRequest(new { errorText = "Нет выбранных файлов" });
-            }
-
-            try 
-            {
-                var filePath = "";
-
-                foreach (IFormFile file in uploadFileModel.Files)
-                {
-                    filePath = Path.Combine(docsPath ?? throw new NullReferenceException("Не задан путь к фалу"), 
-                        uploadFileModel.FolderName ?? string.Empty, file.FileName);
-
-                    using Stream fileStream = new FileStream(filePath, FileMode.Create);
-                    await file.CopyToAsync(fileStream);
-                    fileStream.Close();
-                }
-
-                if(System.IO.File.Exists(filePath))
-                    _googleDriveService.CreateFileAsync(filePath);
-
-            }
-            catch
-            {
-                return StatusCode( StatusCodes.Status500InternalServerError, new { errorText = "Ошибка загрузки файла" });
-            }
-            
-            return Ok(new { okText = "Файл успешно загружен" });
         }
 
         private static string? ByteLengthToSizeString(long? length)

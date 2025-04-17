@@ -31,33 +31,31 @@ namespace Deloprosit.Bll.Services
             }
         }
 
-        public async Task Delete(string? name, bool isFolder = false)
+        public void Delete(string? name, bool isFolder = false)
         {
-            var id = await GetIdAsync(name, isFolder);
+            var id = GetId(name, isFolder);
             var request = _driveService.Files.Delete(id);
             request.SupportsAllDrives = true;
 
-            var permissions = await _driveService.Permissions.List(id).ExecuteAsync();
-
-            var result = request.Execute();
+            request.Execute();
         }
 
-        public async Task CreateFolderAsync(string? path)
+        public void CreateFolder(string? path)
         {
             var folderName = GetName(path).FolderName;
 
             var folderMetadata = new Google.Apis.Drive.v3.Data.File()
             {
                 Name = folderName,
-                MimeType = "application/vnd.google-apps.folder",
-                Parents = new List<string> { ConfigurationHelper.GoogleDriveFolderId ?? "" }
+                MimeType = folderMimeType,
+                Parents = [ ConfigurationHelper.GoogleDriveFolderId ?? "" ]
             };
 
             try
             {
                 var request = _driveService.Files.Create(folderMetadata);
                 request.Fields = "id, name, webViewLink";
-                var folder = await request.ExecuteAsync();
+                var folder = request.Execute();
             }
             catch (Exception ex)
             {
@@ -65,14 +63,14 @@ namespace Deloprosit.Bll.Services
             }
         }
 
-        public async Task CreateFileAsync(string? filePath)
+        public void CreateFile(string? filePath)
         {
             var fileName = Path.GetFileName(filePath);
             var parentFolderName = filePath?.Split('\\')[..^1].Last();
 
             var folderId = parentFolderName == ConfigurationHelper.DocumentsDirectoryName 
                 ? ConfigurationHelper.GoogleDriveFolderId 
-                : await GetIdAsync(parentFolderName, isFolder: true);
+                : GetId(parentFolderName, isFolder: true);
 
             var fileMetadata = new Google.Apis.Drive.v3.Data.File()
             {
@@ -87,10 +85,8 @@ namespace Deloprosit.Bll.Services
 
                 var request = _driveService.Files.Create(fileMetadata, stream, mimeType);
                 request.Fields = "id, name, size, mimeType, webViewLink";
-                // For large files, use resumable upload
-                //request.ChunkSize = 2 * 256 * 1024; // 2Mb
 
-                var uploadProgress = await request.UploadAsync(CancellationToken.None);
+                var uploadProgress = request.Upload();
 
                 if (uploadProgress.Status == Google.Apis.Upload.UploadStatus.Failed)
                 {
@@ -108,7 +104,7 @@ namespace Deloprosit.Bll.Services
 
         public async Task DownloadFolderContentsAsync(string? folderId, string? localPath)
         {
-            var files = await GetFileListAsync(folderId);
+            var files = GetFileList(folderId);
 
             foreach (var item in files)
             {
@@ -127,11 +123,11 @@ namespace Deloprosit.Bll.Services
             }
         }
 
-        private async Task<string?> GetIdAsync(string? name, bool isFolder = false)
+        private string? GetId(string? name, bool isFolder = false)
         {
             try
             {
-                var files = await GetFileListAsync();
+                var files = GetFileList();
 
                 if (isFolder)
                 {
@@ -166,12 +162,12 @@ namespace Deloprosit.Bll.Services
             return name;
         }
 
-        private async Task<IList<Google.Apis.Drive.v3.Data.File>> GetFileListAsync(string? folderId = null)
+        private IList<Google.Apis.Drive.v3.Data.File> GetFileList(string? folderId = null)
         {
             var request = _driveService.Files.List();
             request.Q = $"'{(folderId == null ? ConfigurationHelper.GoogleDriveFolderId : folderId)}' in parents and trashed = false";
             request.Fields = "files(id, name, mimeType)";
-            var result = await request.ExecuteAsync();
+            var result = request.Execute();
 
             return result.Files;
         }
@@ -189,7 +185,7 @@ namespace Deloprosit.Bll.Services
             }
         }
 
-        private string GetMimeType(string? filePath)
+        private static string GetMimeType(string? filePath)
         {
             var mimeProvider = new FileExtensionContentTypeProvider();
 
