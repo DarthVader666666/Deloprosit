@@ -274,10 +274,12 @@ namespace Deloprosit.Server.Controllers
                 if (updateDocumentModel.Type.Equals(nameof(DocumentType.Folder), StringComparison.OrdinalIgnoreCase))
                 {
                     Directory.Move(sourcePath, destPath);
+                    Task.Run(() => _googleDriveService.Rename(sourcePath, updateDocumentModel.NewName, isFolder: true));
                 }
                 else if (updateDocumentModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase))
                 {
                     System.IO.File.Move(sourcePath, destPath);
+                    Task.Run(() => _googleDriveService.Rename(sourcePath, updateDocumentModel.NewName));
                 }
                 else
                 {

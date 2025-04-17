@@ -1,5 +1,4 @@
-﻿using Google;
-using Google.Apis.Drive.v3;
+﻿using Google.Apis.Drive.v3;
 
 using Microsoft.AspNetCore.StaticFiles;
 
@@ -9,6 +8,7 @@ namespace Deloprosit.Bll.Services
     {
         private readonly DriveService _driveService;
         const string folderMimeType = "application/vnd.google-apps.folder";
+        const char separator = '\\';
 
         public GoogleDriveService(DriveService driveService)
         {
@@ -34,22 +34,7 @@ namespace Deloprosit.Bll.Services
 
         public void Delete(string? path, bool isFolder = false)
         {
-            string? id;
-
-            if (isFolder)
-            {
-                id = GetId(path?.Split('\\').Last(), isFolder: isFolder);
-            }
-            else
-            {
-                var parentFolderName = path?.Split('\\')[..^1].Last();
-
-                var folderId = parentFolderName == ConfigurationHelper.DocsFolderName
-                    ? ConfigurationHelper.DocsFolderId
-                    : GetId(parentFolderName, isFolder: true);
-
-                id = GetId(Path.GetFileName(path), folderId);
-            }
+            string? id = GetId(path, isFolder);
 
             var request = _driveService.Files.Delete(id);
             request.SupportsAllDrives = true;
@@ -86,7 +71,7 @@ namespace Deloprosit.Bll.Services
             }
 
             var fileName = Path.GetFileName(filePath);
-            var parentFolderName = filePath?.Split('\\')[..^1].Last();
+            var parentFolderName = filePath?.Split(separator)[..^1].Last();
 
             var folderId = parentFolderName == ConfigurationHelper.DocsFolderName 
                 ? ConfigurationHelper.DocsFolderId 
@@ -112,6 +97,34 @@ namespace Deloprosit.Bll.Services
             }
         }
 
+        public void Rename(string? path, string? newName, bool isFolder = false)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (newName == null)
+            {
+                throw new ArgumentNullException(nameof(newName), "Не указано");
+            }
+
+            var id = GetId(path, isFolder);
+
+            var file = _driveService.Files.Get(id).Execute() ?? throw new NullReferenceException($"Файл(папка) не найдена в облачгом хранилище");
+
+            file.Id = null;
+            file.Kind = null;
+            file.MimeType = null;
+            file.CreatedTimeDateTimeOffset = null;
+            file.ModifiedByMeTimeDateTimeOffset = null;
+
+            file.Name = newName;
+
+            var request = _driveService.Files.Update(file, id);
+            request.Execute();
+        }
+
         public async Task DownloadFolderContentsAsync(string? folderId, string? localPath)
         {
             var files = GetFileList(folderId);
@@ -133,31 +146,54 @@ namespace Deloprosit.Bll.Services
             }
         }
 
-        private string? GetId(string? name, string? folderId = null, bool isFolder = false)
+        private string? GetId(string? path, bool isFolder = false)
         {
-            try
-            {
-                var files = GetFileList(folderId);
+            string? id;
 
-                if (isFolder)
+            if (isFolder)
+            {
+                id = GetIdCode(path?.Split(separator).Last());
+            }
+            else
+            {
+                var parentFolderName = path?.Split(separator)[..^1].Last();
+
+                var folderId = parentFolderName == ConfigurationHelper.DocsFolderName
+                    ? ConfigurationHelper.DocsFolderId
+                    : GetId(parentFolderName, isFolder: true);
+
+                id = GetIdCode(Path.GetFileName(path), folderId);
+            }
+
+            return id;
+
+
+            string? GetIdCode(string? name, string? folderId = null)
+            {
+                try
                 {
-                    return files.FirstOrDefault(x => x.MimeType == folderMimeType && x.Name == name)?.Id;
+                    var files = GetFileList(folderId);
+
+                    if (isFolder)
+                    {
+                        return files.FirstOrDefault(x => x.MimeType == folderMimeType && x.Name == name)?.Id;
+                    }
+                    else
+                    {
+                        return files.FirstOrDefault(x => x.MimeType != folderMimeType && x.Name == name)?.Id;
+                    }
                 }
-                else
+                catch
                 {
-                    return files.FirstOrDefault(x => x.MimeType != folderMimeType && x.Name == name)?.Id;
+                    return null;
                 }
             }
-            catch
-            {
-                return null;
-            }            
         }
 
         private IList<Google.Apis.Drive.v3.Data.File> GetFileList(string? folderId = null)
         {
             var request = _driveService.Files.List();
-            request.Q = $"'{(folderId == null ? ConfigurationHelper.DocsFolderId : folderId)}' in parents and trashed = false";
+            request.Q = $"'{folderId ?? ConfigurationHelper.DocsFolderId}' in parents and trashed = false";
             request.Fields = "files(id, name, mimeType)";
             var result = request.Execute();
 
@@ -166,12 +202,9 @@ namespace Deloprosit.Bll.Services
 
         private async Task LoopFolderContentsAsync(string? folderId, Action driveAction)
         {
-            var request = _driveService.Files.List();
-            request.Q = $"'{folderId}' in parents and trashed = false";
-            request.Fields = "files(id, name, mimeType)";
-            var result = await request.ExecuteAsync();
+            var files = GetFileList(folderId);
 
-            foreach (var item in result.Files)
+            foreach (var item in files)
             {
                 await LoopFolderContentsAsync(item.Id, driveAction);
             }
