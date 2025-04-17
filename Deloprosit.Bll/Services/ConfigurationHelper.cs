@@ -8,15 +8,15 @@ namespace Deloprosit.Bll
         public static string? WebRootPath;
         public static string? DocsPath;
         public static string? DocsFolderName;
-        public static string? GoogleDriveFolderId;
+        public static string? DocsFolderId;
 
         public static void Initialize(IConfiguration configuration, string webRootPath)
         {
             Configuration = configuration;
-            DocsFolderName = configuration["DocumentsDirectoryName"];
+            DocsFolderName = configuration["DocsFolderName"];
             WebRootPath = webRootPath;
             DocsPath = Path.Combine(webRootPath, DocsFolderName ?? string.Empty);
-            GoogleDriveFolderId = Configuration["GoogleDrive:FolderId"];
+            DocsFolderId = Configuration["GoogleDrive:FolderId"];
         }
     }
 }

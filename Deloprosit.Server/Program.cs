@@ -99,10 +99,10 @@ else if (builder.Environment.EnvironmentName.Equals(azureEnvironment, StringComp
     builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<PostgresDeloprositDbContext, MessageRepository>);
 }
 
-builder.Services.AddScoped<CryptoService>();
+builder.Services.AddSingleton<CryptoService>();
 builder.Services.AddScoped<EmailSender>();
 builder.Services.AddScoped<UserManager>();
-builder.Services.AddTransient<DriveService>(provider =>
+builder.Services.AddSingleton<DriveService>(provider =>
 {
     var cryptoService = provider.GetService<CryptoService>();
     var secrets = builder.Configuration["GoogleDrive:Secrets"];
@@ -123,7 +123,7 @@ builder.Services.AddTransient<DriveService>(provider =>
     return driveService;
 });
 
-builder.Services.AddScoped<GoogleDriveService>();
+builder.Services.AddSingleton<GoogleDriveService>();
 
 builder.Services.ConfigureAutomapper();
 

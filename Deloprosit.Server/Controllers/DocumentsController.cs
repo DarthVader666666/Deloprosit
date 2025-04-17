@@ -146,8 +146,8 @@ namespace Deloprosit.Server.Controllers
                 {
                     if (System.IO.File.Exists(path))
                     {
-                        _googleDriveService.Delete(path);
                         System.IO.File.Delete(path);
+                        Task.Run(() => _googleDriveService.Delete(path));
                     }
                     else
                     {
@@ -164,7 +164,7 @@ namespace Deloprosit.Server.Controllers
                         }
 
                         Directory.Delete(path);
-                        _googleDriveService.Delete(path, isFolder: true);
+                        Task.Run(() => _googleDriveService.Delete(path, isFolder: true));
                     }
                     else
                     {
@@ -193,7 +193,7 @@ namespace Deloprosit.Server.Controllers
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path ?? throw new NullReferenceException());
-                    _googleDriveService.CreateFolder(path.Split('\\').Last());
+                    Task.Run(() => _googleDriveService.CreateFolder(path.Split('\\').Last()));
                 }
                 else
                 {
@@ -231,13 +231,15 @@ namespace Deloprosit.Server.Controllers
                     filePath = Path.Combine(docsPath ?? throw new NullReferenceException("Не задан путь к файлу"),
                         uploadFileModel.FolderName ?? string.Empty, file.FileName);
 
+                    var overwrite = System.IO.File.Exists(filePath);
+
                     using Stream fileStream = new FileStream(filePath, FileMode.Create);
                     await file.CopyToAsync(fileStream);
                     fileStream.Close();
 
                     if (System.IO.File.Exists(filePath))
                     {
-                        _googleDriveService.CreateFile(filePath);
+                        Task.Run(() => _googleDriveService.CreateFile(filePath, overwrite));
                     }
                 }
             }

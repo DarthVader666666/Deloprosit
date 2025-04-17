@@ -24,7 +24,7 @@ namespace Deloprosit.Bll.Services
 
             try
             {
-                DownloadFolderContentsAsync(ConfigurationHelper.GoogleDriveFolderId, ConfigurationHelper.DocsPath);
+                DownloadFolderContentsAsync(ConfigurationHelper.DocsFolderId, ConfigurationHelper.DocsPath);
             }
             catch (Exception ex)
             {
@@ -38,14 +38,14 @@ namespace Deloprosit.Bll.Services
 
             if (isFolder)
             {
-                id = GetId(path?.Split('\\').Last(), isFolder: true);
+                id = GetId(path?.Split('\\').Last(), isFolder: isFolder);
             }
             else
             {
                 var parentFolderName = path?.Split('\\')[..^1].Last();
 
                 var folderId = parentFolderName == ConfigurationHelper.DocsFolderName
-                    ? ConfigurationHelper.GoogleDriveFolderId
+                    ? ConfigurationHelper.DocsFolderId
                     : GetId(parentFolderName, isFolder: true);
 
                 id = GetId(Path.GetFileName(path), folderId);
@@ -63,7 +63,7 @@ namespace Deloprosit.Bll.Services
             {
                 Name = folderName,
                 MimeType = folderMimeType,
-                Parents = [ ConfigurationHelper.GoogleDriveFolderId ]
+                Parents = [ ConfigurationHelper.DocsFolderId ]
             };
 
             try
@@ -78,21 +78,18 @@ namespace Deloprosit.Bll.Services
             }
         }
 
-        public void CreateFile(string? filePath)
+        public void CreateFile(string? filePath, bool overwrite = false)
         {
-            try
+            if(overwrite)
             {
                 Delete(filePath);
-            }
-            catch (GoogleApiException ex)
-            {            
             }
 
             var fileName = Path.GetFileName(filePath);
             var parentFolderName = filePath?.Split('\\')[..^1].Last();
 
             var folderId = parentFolderName == ConfigurationHelper.DocsFolderName 
-                ? ConfigurationHelper.GoogleDriveFolderId 
+                ? ConfigurationHelper.DocsFolderId 
                 : GetId(parentFolderName, isFolder: true);
 
             var fileMetadata = new Google.Apis.Drive.v3.Data.File()
@@ -160,7 +157,7 @@ namespace Deloprosit.Bll.Services
         private IList<Google.Apis.Drive.v3.Data.File> GetFileList(string? folderId = null)
         {
             var request = _driveService.Files.List();
-            request.Q = $"'{(folderId == null ? ConfigurationHelper.GoogleDriveFolderId : folderId)}' in parents and trashed = false";
+            request.Q = $"'{(folderId == null ? ConfigurationHelper.DocsFolderId : folderId)}' in parents and trashed = false";
             request.Fields = "files(id, name, mimeType)";
             var result = request.Execute();
 
