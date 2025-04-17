@@ -28,7 +28,7 @@ namespace Deloprosit.Server.Controllers
         {
             docsPath = ConfigurationHelper.DocsPath;
             webRootPath = ConfigurationHelper.WebRootPath;
-            documentsDirectoryName = ConfigurationHelper.DocumentsDirectoryName;
+            documentsDirectoryName = ConfigurationHelper.DocsFolderName;
             _googleDriveService = googleDriveService;   
         }
 
@@ -146,7 +146,7 @@ namespace Deloprosit.Server.Controllers
                 {
                     if (System.IO.File.Exists(path))
                     {
-                        _googleDriveService.Delete(Path.GetFileName(path));
+                        _googleDriveService.Delete(path);
                         System.IO.File.Delete(path);
                     }
                     else
@@ -158,14 +158,13 @@ namespace Deloprosit.Server.Controllers
                 {
                     if (Directory.Exists(path))
                     {
-                        _googleDriveService.Delete(path.Split('\\').Last(), isFolder: true);
-
                         foreach (var filePath in Directory.GetFiles(path))
                         {
                             System.IO.File.Delete(filePath);
                         }
 
                         Directory.Delete(path);
+                        _googleDriveService.Delete(path, isFolder: true);
                     }
                     else
                     {
@@ -194,7 +193,7 @@ namespace Deloprosit.Server.Controllers
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path ?? throw new NullReferenceException());
-                    _googleDriveService.CreateFolder(path);
+                    _googleDriveService.CreateFolder(path.Split('\\').Last());
                 }
                 else
                 {

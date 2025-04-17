@@ -1,4 +1,5 @@
-﻿using Google.Apis.Drive.v3;
+﻿using Google;
+using Google.Apis.Drive.v3;
 
 using Microsoft.AspNetCore.StaticFiles;
 
@@ -31,24 +32,38 @@ namespace Deloprosit.Bll.Services
             }
         }
 
-        public void Delete(string? name, bool isFolder = false)
+        public void Delete(string? path, bool isFolder = false)
         {
-            var id = GetId(name, isFolder);
+            string? id;
+
+            if (isFolder)
+            {
+                id = GetId(path?.Split('\\').Last(), isFolder: true);
+            }
+            else
+            {
+                var parentFolderName = path?.Split('\\')[..^1].Last();
+
+                var folderId = parentFolderName == ConfigurationHelper.DocsFolderName
+                    ? ConfigurationHelper.GoogleDriveFolderId
+                    : GetId(parentFolderName, isFolder: true);
+
+                id = GetId(Path.GetFileName(path), folderId);
+            }
+
             var request = _driveService.Files.Delete(id);
             request.SupportsAllDrives = true;
 
             request.Execute();
         }
 
-        public void CreateFolder(string? path)
+        public void CreateFolder(string? folderName)
         {
-            var folderName = GetName(path).FolderName;
-
             var folderMetadata = new Google.Apis.Drive.v3.Data.File()
             {
                 Name = folderName,
                 MimeType = folderMimeType,
-                Parents = [ ConfigurationHelper.GoogleDriveFolderId ?? "" ]
+                Parents = [ ConfigurationHelper.GoogleDriveFolderId ]
             };
 
             try
@@ -59,16 +74,24 @@ namespace Deloprosit.Bll.Services
             }
             catch (Exception ex)
             {
-                throw ex;   
+                throw ex;
             }
         }
 
         public void CreateFile(string? filePath)
         {
+            try
+            {
+                Delete(filePath);
+            }
+            catch (GoogleApiException ex)
+            {            
+            }
+
             var fileName = Path.GetFileName(filePath);
             var parentFolderName = filePath?.Split('\\')[..^1].Last();
 
-            var folderId = parentFolderName == ConfigurationHelper.DocumentsDirectoryName 
+            var folderId = parentFolderName == ConfigurationHelper.DocsFolderName 
                 ? ConfigurationHelper.GoogleDriveFolderId 
                 : GetId(parentFolderName, isFolder: true);
 
@@ -78,28 +101,18 @@ namespace Deloprosit.Bll.Services
                 Parents = folderId != null ? new List<string> { folderId } : null
             };
 
-            try
+            using var stream = new FileStream(filePath ?? "", FileMode.Open);
+            var mimeType = GetMimeType(filePath);
+
+            var request = _driveService.Files.Create(fileMetadata, stream, mimeType);
+            request.Fields = "id, name, size, mimeType, webViewLink";
+
+            var uploadProgress = request.Upload();
+
+            if (uploadProgress.Status == Google.Apis.Upload.UploadStatus.Failed)
             {
-                using var stream = new FileStream(filePath ?? "", FileMode.Open);
-                var mimeType = GetMimeType(filePath);
-
-                var request = _driveService.Files.Create(fileMetadata, stream, mimeType);
-                request.Fields = "id, name, size, mimeType, webViewLink";
-
-                var uploadProgress = request.Upload();
-
-                if (uploadProgress.Status == Google.Apis.Upload.UploadStatus.Failed)
-                {
-                    throw new Exception($"Upload failed: {uploadProgress.Exception.Message}");
-                }
-
-                var file = request.ResponseBody;
-                var id = file.Id;
+                throw new Exception($"Загрузка файла {uploadProgress.Exception.Message} в облачное хранилище не удалась");
             }
-            catch (Exception ex)
-            {
-            }
-            
         }
 
         public async Task DownloadFolderContentsAsync(string? folderId, string? localPath)
@@ -110,7 +123,7 @@ namespace Deloprosit.Bll.Services
             {
                 var itemPath = Path.Combine(localPath ?? "", item.Name);
 
-                if (item.MimeType == "application/vnd.google-apps.folder")
+                if (item.MimeType == folderMimeType)
                 {
                     Directory.CreateDirectory(itemPath);
                     await DownloadFolderContentsAsync(item.Id, itemPath);
@@ -123,11 +136,11 @@ namespace Deloprosit.Bll.Services
             }
         }
 
-        private string? GetId(string? name, bool isFolder = false)
+        private string? GetId(string? name, string? folderId = null, bool isFolder = false)
         {
             try
             {
-                var files = GetFileList();
+                var files = GetFileList(folderId);
 
                 if (isFolder)
                 {
@@ -138,28 +151,10 @@ namespace Deloprosit.Bll.Services
                     return files.FirstOrDefault(x => x.MimeType != folderMimeType && x.Name == name)?.Id;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }            
-        }
-
-        private static (string? FileName, string? FolderName) GetName(string? path)
-        {
-            (string? FileName, string? FolderName) name = (null, null);
-
-            if (Directory.Exists(path))
-            {                
-                var folderName = path.Split('\\').Last();
-                name.FolderName = folderName;
-            }
-            else if (File.Exists(path))
-            {
-                var fileName = Path.GetFileName(path);
-                name.FileName = fileName;
-            }
-
-            return name;
         }
 
         private IList<Google.Apis.Drive.v3.Data.File> GetFileList(string? folderId = null)
@@ -192,6 +187,6 @@ namespace Deloprosit.Bll.Services
             return mimeProvider.TryGetContentType(filePath, out var mimeType)
                 ? mimeType
                 : "application/octet-stream";
-        }        
+        }  
     }
 }
