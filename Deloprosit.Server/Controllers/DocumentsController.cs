@@ -138,10 +138,10 @@ namespace Deloprosit.Server.Controllers
                 return StatusCode( 500, new { errorText = "Ошибка при удалении файла" });
             }
 
+            var path = Path.Combine(webRootPath ?? string.Empty, documentPathModel.Path);
+
             try
             {
-                var path = Path.Combine(webRootPath ?? string.Empty, documentPathModel.Path);
-
                 if (documentPathModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase))
                 {
                     if (System.IO.File.Exists(path))
@@ -177,7 +177,9 @@ namespace Deloprosit.Server.Controllers
                 return StatusCode( StatusCodes.Status500InternalServerError, new { errorText = $"Ошибка при удалении\n\r{ex.Message}" });
             }
 
-            return Ok(new { okText = documentPathModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase) ? "Файл успешно удален" : "Папка успешно удалена" });
+            return Ok(new { okText = documentPathModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase) 
+                ? $"Файл \"{Path.GetFileName(path)}\" успешно удален" 
+                : $"Папка \"{path.Split(Path.DirectorySeparatorChar).Last()}\" успешно удалена" });
         }
 
         [HttpPost]
@@ -186,14 +188,15 @@ namespace Deloprosit.Server.Controllers
         public async Task<IActionResult> AddFolder()
         {
             var reader = new StreamReader(HttpContext.Request.Body);
-            var path = Path.Combine(docsPath ?? "", JsonConvert.DeserializeObject<FolderNameModel>(await reader.ReadToEndAsync())?.FolderName?.Replace('-', ' ') ?? "");
+            var folderName = JsonConvert.DeserializeObject<FolderNameModel>(await reader.ReadToEndAsync())?.FolderName?.Replace('-', ' ');
+            var path = Path.Combine(docsPath ?? "", folderName ?? "");
 
             try
             {
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path ?? throw new NullReferenceException());
-                    Task.Run(() => _googleDriveService.CreateFolder(path.Split('\\').Last()));
+                    Task.Run(() => _googleDriveService.CreateFolder(path.Split(Path.DirectorySeparatorChar).Last()));
                 }
                 else
                 {
@@ -209,7 +212,7 @@ namespace Deloprosit.Server.Controllers
                 return StatusCode( StatusCodes.Status500InternalServerError, new { errorText = "Ошибка при создании папки" });
             }
 
-            return Ok(new { okText = "Папка успешно создана" });
+            return Ok(new { okText = $"Папка \"{folderName}\" успешно создана" });
         }
 
         [HttpPost]
@@ -222,14 +225,18 @@ namespace Deloprosit.Server.Controllers
                 return BadRequest(new { errorText = "Нет выбранных файлов" });
             }
 
+            var fileName = "";
+
             try
             {
                 var filePath = "";
 
                 foreach (IFormFile file in uploadFileModel.Files)
                 {
+                    fileName = file.FileName;
+
                     filePath = Path.Combine(docsPath ?? throw new NullReferenceException("Не задан путь к файлу"),
-                        uploadFileModel.FolderName ?? string.Empty, file.FileName);
+                        uploadFileModel.FolderName ?? string.Empty, fileName);
 
                     var overwrite = System.IO.File.Exists(filePath);
 
@@ -245,14 +252,14 @@ namespace Deloprosit.Server.Controllers
             }
             catch (GoogleApiException ex)
             {
-                return StatusCode(StatusCodes.Status304NotModified, new { warningText = "Файл не был создан в облаке" });
+                return StatusCode(StatusCodes.Status304NotModified, new { warningText = $"Файл \"{fileName}\" не был создан в облаке" });
             }
             catch
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { errorText = "Ошибка загрузки файла" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { errorText = $"Ошибка загрузки файла \"{fileName}\"" });
             }
 
-            return Ok(new { okText = "Файл успешно загружен" });
+            return Ok(new { okText = $"Файл \"{fileName}\" успешно загружен" });
         }
 
         [HttpPut]
@@ -267,7 +274,7 @@ namespace Deloprosit.Server.Controllers
 
             try
             {
-                var path = Path.Combine(webRootPath ?? string.Empty, Path.Combine(updateDocumentModel.Path.Split('\\')[..^1]));
+                var path = Path.Combine(webRootPath ?? string.Empty, Path.Combine(updateDocumentModel.Path.Split(Path.DirectorySeparatorChar)[..^1]));
                 var sourcePath = Path.Combine(webRootPath ?? string.Empty, updateDocumentModel.Path);
                 var destPath = Path.Combine(path, updateDocumentModel.NewName);
 
@@ -288,7 +295,7 @@ namespace Deloprosit.Server.Controllers
             }
             catch
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { errorText = "Папка уже существует" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { errorText = $"Ошибка при переименовании" });
             }
 
             return Ok(new { okText = "Имя успешно обновлено" });

@@ -43,7 +43,7 @@ function createFolder() {
         if(response.status === 200) {
             newFolderName.value = '';
             showNewFolderMenu.value = false;
-            toast.success('Папка успешно создана');
+            toast.success(response.data.okText);
             await store.dispatch('downloadDocumentNodes');
         }
     })
@@ -155,7 +155,7 @@ async function uploadFiles(event) {
 }
 
 async function deleteDocument(node) {
-    if(!window.confirm(`${(node.data.type === 'file' ? 'Файл будет удален' : 'Папка и всё её содержимое будет удалено')}, вы уверены`)) {
+    if(!window.confirm(`${(node.data.type === 'file' ? `Файл "${node.data.name}" будет удален` : `Папка "${node.data.name}" и всё её содержимое будет удалено`)}, вы уверены?`)) {
         return;
     }
 

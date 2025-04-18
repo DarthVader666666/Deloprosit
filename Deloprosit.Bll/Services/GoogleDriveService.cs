@@ -8,7 +8,6 @@ namespace Deloprosit.Bll.Services
     {
         private readonly DriveService _driveService;
         const string folderMimeType = "application/vnd.google-apps.folder";
-        const char separator = '\\';
 
         public GoogleDriveService(DriveService driveService)
         {
@@ -71,7 +70,7 @@ namespace Deloprosit.Bll.Services
             }
 
             var fileName = Path.GetFileName(filePath);
-            var parentFolderName = filePath?.Split(separator)[..^1].Last();
+            var parentFolderName = filePath?.Split(Path.DirectorySeparatorChar)[..^1].Last();
 
             var folderId = parentFolderName == ConfigurationHelper.DocsFolderName 
                 ? ConfigurationHelper.DocsFolderId 
@@ -93,7 +92,7 @@ namespace Deloprosit.Bll.Services
 
             if (uploadProgress.Status == Google.Apis.Upload.UploadStatus.Failed)
             {
-                throw new Exception($"Загрузка файла {uploadProgress.Exception.Message} в облачное хранилище не удалась");
+                throw new Exception($"Загрузка файла в облачное хранилище не удалась. {uploadProgress.Exception.Message}");
             }
         }
 
@@ -152,11 +151,11 @@ namespace Deloprosit.Bll.Services
 
             if (isFolder)
             {
-                id = GetIdCore(path?.Split(separator).Last());
+                id = GetIdCore(path?.Split(Path.DirectorySeparatorChar).Last());
             }
             else
             {
-                var parentFolderName = path?.Split(separator)[..^1].Last();
+                var parentFolderName = path?.Split(Path.DirectorySeparatorChar)[..^1].Last();
 
                 var folderId = parentFolderName == ConfigurationHelper.DocsFolderName
                     ? ConfigurationHelper.DocsFolderId
