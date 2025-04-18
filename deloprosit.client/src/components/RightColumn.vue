@@ -67,10 +67,14 @@ function showRenameInput(node) {
     editButtons.forEach(editButton => editButton.style.display = 'inline-flex');
     buttons.forEach(button => button.style.display = 'none');
 
-    document.getElementById(`${node.data.path}_${node.data.type}_edit-button`).style.display = 'none';
+    document.getElementById(`${node.data.path}_${node.data.type}_edit-button`).style.display = 'none';    
     document.getElementById(`${node.data.path}_${node.data.type}_name`).style.display = 'none';
     document.getElementById(`${node.data.path}_${node.data.type}_input`).style.display = 'block';
     document.getElementById(`${node.data.path}_${node.data.type}_buttons`).style.display = 'flex';
+
+    if(node.data.type === 'file') {
+        document.getElementById(`${node.data.path}_${node.data.type}_copy-url-button`).style.display = 'none';
+    }
 }
 
 function cancelEdit(node) {
@@ -80,6 +84,10 @@ function cancelEdit(node) {
     document.getElementById(`${node.data.path}_${node.data.type}_name`).style.display = 'block';
     document.getElementById(`${node.data.path}_${node.data.type}_edit-button`).style.display = 'inline-flex';
     document.getElementById(`${node.data.path}_${node.data.type}_buttons`).style.display = 'none';
+
+    if(node.data.type === 'file') {
+        document.getElementById(`${node.data.path}_${node.data.type}_copy-url-button`).style.display = 'inline-flex';
+    }
 }
 
 function updateName(node) {
