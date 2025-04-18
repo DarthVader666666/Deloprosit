@@ -9,6 +9,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import store from '@/vuex/store.js';
 import MessagesView from "@/views/MessagesView.vue";
 import SearchResultView from "@/views/SearchResultView.vue";
+import PersonalDataAgreement from "@/views/PersonalDataAgreement.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -62,6 +63,11 @@ const router = createRouter({
             path: '/search-result',
             name: 'search-result',
             component: SearchResultView
+        },
+        {
+            path: '/personal-data-agreement',
+            name: 'personal-data-agreement',
+            component: PersonalDataAgreement
         }
     ]
 });
@@ -121,6 +127,10 @@ router.afterEach(async (to) => {
     if(to.name === 'messages') {
         await store.dispatch('downloadMessages', false);
         store.commit('setTitle', 'Сообщения');
+     }
+
+     if(to.name === 'personal-data-agreement') {
+        store.commit('setTitle', 'Соглашение о хранении и обработке данных');
      }
 
     await store.dispatch('downloadChapters');

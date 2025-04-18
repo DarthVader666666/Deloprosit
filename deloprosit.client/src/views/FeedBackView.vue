@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useStore } from 'vuex';
 import { ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
-import { useRouter } from 'vue-router';
+import { useRouter, RouterLink } from 'vue-router';
 import { helper } from '@/helper/helper';
 import SpinningCircle from '@/components/SpinningCircle.vue';
 import CaptchaComponent from '@/components/CaptchaComponent.vue';
@@ -20,6 +20,7 @@ const router = useRouter();
 const isCaptchaMatch = ref(false);
 const pending = ref(false);
 const invalid = ref(false);
+const isAgreementChecked = ref(false);
 const messageForm = ref(
     {
         name: null,
@@ -129,7 +130,11 @@ function setCaptchaMatch(isMatch) {
             </div>        
             <CaptchaComponent @captcha-match="setCaptchaMatch"></CaptchaComponent>
             <div>
-                <Button severity="secondary" :disabled="!isCaptchaMatch" type="submit" raised>Отправить</Button>
+                <input type="checkbox" v-model="isAgreementChecked" style="margin-right: 10px">
+                <RouterLink to="personal-data-agreement">Соглашаюсь с правилами хранения и обработки персональных данных</RouterLink>
+            </div>
+            <div>
+                <Button severity="secondary" :disabled="!(isCaptchaMatch && isAgreementChecked)" type="submit" raised>Отправить</Button>
                 <Button severity="contrast" raised @click="router.push('/')">Отменить</Button>
             </div>
         </form>

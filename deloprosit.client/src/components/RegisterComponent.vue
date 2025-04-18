@@ -22,7 +22,7 @@ const toast = useToast();
 const router = useRouter();
 
 const isCaptchaMatch = ref(false);
-
+const isAgreementChecked = ref(false);
 const showNicknameError = ref(false);
 const showEmailError = ref(false);
 const repeatPassword = ref(null);
@@ -34,7 +34,7 @@ const registerModel = ref({
 });
 
 const isDisabledSendButton = computed(() => {    
-    return !(registerModel.value.nickname && registerModel.value.email && registerModel.value.password && isMatchPassword.value && isCaptchaMatch.value)
+    return !(registerModel.value.nickname && registerModel.value.email && registerModel.value.password && isMatchPassword.value && isCaptchaMatch.value && isAgreementChecked.value)
     || showNicknameError.value || showEmailError.value || showPasswordsError.value || props.pending;
 });
 
@@ -135,6 +135,10 @@ function setCaptchaMatch(isMatch) {
                 <InputText v-model="repeatPassword" type="password" maxlength="30" required/>
             </div>
             <CaptchaComponent @captcha-match="setCaptchaMatch"></CaptchaComponent>
+            <div>
+                <input type="checkbox" v-model="isAgreementChecked" style="margin-right: 10px">
+                <RouterLink to="personal-data-agreement">Соглашаюсь с правилами хранения и обработки персональных данных</RouterLink>
+            </div>
         </div>
         <hr/>
         <div class="buttons">
