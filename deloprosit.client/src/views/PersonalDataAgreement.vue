@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="personal-data-agreement">
         <h3>
             Соглашение о хранении и обработке персональных данных
         </h3>
@@ -124,3 +124,16 @@
         </p>
     </div>
 </template>
+<style scoped>
+.personal-data-agreement {
+    padding: 20px !important; 
+    margin: 20px; 
+    background: white !important;
+}
+
+@media (max-width: 800px) {
+    .personal-data-agreement {
+        margin: 0;
+    }
+}
+</style>
