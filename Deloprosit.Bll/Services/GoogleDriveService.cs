@@ -111,7 +111,7 @@ namespace Deloprosit.Bll.Services
 
             var id = GetId(path, isFolder);
 
-            var file = _driveService.Files.Get(id).Execute() ?? throw new NullReferenceException($"Файл(папка) не найдена в облачгом хранилище");
+            var file = _driveService.Files.Get(id).Execute() ?? throw new NullReferenceException($"Файл(папка) не найдена в облачном хранилище");
 
             file.Id = null;
             file.Kind = null;

@@ -83,6 +83,11 @@ function cancelEdit(node) {
 }
 
 function updateName(node) {
+    if(newName.value === node.data.name) {
+        cancelEdit(node);
+        return;
+    }
+
     axios.put(`${store.state.serverUrl}/documents/update`, 
         {
             newName: newName.value,
@@ -108,7 +113,7 @@ function updateName(node) {
 
 function download(node) {
     if(node.data.path)
-        window.open(node.data.path);
+        window.open(store.getters.serverUrl.replace('api', '') + node.data.path.replace('\\', '/'));
 }
 
 async function uploadFiles(event) {
@@ -163,6 +168,12 @@ async function deleteDocument(node) {
             toast.error(error.response.data.errorText)
         }
     })
+}
+
+async function copyUrlToClipboard(node) {
+    const url = store.getters.serverUrl.replace('api', '') + node.data.path.replace('\\', '/');
+    navigator.clipboard.writeText(url);
+    toast.success(`Ссылка для "${node.data.name}" скопирована`);
 }
 
 </script>
@@ -237,11 +248,13 @@ async function deleteDocument(node) {
                         <input type="text" v-model="newName" @keydown.esc="cancelEdit(node)" @keydown.enter="updateName(node)" class="rename-input" style="display: none;" :id="`${node.data.path}_${node.data.type}_input`">
                         <Button v-if="node.data.type != 'root' && (isAdmin || isOwner)" @click="showRenameInput(node)" :id="`${node.data.path}_${node.data.type}_edit-button`"
                             class="document-button" text rounded severity="contrast" icon="pi pi-pencil" title="Переименовать"></Button>
+                        <Button v-if="node.data.type != 'root' && node.data.type != 'folder' && (isAdmin || isOwner)" @click="copyUrlToClipboard(node)" :id="`${node.data.path}_${node.data.type}_copy-url-button`"
+                            class="document-button" text rounded severity="contrast" icon="pi pi-link" title="Копировать ссылку"></Button>
 
                         <div v-if="node.data.type != 'root' && (isAdmin || isOwner)" style="display: none;" :id="`${node.data.path}_${node.data.type}_buttons`">
                             <Button @click="cancelEdit(node)"
                                 class="document-button" rounded severity="danger" text icon="pi pi-ban" title="Отмена"></Button>
-                           <Button @click="updateName(node)"
+                            <Button @click="updateName(node)"
                                 class="document-button" rounded severity="primary" text icon="pi pi-check" title="Ок"></Button>
                         </div>                        
                     </template>
