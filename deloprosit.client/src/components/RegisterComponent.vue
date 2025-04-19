@@ -8,6 +8,7 @@ import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import CaptchaComponent from '@/components/CaptchaComponent.vue'
+import ConfirmAgreement from './ConfirmAgreement.vue';
 
 const props = defineProps({
     pending: {
@@ -135,10 +136,7 @@ function setCaptchaMatch(isMatch) {
                 <InputText v-model="repeatPassword" type="password" maxlength="30" required/>
             </div>
             <CaptchaComponent @captcha-match="setCaptchaMatch"></CaptchaComponent>
-            <div>
-                <input type="checkbox" v-model="isAgreementChecked" style="margin-right: 10px">
-                <RouterLink to="personal-data-agreement">Соглашаюсь с правилами хранения и обработки персональных данных</RouterLink>
-            </div>
+            <ConfirmAgreement @agreement-checked="isAgreementChecked = !isAgreementChecked" :isAgreementChecked="isAgreementChecked"></ConfirmAgreement>
         </div>
         <hr/>
         <div class="buttons">

@@ -6,10 +6,11 @@ import axios from 'axios';
 import { useStore } from 'vuex';
 import { ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
-import { useRouter, RouterLink } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { helper } from '@/helper/helper';
 import SpinningCircle from '@/components/SpinningCircle.vue';
 import CaptchaComponent from '@/components/CaptchaComponent.vue';
+import ConfirmAgreement from '@/components/ConfirmAgreement.vue';
 
 const placeholder = 'Должен быть указан Email и/или Номер телефона';
 
@@ -129,10 +130,7 @@ function setCaptchaMatch(isMatch) {
                 <Textarea v-model="messageForm.text" required></Textarea>
             </div>        
             <CaptchaComponent @captcha-match="setCaptchaMatch"></CaptchaComponent>
-            <div>
-                <input type="checkbox" v-model="isAgreementChecked" style="margin-right: 10px">
-                <RouterLink to="personal-data-agreement">Соглашаюсь с правилами хранения и обработки персональных данных</RouterLink>
-            </div>
+            <ConfirmAgreement @agreement-checked="isAgreementChecked = !isAgreementChecked" :isAgreementChecked="isAgreementChecked"></ConfirmAgreement>
             <div>
                 <Button severity="secondary" :disabled="!(isCaptchaMatch && isAgreementChecked)" type="submit" raised>Отправить</Button>
                 <Button severity="contrast" raised @click="router.push('/')">Отменить</Button>
