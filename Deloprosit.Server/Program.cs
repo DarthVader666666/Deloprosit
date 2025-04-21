@@ -134,7 +134,7 @@ UploadDocuments(scope);
 
 var app = builder.Build();
 
-app.UseStatusCodePagesWithReExecute("/error", "?status={0}");
+//app.UseStatusCodePagesWithReExecute("/error", "?status={0}");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

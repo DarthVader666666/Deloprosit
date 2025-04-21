@@ -17,8 +17,8 @@
         <input type="checkbox" @change="emit('agreement-checked')" :checked="props.isAgreementChecked"
             style="margin: 0; height: 15px; width: 15px;">
         <span>
-            Соглашаюсь с 
+            Соглашаюсь с <RouterLink to="personal-data-agreement"> правилами хранения и обработки персональных данных</RouterLink>
         </span>
-        <RouterLink to="personal-data-agreement"> правилами хранения и обработки персональных данных</RouterLink>
+        
     </div>
 </template>
