@@ -6,7 +6,7 @@ deployment:
 
     # Build and deploy ASP.NET Core backend
     - cd .
-    - dotnet publish  Deloprosit.sln -c Release -o $BACKENDPATH
+    - dotnet publish -c Release -o $BACKENDPATH
     - cp -r $BACKENDPATH/wwwroot/* $DEPLOYPATH/
 
     # Build and deploy Vue.js frontend
