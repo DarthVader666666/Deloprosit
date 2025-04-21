@@ -257,7 +257,8 @@ function handleBurgerClick() {
     }
 
     .slide-container {
-        position: absolute;
+        position: fixed;
+        top: var(--HEADER-HEIGHT);
         right: 0;
         z-index: 1;
         background-color: var(--MENU-BCKGND-CLR);
@@ -266,7 +267,6 @@ function handleBurgerClick() {
         padding: 15px;
         border-radius: 3px;
         box-shadow: var(--MENU-BOX-SHADOW);
-        top: 90px;
         align-items: start;
         animation-name: slide;
         animation-duration: 0.2s;

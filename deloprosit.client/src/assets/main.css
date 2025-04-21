@@ -159,7 +159,7 @@ body {
 }
 
 @keyframes slide {
-  1% {
+  0% {
       transform: translateX(100%);
   }
 }
