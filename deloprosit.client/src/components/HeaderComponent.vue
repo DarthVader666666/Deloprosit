@@ -21,6 +21,7 @@ const nickname = computed(() => store.state.nickname);
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const unreadMessagesCount = computed(() => store.getters.getUnreadMessagesCount);
+const darkenBackground = computed(() => showLogin.value || showMenu.value || showAccountSettings.value);
 
 const remember = ref(false);
 const showLogin = ref(false);
@@ -44,7 +45,33 @@ watch(showMenu, (oldValue, newValue) => {
     }
     else {
         menu.classList.remove('menu');
-        menu.classList.add('slide-container');        
+        menu.classList.add('slide-container');
+    }
+});
+
+watch(darkenBackground, (oldValue, newValue) => {
+
+    const containers = [
+        document.getElementsByClassName('main-container'),
+        document.getElementsByClassName('search-bar'),
+        document.getElementsByClassName('title')
+    ]
+
+    if(!newValue) {
+        containers.forEach(items => {
+            for(let item of items) {            
+                item.style.opacity = 0.8;
+                item.style.filter = 'brightness(50%)';
+            }
+        })
+    }
+    else {
+        containers.forEach(items => {
+            for(let item of items) {
+                item.style.opacity = 1;
+                item.style.filter = 'brightness(100%)';
+            }
+        })
     }
 });
 
