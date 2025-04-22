@@ -59,25 +59,26 @@ builder.Services.AddCors(options => options.AddPolicy("AllowClient",
     new CorsPolicyBuilder().WithOrigins(origins ?? [])
     .AllowAnyHeader().AllowAnyMethod().AllowCredentials().Build()));
 
-string? connectionString = null;
+string? mssqlConnectionString = null;
+string? postgresConnectionString = null;
 
 if (builder.Environment.IsDevelopment())
 {
-    connectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
+    mssqlConnectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
 }
 else if (builder.Environment.EnvironmentName.Equals(production, StringComparison.OrdinalIgnoreCase))
 {
-    //connectionString = builder.Configuration.GetConnectionString("PostgresDeloprositDb");
-    connectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
+    postgresConnectionString = builder.Configuration.GetConnectionString("PostgresDeloprositDb");
+    mssqlConnectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
 }
 
-if (connectionString == null)
+if (mssqlConnectionString == null)
 {
     throw new NullReferenceException();
 }
 
-builder.Services.AddDbContext<MssqlDeloprositDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(connectionString));
-builder.Services.AddDbContext<PostgresDeloprositDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
+builder.Services.AddDbContext<MssqlDeloprositDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(mssqlConnectionString));
+builder.Services.AddDbContext<PostgresDeloprositDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(postgresConnectionString));
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 if (builder.Environment.IsDevelopment())
@@ -91,12 +92,12 @@ if (builder.Environment.IsDevelopment())
 }
 else if (builder.Environment.EnvironmentName.Equals(production, StringComparison.OrdinalIgnoreCase))
 {
-    //builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<PostgresDeloprositDbContext, UserRepository>);
-    //builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<PostgresDeloprositDbContext, RoleRepository>);
-    //builder.Services.AddScoped<IRepository<Chapter>, ChapterRepository>(ConfigureRepository<PostgresDeloprositDbContext, ChapterRepository>);
-    //builder.Services.AddScoped<IRepository<Theme>, ThemeRepository>(ConfigureRepository<PostgresDeloprositDbContext, ThemeRepository>);
-    //builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<PostgresDeloprositDbContext, CaptchaRepository>);
-    //builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<PostgresDeloprositDbContext, MessageRepository>);
+    builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<PostgresDeloprositDbContext, UserRepository>);
+    builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<PostgresDeloprositDbContext, RoleRepository>);
+    builder.Services.AddScoped<IRepository<Chapter>, ChapterRepository>(ConfigureRepository<PostgresDeloprositDbContext, ChapterRepository>);
+    builder.Services.AddScoped<IRepository<Theme>, ThemeRepository>(ConfigureRepository<PostgresDeloprositDbContext, ThemeRepository>);
+    builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<PostgresDeloprositDbContext, CaptchaRepository>);
+    builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<PostgresDeloprositDbContext, MessageRepository>);
 
     builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<MssqlDeloprositDbContext, UserRepository>);
     builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<MssqlDeloprositDbContext, RoleRepository>);
@@ -177,17 +178,22 @@ void MigrateSeedDatabase(IServiceScope? scope)
     }
     else if (builder!.Environment.EnvironmentName.Equals(production, StringComparison.OrdinalIgnoreCase))
     {
-        //var dbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloprositDbContext>();
-        var dbContext = scope?.ServiceProvider.GetRequiredService<MssqlDeloprositDbContext>();
+        var postgresDbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloprositDbContext>();
+        var msqlDbContext = scope?.ServiceProvider.GetRequiredService<MssqlDeloprositDbContext>();
 
         try
         {
-            if (dbContext != null && dbContext.Database.EnsureCreated())
+            if (msqlDbContext != null && msqlDbContext.Database.EnsureCreated())
             {
-                dbContext?.Database.Migrate();
+                msqlDbContext?.Database.Migrate();
+            }
+
+            if (postgresDbContext != null && postgresDbContext.Database.EnsureCreated())
+            {
+                postgresDbContext?.Database.Migrate();
             }
         }
-        catch (NpgsqlException ex)
+        catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
         }
