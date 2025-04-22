@@ -50,7 +50,6 @@ watch(showMenu, (oldValue, newValue) => {
 });
 
 watch(darkenBackground, (oldValue, newValue) => {
-
     const containers = [
         document.getElementsByClassName('main-container'),
         document.getElementsByClassName('search-bar'),
@@ -140,6 +139,7 @@ const handleLogout = () => {
                 store.commit('setNickname', null);
                 store.commit('setRoles', []);
                 store.commit('setNickname', null);
+                showAccountSettings.value = false;
                 router.push('/');
             }
         })
@@ -176,7 +176,7 @@ function handleBurgerClick() {
             <div class="menu" id="menu">
                 <div v-if="nickname" class="account">
                     <Button 
-                        @click="() => showAccountSettings = !showAccountSettings"
+                        @click="() => { showAccountSettings = !showAccountSettings; showMenu = false }"
                         severity="secondary" rounded
                         id="account-button"
                     >
