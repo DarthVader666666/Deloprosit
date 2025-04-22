@@ -19,7 +19,7 @@ using System.Text.Json.Serialization;
 
 using static Google.Apis.Drive.v3.DriveService;
 
-const string azureEnvironment = "Production";
+const string production = "Production";
 var builder = WebApplication.CreateBuilder(args);
 
 ConfigurationHelper.Initialize(builder.Configuration, builder.Environment.WebRootPath);
@@ -65,9 +65,10 @@ if (builder.Environment.IsDevelopment())
 {
     connectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
 }
-else if (builder.Environment.EnvironmentName.Equals(azureEnvironment, StringComparison.OrdinalIgnoreCase))
+else if (builder.Environment.EnvironmentName.Equals(production, StringComparison.OrdinalIgnoreCase))
 {
-    connectionString = builder.Configuration.GetConnectionString("PostgresDeloprositDb");
+    //connectionString = builder.Configuration.GetConnectionString("PostgresDeloprositDb");
+    connectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
 }
 
 if (connectionString == null)
@@ -81,7 +82,6 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 if (builder.Environment.IsDevelopment())
 {
-
     builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<MssqlDeloprositDbContext, UserRepository>);
     builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<MssqlDeloprositDbContext, RoleRepository>);
     builder.Services.AddScoped<IRepository<Chapter>, ChapterRepository>(ConfigureRepository<MssqlDeloprositDbContext, ChapterRepository>);
@@ -89,14 +89,21 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<MssqlDeloprositDbContext, CaptchaRepository>);
     builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<MssqlDeloprositDbContext, MessageRepository>);
 }
-else if (builder.Environment.EnvironmentName.Equals(azureEnvironment, StringComparison.OrdinalIgnoreCase))
+else if (builder.Environment.EnvironmentName.Equals(production, StringComparison.OrdinalIgnoreCase))
 {
-    builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<PostgresDeloprositDbContext, UserRepository>);
-    builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<PostgresDeloprositDbContext, RoleRepository>);
-    builder.Services.AddScoped<IRepository<Chapter>, ChapterRepository>(ConfigureRepository<PostgresDeloprositDbContext, ChapterRepository>);
-    builder.Services.AddScoped<IRepository<Theme>, ThemeRepository>(ConfigureRepository<PostgresDeloprositDbContext, ThemeRepository>);
-    builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<PostgresDeloprositDbContext, CaptchaRepository>);
-    builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<PostgresDeloprositDbContext, MessageRepository>);
+    //builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<PostgresDeloprositDbContext, UserRepository>);
+    //builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<PostgresDeloprositDbContext, RoleRepository>);
+    //builder.Services.AddScoped<IRepository<Chapter>, ChapterRepository>(ConfigureRepository<PostgresDeloprositDbContext, ChapterRepository>);
+    //builder.Services.AddScoped<IRepository<Theme>, ThemeRepository>(ConfigureRepository<PostgresDeloprositDbContext, ThemeRepository>);
+    //builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<PostgresDeloprositDbContext, CaptchaRepository>);
+    //builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<PostgresDeloprositDbContext, MessageRepository>);
+
+    builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<MssqlDeloprositDbContext, UserRepository>);
+    builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<MssqlDeloprositDbContext, RoleRepository>);
+    builder.Services.AddScoped<IRepository<Chapter>, ChapterRepository>(ConfigureRepository<MssqlDeloprositDbContext, ChapterRepository>);
+    builder.Services.AddScoped<IRepository<Theme>, ThemeRepository>(ConfigureRepository<MssqlDeloprositDbContext, ThemeRepository>);
+    builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<MssqlDeloprositDbContext, CaptchaRepository>);
+    builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<MssqlDeloprositDbContext, MessageRepository>);
 }
 
 builder.Services.AddSingleton<CryptoService>();
@@ -168,9 +175,10 @@ void MigrateSeedDatabase(IServiceScope? scope)
         var dbContext = scope?.ServiceProvider.GetRequiredService<MssqlDeloprositDbContext>();
         dbContext?.Database.Migrate();
     }
-    else if (builder!.Environment.EnvironmentName.Equals(azureEnvironment, StringComparison.OrdinalIgnoreCase))
+    else if (builder!.Environment.EnvironmentName.Equals(production, StringComparison.OrdinalIgnoreCase))
     {
-        var dbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloprositDbContext>();
+        //var dbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloprositDbContext>();
+        var dbContext = scope?.ServiceProvider.GetRequiredService<MssqlDeloprositDbContext>();
 
         try
         {
