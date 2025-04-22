@@ -67,8 +67,8 @@ watch(darkenBackground, (oldValue, newValue) => {
     else {
         containers.forEach(items => {
             for(let item of items) {
-                item.style.opacity = 1;
-                item.style.filter = 'brightness(100%)';
+                item.style.removeProperty('opacity');
+                item.style.removeProperty('filter');
             }
         })
     }
