@@ -20,7 +20,7 @@ using System.Text.Json.Serialization;
 
 using static Google.Apis.Drive.v3.DriveService;
 
-const string azureEnvironment = "Azure";
+const string azureEnvironment = "Production";
 var builder = WebApplication.CreateBuilder(args);
 
 ConfigurationHelper.Initialize(builder.Configuration, builder.Environment.WebRootPath);
@@ -62,7 +62,7 @@ builder.Services.AddCors(options => options.AddPolicy("AllowClient",
 
 string? connectionString = null;
 
-if (builder.Environment.IsDevelopment() || builder.Environment.IsProduction())
+if (builder.Environment.IsDevelopment())
 {
     connectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
 }
@@ -80,7 +80,7 @@ builder.Services.AddDbContext<MssqlDeloprositDbContext>(optionsBuilder => option
 builder.Services.AddDbContext<PostgresDeloprositDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-if (builder.Environment.IsDevelopment() || builder.Environment.IsProduction())
+if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<MssqlDeloprositDbContext, UserRepository>);
     builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<MssqlDeloprositDbContext, RoleRepository>);
@@ -163,7 +163,7 @@ TRepository ConfigureRepository<TDbContext, TRepository>(IServiceProvider provid
 
 void MigrateSeedDatabase(IServiceScope? scope)
 {
-    if (builder!.Environment.IsDevelopment() || builder!.Environment.IsProduction())
+    if (builder!.Environment.IsDevelopment())
     {
         var dbContext = scope?.ServiceProvider.GetRequiredService<MssqlDeloprositDbContext>();
         dbContext?.Database.Migrate();
