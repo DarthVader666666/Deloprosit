@@ -62,7 +62,7 @@ builder.Services.AddCors(options => options.AddPolicy("AllowClient",
 
 string? connectionString = null;
 
-if (builder.Environment.IsDevelopment())
+if (builder.Environment.IsDevelopment() || builder.Environment.IsProduction())
 {
     connectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
 }
