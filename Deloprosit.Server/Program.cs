@@ -14,14 +14,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
-using Npgsql;
-
 using System.Text.Json.Serialization;
 
 using static Google.Apis.Drive.v3.DriveService;
 
-const string azureEnvironment = "Production";
 var builder = WebApplication.CreateBuilder(args);
+var usePostgres = false;
 
 ConfigurationHelper.Initialize(builder.Configuration, builder.Environment.WebRootPath);
 
@@ -60,27 +58,18 @@ builder.Services.AddCors(options => options.AddPolicy("AllowClient",
     new CorsPolicyBuilder().WithOrigins(origins ?? [])
     .AllowAnyHeader().AllowAnyMethod().AllowCredentials().Build()));
 
-string? connectionString = null;
-
-if (builder.Environment.IsDevelopment())
-{
-    connectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
-}
-else if (builder.Environment.EnvironmentName.Equals(azureEnvironment, StringComparison.OrdinalIgnoreCase))
-{
-    connectionString = builder.Configuration.GetConnectionString("PostgresDeloprositDb");
-}
+var connectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
+builder.Services.AddDbContext<MssqlDeloprositDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(connectionString));
 
 if (connectionString == null)
 {
-    throw new NullReferenceException();
+    usePostgres = true;
+    connectionString = builder.Configuration.GetConnectionString("PostgresDeloprositDb");
+    builder.Services.AddDbContext<PostgresDeloprositDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
+    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 }
 
-builder.Services.AddDbContext<MssqlDeloprositDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(connectionString));
-builder.Services.AddDbContext<PostgresDeloprositDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
-if (builder.Environment.IsDevelopment())
+if (!usePostgres)
 {
     builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<MssqlDeloprositDbContext, UserRepository>);
     builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<MssqlDeloprositDbContext, RoleRepository>);
@@ -89,7 +78,7 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<MssqlDeloprositDbContext, CaptchaRepository>);
     builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<MssqlDeloprositDbContext, MessageRepository>);
 }
-else if (builder.Environment.EnvironmentName.Equals(azureEnvironment, StringComparison.OrdinalIgnoreCase))
+else
 {
     builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<PostgresDeloprositDbContext, UserRepository>);
     builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<PostgresDeloprositDbContext, RoleRepository>);
@@ -163,26 +152,27 @@ TRepository ConfigureRepository<TDbContext, TRepository>(IServiceProvider provid
 
 void MigrateSeedDatabase(IServiceScope? scope)
 {
-    if (builder!.Environment.IsDevelopment())
-    {
-        var dbContext = scope?.ServiceProvider.GetRequiredService<MssqlDeloprositDbContext>();
-        dbContext?.Database.Migrate();
-    }
-    else if (builder!.Environment.EnvironmentName.Equals(azureEnvironment, StringComparison.OrdinalIgnoreCase))
-    {
-        var dbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloprositDbContext>();
+    DeloprositDbContext? dbContext = null;
 
-        try
+    if (!usePostgres)
+    {
+        dbContext = scope?.ServiceProvider.GetRequiredService<MssqlDeloprositDbContext>();
+    }
+    else
+    {
+        dbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloprositDbContext>();     
+    }
+
+    try
+    {
+        if (dbContext != null && dbContext.Database.EnsureCreated())
         {
-            if (dbContext != null && dbContext.Database.EnsureCreated())
-            {
-                dbContext?.Database.Migrate();
-            }
+            dbContext?.Database.Migrate();
         }
-        catch (NpgsqlException ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
     }
 }
 

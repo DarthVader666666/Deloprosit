@@ -88,11 +88,20 @@ namespace Deloprosit.Server.Controllers
         [Route("[action]")]
         public async Task<IActionResult> GetList() 
         {
-            var chapters = await _chapterRepository.GetListAsync();
+            IEnumerable<Chapter?> chapters;
 
-            if (chapters == null)
+            try
             {
-                return StatusCode(500, new { errorText = "Ошибка сервера" });
+                chapters = await _chapterRepository.GetListAsync();
+
+                if (chapters == null)
+                {
+                    return StatusCode(500, new { errorText = "Ошибка сервера" });
+                }
+            }
+            catch (Exception ex) 
+            {
+                return StatusCode(500, new { errorText = ex.Message });
             }
 
             var response = _mapper.Map<IEnumerable<ChapterResponseModel>>(chapters);
