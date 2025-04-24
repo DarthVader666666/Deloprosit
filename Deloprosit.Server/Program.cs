@@ -59,7 +59,6 @@ builder.Services.AddCors(options => options.AddPolicy("AllowClient",
     .AllowAnyHeader().AllowAnyMethod().AllowCredentials().Build()));
 
 var connectionString = builder.Configuration.GetConnectionString("MssqlDeloprositDb");
-builder.Services.AddDbContext<MssqlDeloprositDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(connectionString));
 
 if (connectionString == null)
 {
@@ -67,6 +66,10 @@ if (connectionString == null)
     connectionString = builder.Configuration.GetConnectionString("PostgresDeloprositDb");
     builder.Services.AddDbContext<PostgresDeloprositDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+}
+else
+{
+    builder.Services.AddDbContext<MssqlDeloprositDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(connectionString));
 }
 
 if (!usePostgres)
@@ -163,16 +166,16 @@ void MigrateSeedDatabase(IServiceScope? scope)
         dbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloprositDbContext>();     
     }
 
-    try
+    if (dbContext != null)
     {
-        if (dbContext != null && dbContext.Database.EnsureCreated())
-        {
+        try
+        { 
             dbContext?.Database.Migrate();
         }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine(ex.Message);
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 }
 
