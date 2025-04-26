@@ -160,7 +160,7 @@ function handleBurgerClick() {
 <template>
     <div class="header-container" ref="header">
         <div class="logo">
-            <RouterLink to="/"><h1>DP</h1></RouterLink>            
+            <RouterLink to="/"><h1>DeloPro</h1></RouterLink>            
         </div>
         <div class="account-and-menu">
             <div class="menu-burger" >
