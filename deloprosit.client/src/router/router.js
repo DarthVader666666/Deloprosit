@@ -5,14 +5,14 @@ import ChapterDetailsView from "@/views/ChapterDetailsView.vue";
 import ChapterEditView from "@/views/ChapterEditView.vue";
 import ThemeEditView from "@/views/ThemeEditView.vue";
 import FeedBackView from "@/views/FeedBackView.vue";
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import store from '@/vuex/store.js';
 import MessagesView from "@/views/MessagesView.vue";
 import SearchResultView from "@/views/SearchResultView.vue";
 import PersonalDataAgreement from "@/views/PersonalDataAgreement.vue";
 
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory(),
     routes: [
         {
             path: '/',
