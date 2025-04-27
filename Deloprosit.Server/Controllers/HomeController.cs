@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Deloprosit.Server.Controllers
@@ -14,57 +15,57 @@ namespace Deloprosit.Server.Controllers
             _configuration = configuration;
         }
 
-        [Route("/error")]
-        public IActionResult Error([FromQuery] int status)
+        [Route("/error/{status}")]
+        public IActionResult Error(int status)
         {
             if (status == 404)
             {
-                return Redirect(_configuration["ClientUrl"] ?? "/");
+                return Redirect(_configuration["ClientUrl"] ?? "/#/");
             }
 
             return Ok();
         }
 
-        [Route("/")]
-        public IActionResult RedirectHome()
-        {
-            return Redirect($"{_configuration["ClientUrl"]}/");
-        }
+        //[Route("/")]
+        //public IActionResult RedirectHome()
+        //{
+        //    return Redirect($"{_configuration["ClientUrl"]}/");
+        //}
 
-        [Route("chapters/{chapterId:int}/{themeId:int?}")]
-        public IActionResult RedirectToTheme(int? chapterId, int? themeId)
-        {
-            return Redirect($"{_configuration["ClientUrl"]}/chapters/{chapterId}/{themeId}");
-        }
+        //[Route("chapters/{chapterId:int}/{themeId:int?}")]
+        //public IActionResult RedirectToTheme(int? chapterId, int? themeId)
+        //{
+        //    return Redirect($"{_configuration["ClientUrl"]}/chapters/{chapterId}/{themeId}");
+        //}
 
-        [Route("chapters/create")]
-        public IActionResult RedirectToCreateChapter()
-        {
-            return Redirect($"{_configuration["ClientUrl"]}/chapters/create");
-        }
+        //[Route("chapters/create")]
+        //public IActionResult RedirectToCreateChapter()
+        //{
+        //    return Redirect($"{_configuration["ClientUrl"]}/chapters/create");
+        //}
 
-        [Route("feedback")]
-        public IActionResult RedirectToFeedback()
-        {
-            return Redirect($"{_configuration["ClientUrl"]}/feedback");
-        }
+        //[Route("feedback")]
+        //public IActionResult RedirectToFeedback()
+        //{
+        //    return Redirect($"{_configuration["ClientUrl"]}/feedback");
+        //}
 
-        [Route("register")]
-        public IActionResult RedirectToRegister()
-        {
-            return Redirect($"{_configuration["ClientUrl"]}/register");
-        }
+        //[Route("register")]
+        //public IActionResult RedirectToRegister()
+        //{
+        //    return Redirect($"{_configuration["ClientUrl"]}/register");
+        //}
 
-        [Route("messages")]
-        public IActionResult RedirectToMessages()
-        {
-            return Redirect($"{_configuration["ClientUrl"]}/messages");
-        }
+        //[Route("messages")]
+        //public IActionResult RedirectToMessages()
+        //{
+        //    return Redirect($"{_configuration["ClientUrl"]}/messages");
+        //}
 
-        [Route("search-result")]
-        public IActionResult RedirectToSearchResult()
-        {
-            return Redirect($"{_configuration["ClientUrl"]}/search-result");
-        }
+        //[Route("search-result")]
+        //public IActionResult RedirectToSearchResult()
+        //{
+        //    return Redirect($"{_configuration["ClientUrl"]}/search-result");
+        //}
     }
 }

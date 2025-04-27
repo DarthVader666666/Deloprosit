@@ -126,7 +126,7 @@ UploadDocuments(scope);
 
 var app = builder.Build();
 
-app.UseStatusCodePagesWithReExecute("/error", "?status={0}");
+app.UseStatusCodePagesWithReExecute("/error/{0}");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
@@ -139,12 +139,23 @@ app.UseCookiePolicy(
     {
         Secure = CookieSecurePolicy.Always
     });
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapWhen(ctx => !ctx.Request.Path.Value.StartsWith("/api"), appBuilder =>
+{
+    appBuilder.UseRouting();
+    
+    appBuilder.UseEndpoints(endpoints =>
+    {
+        endpoints.MapFallbackToFile("index.html");
+    });
+});
 
 app.Run();
 
