@@ -139,23 +139,12 @@ app.UseCookiePolicy(
     {
         Secure = CookieSecurePolicy.Always
     });
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.MapWhen(ctx => !ctx.Request.Path.Value.StartsWith("/api"), appBuilder =>
-{
-    appBuilder.UseRouting();
-    
-    appBuilder.UseEndpoints(endpoints =>
-    {
-        endpoints.MapFallbackToFile("index.html");
-    });
-});
 
 app.Run();
 
