@@ -14,7 +14,6 @@ namespace Deloprosit.Server.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet]
         [Route("/error")]
         public IActionResult Error([FromQuery] int status)
         {
@@ -24,6 +23,48 @@ namespace Deloprosit.Server.Controllers
             }
 
             return Ok();
+        }
+
+        [Route("/")]
+        public IActionResult RedirectHome()
+        {
+            return Redirect($"{_configuration["ClientUrl"]}/");
+        }
+
+        [Route("chapters/{chapterId:int}/{themeId:int?}")]
+        public IActionResult RedirectToTheme(int? chapterId, int? themeId)
+        {
+            return Redirect($"{_configuration["ClientUrl"]}/chapters/{chapterId}/{themeId}");
+        }
+
+        [Route("chapters/create")]
+        public IActionResult RedirectToCreateChapter()
+        {
+            return Redirect($"{_configuration["ClientUrl"]}/chapters/create");
+        }
+
+        [Route("feedback")]
+        public IActionResult RedirectToFeedback()
+        {
+            return Redirect($"{_configuration["ClientUrl"]}/feedback");
+        }
+
+        [Route("register")]
+        public IActionResult RedirectToRegister()
+        {
+            return Redirect($"{_configuration["ClientUrl"]}/register");
+        }
+
+        [Route("messages")]
+        public IActionResult RedirectToMessages()
+        {
+            return Redirect($"{_configuration["ClientUrl"]}/messages");
+        }
+
+        [Route("search-result")]
+        public IActionResult RedirectToSearchResult()
+        {
+            return Redirect($"{_configuration["ClientUrl"]}/search-result");
         }
     }
 }
