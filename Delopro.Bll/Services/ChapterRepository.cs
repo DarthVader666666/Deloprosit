@@ -8,9 +8,9 @@ namespace Delopro.Bll.Services
 {
     public class ChapterRepository : IRepository<Chapter>
     {
-        private readonly DeloprositDbContext _dbContext;
+        private readonly DeloproDbContext _dbContext;
 
-        public ChapterRepository(DeloprositDbContext dbContext)
+        public ChapterRepository(DeloproDbContext dbContext)
         {
             _dbContext = dbContext;
         }

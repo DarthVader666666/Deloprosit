@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Delopro.Data.Migrations
 {
-    [DbContext(typeof(MssqlDeloprositDbContext))]
+    [DbContext(typeof(MssqlDeloproDbContext))]
     [Migration("20250304164022_Added_Title_and_Renamed_Description_to_Content_in_Theme")]
     partial class Added_Title_and_Renamed_Description_to_Content_in_Theme
     {

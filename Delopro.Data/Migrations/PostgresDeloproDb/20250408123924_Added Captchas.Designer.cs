@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Delopro.Data.Migrations.PostgresDeloprositDb
+namespace Delopro.Data.Migrations.PostgresDeloproDb
 {
-    [DbContext(typeof(PostgresDeloprositDbContext))]
-    [Migration("20250408130658_Admin and Owner Initial Credentials")]
-    partial class AdminandOwnerInitialCredentials
+    [DbContext(typeof(PostgresDeloproDbContext))]
+    [Migration("20250408123924_Added Captchas")]
+    partial class AddedCaptchas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -359,24 +359,6 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            Email = "mHdyjukniQqXvq8Ulori1g==",
-                            IsConfirmed = true,
-                            Nickname = "alex",
-                            Password = "eK+Th1R1aYQxoYblzPPL8w=="
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            Email = "JtfP1IxKgKVGB4ADFXFnvA==",
-                            IsConfirmed = true,
-                            Nickname = "admin",
-                            Password = "efavXKTzRTFnR7w69A7OJA=="
-                        });
                 });
 
             modelBuilder.Entity("Deloprosit.Data.Entities.UserRole", b =>
@@ -392,18 +374,6 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            RoleId = 1
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            RoleId = 2
-                        });
                 });
 
             modelBuilder.Entity("Deloprosit.Data.Entities.Chapter", b =>

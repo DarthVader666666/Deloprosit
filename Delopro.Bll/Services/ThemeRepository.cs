@@ -8,9 +8,9 @@ namespace Delopro.Bll.Services
 {
     public class ThemeRepository: IRepository<Theme>
     {
-        private readonly DeloprositDbContext _dbContext;
+        private readonly DeloproDbContext _dbContext;
 
-        public ThemeRepository(DeloprositDbContext dbContext)
+        public ThemeRepository(DeloproDbContext dbContext)
         {
             _dbContext = dbContext;
         }

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Delopro.Data.Migrations.PostgresDeloprositDb
+namespace Delopro.Data.Migrations.PostgresDeloproDb
 {
     /// <inheritdoc />
     public partial class Added_Title_and_Renamed_Description_to_Content_in_Theme : Migration

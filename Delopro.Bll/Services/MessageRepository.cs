@@ -8,9 +8,9 @@ namespace Delopro.Bll.Services
 {
     public class MessageRepository: IRepository<Message>
     {
-        private readonly DeloprositDbContext _dbContext;
+        private readonly DeloproDbContext _dbContext;
 
-        public MessageRepository(DeloprositDbContext dbContext)
+        public MessageRepository(DeloproDbContext dbContext)
         {
             _dbContext = dbContext;
         }

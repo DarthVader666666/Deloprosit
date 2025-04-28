@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Delopro.Data.Migrations
 {
-    [DbContext(typeof(MssqlDeloprositDbContext))]
+    [DbContext(typeof(MssqlDeloproDbContext))]
     [Migration("20250321071800_Added Email and Phone To Message")]
     partial class AddedEmailandPhoneToMessage
     {

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Delopro.Data.Migrations
 {
-    [DbContext(typeof(MssqlDeloprositDbContext))]
+    [DbContext(typeof(MssqlDeloproDbContext))]
     [Migration("20250409153728_Defined Default Values For UserId and IsRead in Messages")]
     partial class DefinedDefaultValuesForUserIdandIsReadinMessages
     {

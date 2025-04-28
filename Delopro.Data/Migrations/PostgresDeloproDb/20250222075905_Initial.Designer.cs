@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Delopro.Data.Migrations.PostgresDeloprositDb
+namespace Delopro.Data.Migrations.PostgresDeloproDb
 {
-    [DbContext(typeof(PostgresDeloprositDbContext))]
-    [Migration("20250319204645_Added Message")]
-    partial class AddedMessage
+    [DbContext(typeof(PostgresDeloproDbContext))]
+    [Migration("20250222075905_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,13 +39,10 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
                         .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DateDeleted")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("ImagePath")
-                        .HasColumnType("text");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -66,13 +63,13 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CommentId"));
 
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DateDeleted")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DateEdited")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -92,28 +89,6 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
                     b.HasIndex("UserId");
 
                     b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("Deloprosit.Data.Entities.Message", b =>
-                {
-                    b.Property<int>("MessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MessageId"));
-
-                    b.Property<DateTime>("DateSent")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("text");
-
-                    b.HasKey("MessageId");
-
-                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Deloprosit.Data.Entities.Role", b =>
@@ -156,30 +131,27 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
 
             modelBuilder.Entity("Deloprosit.Data.Entities.Theme", b =>
                 {
-                    b.Property<int?>("ThemeId")
+                    b.Property<int>("ThemeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int?>("ThemeId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ThemeId"));
 
-                    b.Property<int?>("ChapterId")
+                    b.Property<int>("ChapterId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Content")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DateDeleted")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ThemeTitle")
+                    b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("ThemeId");
@@ -204,7 +176,7 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
                         .HasColumnType("bytea");
 
                     b.Property<DateTime?>("BirthDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("City")
                         .HasMaxLength(100)
@@ -247,7 +219,7 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
                         .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("RegisterDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserTitle")
                         .HasMaxLength(100)
@@ -314,12 +286,14 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
                     b.HasOne("Deloprosit.Data.Entities.Chapter", "Chapter")
                         .WithMany("Themes")
                         .HasForeignKey("ChapterId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Deloprosit.Data.Entities.User", "User")
                         .WithMany("Themes")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Chapter");
 

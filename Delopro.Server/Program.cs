@@ -64,31 +64,31 @@ if (connectionString == null)
 {
     usePostgres = true;
     connectionString = builder.Configuration.GetConnectionString("PostgresDeloprositDb");
-    builder.Services.AddDbContext<PostgresDeloprositDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
+    builder.Services.AddDbContext<PostgresDeloproDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 }
 else
 {
-    builder.Services.AddDbContext<MssqlDeloprositDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(connectionString));
+    builder.Services.AddDbContext<MssqlDeloproDbContext>(optionsBuilder => optionsBuilder.UseSqlServer(connectionString));
 }
 
 if (!usePostgres)
 {
-    builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<MssqlDeloprositDbContext, UserRepository>);
-    builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<MssqlDeloprositDbContext, RoleRepository>);
-    builder.Services.AddScoped<IRepository<Chapter>, ChapterRepository>(ConfigureRepository<MssqlDeloprositDbContext, ChapterRepository>);
-    builder.Services.AddScoped<IRepository<Theme>, ThemeRepository>(ConfigureRepository<MssqlDeloprositDbContext, ThemeRepository>);
-    builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<MssqlDeloprositDbContext, CaptchaRepository>);
-    builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<MssqlDeloprositDbContext, MessageRepository>);
+    builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<MssqlDeloproDbContext, UserRepository>);
+    builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<MssqlDeloproDbContext, RoleRepository>);
+    builder.Services.AddScoped<IRepository<Chapter>, ChapterRepository>(ConfigureRepository<MssqlDeloproDbContext, ChapterRepository>);
+    builder.Services.AddScoped<IRepository<Theme>, ThemeRepository>(ConfigureRepository<MssqlDeloproDbContext, ThemeRepository>);
+    builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<MssqlDeloproDbContext, CaptchaRepository>);
+    builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<MssqlDeloproDbContext, MessageRepository>);
 }
 else
 {
-    builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<PostgresDeloprositDbContext, UserRepository>);
-    builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<PostgresDeloprositDbContext, RoleRepository>);
-    builder.Services.AddScoped<IRepository<Chapter>, ChapterRepository>(ConfigureRepository<PostgresDeloprositDbContext, ChapterRepository>);
-    builder.Services.AddScoped<IRepository<Theme>, ThemeRepository>(ConfigureRepository<PostgresDeloprositDbContext, ThemeRepository>);
-    builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<PostgresDeloprositDbContext, CaptchaRepository>);
-    builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<PostgresDeloprositDbContext, MessageRepository>);
+    builder.Services.AddScoped<IRepository<User>, UserRepository>(ConfigureRepository<PostgresDeloproDbContext, UserRepository>);
+    builder.Services.AddScoped<IRepository<Role>, RoleRepository>(ConfigureRepository<PostgresDeloproDbContext, RoleRepository>);
+    builder.Services.AddScoped<IRepository<Chapter>, ChapterRepository>(ConfigureRepository<PostgresDeloproDbContext, ChapterRepository>);
+    builder.Services.AddScoped<IRepository<Theme>, ThemeRepository>(ConfigureRepository<PostgresDeloproDbContext, ThemeRepository>);
+    builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<PostgresDeloproDbContext, CaptchaRepository>);
+    builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<PostgresDeloproDbContext, MessageRepository>);
 }
 
 builder.Services.AddSingleton<CryptoService>();
@@ -162,22 +162,22 @@ if (app.Environment.IsProduction())
 
 app.Run();
 
-TRepository ConfigureRepository<TDbContext, TRepository>(IServiceProvider provider) where TDbContext : DeloprositDbContext where TRepository : class
+TRepository ConfigureRepository<TDbContext, TRepository>(IServiceProvider provider) where TDbContext : DeloproDbContext where TRepository : class
 {
     return Activator.CreateInstance(typeof(TRepository), provider.GetRequiredService<TDbContext>()) as TRepository ?? throw new NullReferenceException();
 }
 
 void MigrateSeedDatabase(IServiceScope? scope)
 {
-    DeloprositDbContext? dbContext = null;
+    DeloproDbContext? dbContext = null;
 
     if (!usePostgres)
     {
-        dbContext = scope?.ServiceProvider.GetRequiredService<MssqlDeloprositDbContext>();
+        dbContext = scope?.ServiceProvider.GetRequiredService<MssqlDeloproDbContext>();
     }
     else
     {
-        dbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloprositDbContext>();     
+        dbContext = scope?.ServiceProvider.GetRequiredService<PostgresDeloproDbContext>();     
     }
 
     if (dbContext != null)

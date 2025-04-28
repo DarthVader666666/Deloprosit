@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Delopro.Data.Migrations
 {
-    [DbContext(typeof(MssqlDeloprositDbContext))]
+    [DbContext(typeof(MssqlDeloproDbContext))]
     [Migration("20250303095206_Added_ImagePath_To_Chapter")]
     partial class Added_ImagePath_To_Chapter
     {

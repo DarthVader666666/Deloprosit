@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Delopro.Data.Migrations.PostgresDeloprositDb
+namespace Delopro.Data.Migrations.PostgresDeloproDb
 {
-    [DbContext(typeof(PostgresDeloprositDbContext))]
-    [Migration("20250320135336_Added UserId FK in Message")]
-    partial class AddedUserIdFKinMessage
+    [DbContext(typeof(PostgresDeloproDbContext))]
+    [Migration("20250307131519_Added_Cascade_Deletion_fro_Themes")]
+    partial class Added_Cascade_Deletion_fro_Themes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,33 +92,6 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
                     b.HasIndex("UserId");
 
                     b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("Deloprosit.Data.Entities.Message", b =>
-                {
-                    b.Property<int>("MessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MessageId"));
-
-                    b.Property<DateTime>("DateSent")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("text");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("MessageId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Deloprosit.Data.Entities.Role", b =>
@@ -314,17 +287,6 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Deloprosit.Data.Entities.Message", b =>
-                {
-                    b.HasOne("Deloprosit.Data.Entities.User", "User")
-                        .WithMany("Messages")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Deloprosit.Data.Entities.Theme", b =>
                 {
                     b.HasOne("Deloprosit.Data.Entities.Chapter", "Chapter")
@@ -381,8 +343,6 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
                     b.Navigation("Chapters");
 
                     b.Navigation("Comments");
-
-                    b.Navigation("Messages");
 
                     b.Navigation("Themes");
 

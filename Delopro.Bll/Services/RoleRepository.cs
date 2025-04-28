@@ -6,9 +6,9 @@ namespace Delopro.Bll.Services
 {
     public class RoleRepository : IRepository<Role>
     {
-        public readonly DeloprositDbContext _dbContext;
+        public readonly DeloproDbContext _dbContext;
 
-        public RoleRepository(DeloprositDbContext dbContext)
+        public RoleRepository(DeloproDbContext dbContext)
         {
             _dbContext = dbContext;
         }

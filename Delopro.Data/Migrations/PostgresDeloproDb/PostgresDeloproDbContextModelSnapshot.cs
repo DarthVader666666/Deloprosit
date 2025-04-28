@@ -3,20 +3,17 @@ using System;
 using Delopro.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Delopro.Data.Migrations.PostgresDeloprositDb
+namespace Delopro.Data.Migrations.PostgresDeloproDb
 {
-    [DbContext(typeof(PostgresDeloprositDbContext))]
-    [Migration("20250409153742_Defined Default Values For UserId and IsRead in Messages")]
-    partial class DefinedDefaultValuesForUserIdandIsReadinMessages
+    [DbContext(typeof(PostgresDeloproDbContext))]
+    partial class PostgresDeloproDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

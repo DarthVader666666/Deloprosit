@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Delopro.Data.Migrations
 {
-    [DbContext(typeof(MssqlDeloprositDbContext))]
+    [DbContext(typeof(MssqlDeloproDbContext))]
     [Migration("20250307131159_Added_Cascade_Deletion_fro_Themes")]
     partial class Added_Cascade_Deletion_fro_Themes
     {

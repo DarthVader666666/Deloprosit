@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Delopro.Data.Migrations.PostgresDeloprositDb
+namespace Delopro.Data.Migrations.PostgresDeloproDb
 {
     /// <inheritdoc />
     public partial class AddedUserIdFKinMessage : Migration

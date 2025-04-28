@@ -6,9 +6,9 @@ namespace Delopro.Bll.Services
 {
     public class UserRepository : IRepository<User>
     {
-        private readonly DeloprositDbContext _dbContext;
+        private readonly DeloproDbContext _dbContext;
 
-        public UserRepository(DeloprositDbContext dbContext)
+        public UserRepository(DeloproDbContext dbContext)
         {
             _dbContext = dbContext;
         }

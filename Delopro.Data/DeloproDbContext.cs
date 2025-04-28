@@ -4,18 +4,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Delopro.Data
 {
-    public class DeloprositDbContext: DbContext
+    public class DeloproDbContext: DbContext
     {
         const int maxRoleNameLength = 50;
         const int maxNameLength = 100;
         const int maxTextLength = 1000;
         const int maxBytesLength = 8000;
 
-        public DeloprositDbContext(DbContextOptions options) : base(options)
+        public DeloproDbContext(DbContextOptions options) : base(options)
         {
         }
 
-        protected DeloprositDbContext(DbContextOptions<DeloprositDbContext> options) : base(options)
+        protected DeloproDbContext(DbContextOptions<DeloproDbContext> options) : base(options)
         {
         }
 

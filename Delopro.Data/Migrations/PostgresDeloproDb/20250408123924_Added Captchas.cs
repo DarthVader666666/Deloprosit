@@ -5,7 +5,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Delopro.Data.Migrations.PostgresDeloprositDb
+namespace Delopro.Data.Migrations.PostgresDeloproDb
 {
     /// <inheritdoc />
     public partial class AddedCaptchas : Migration

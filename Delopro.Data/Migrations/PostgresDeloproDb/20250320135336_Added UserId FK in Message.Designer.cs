@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Delopro.Data.Migrations.PostgresDeloprositDb
+namespace Delopro.Data.Migrations.PostgresDeloproDb
 {
-    [DbContext(typeof(PostgresDeloprositDbContext))]
-    [Migration("20250320144251_Added Name in Message")]
-    partial class AddedNameinMessage
+    [DbContext(typeof(PostgresDeloproDbContext))]
+    [Migration("20250320135336_Added UserId FK in Message")]
+    partial class AddedUserIdFKinMessage
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -107,9 +107,6 @@ namespace Delopro.Data.Migrations.PostgresDeloprositDb
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
 
                     b.Property<string>("Text")
                         .HasColumnType("text");

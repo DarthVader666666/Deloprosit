@@ -6,9 +6,9 @@ namespace Delopro.Bll.Services
 {
     public class CaptchaRepository : IRepository<Captcha>
     {
-        private readonly DeloprositDbContext _dbContext;
+        private readonly DeloproDbContext _dbContext;
 
-        public CaptchaRepository(DeloprositDbContext dbContext)
+        public CaptchaRepository(DeloproDbContext dbContext)
         {
             _dbContext = dbContext;
         }

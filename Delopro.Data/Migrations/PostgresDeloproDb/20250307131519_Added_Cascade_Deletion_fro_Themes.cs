@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Delopro.Data.Migrations.PostgresDeloprositDb
+namespace Delopro.Data.Migrations.PostgresDeloproDb
 {
     /// <inheritdoc />
     public partial class Added_Cascade_Deletion_fro_Themes : Migration
