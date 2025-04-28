@@ -34,7 +34,7 @@ const props = defineProps({
   left: 50% !important;
   margin-left:-100px;
   top: 55% !important;
-  margin-top: 100px;
+  /* margin-top: 100px; */
   width: 45px;
   z-index: 9000 !important;
 }

@@ -32,7 +32,8 @@ const store = createStore({
                 'laptop-1.png',
                 'laptop-2.png',
             ],
-        showChapterList: true
+        showChapterList: true,
+        pending: false
     },
     getters: {
         getChapter(state) {
@@ -85,6 +86,9 @@ const store = createStore({
         },
         getCaptcha(state) {
             return state.captcha;
+        },
+        getPending(state) {
+            return state.pending;
         }
     },
     mutations: {
@@ -143,6 +147,9 @@ const store = createStore({
         },
         setCaptcha(state, value) {
             state.captcha = value;
+        },
+        setPending(state, value) {
+            state.pending = value;
         }
     },
     actions: {
@@ -161,6 +168,8 @@ const store = createStore({
             commit('setChapterNodes', chapterNodes);
         },
         async downloadTheme({commit, state}, themeId ) {
+            commit('setPending', true);
+
             if (themeId) {
                 const url = `${state.serverUrl}/themes/get/${themeId}`;
                 const theme = (await axios.get(url)).data;
@@ -169,6 +178,8 @@ const store = createStore({
             else {                
                 commit('setTheme', state.chapter.themes[0]);
             }
+
+            commit('setPending', false);
         },
         async downloadDocuments({commit, state}) {
             const documents = (await axios.get(`${state.serverUrl}/documents/getlist`)

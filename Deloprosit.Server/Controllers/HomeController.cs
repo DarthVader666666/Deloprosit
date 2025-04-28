@@ -14,12 +14,12 @@ namespace Deloprosit.Server.Controllers
             _configuration = configuration;
         }
 
-        [Route("/error/{status}")]
-        public IActionResult Error(int status)
+        [Route("/error/{statusCode}")]
+        public IActionResult Error(int statusCode)
         {
-            if (status == 404)
+            if (statusCode == 404)
             {
-                return Redirect(_configuration["ClientUrl"] ?? "/#/");
+                return Redirect(_configuration["ClientUrl"] ?? "/");
             }
 
             return Ok();

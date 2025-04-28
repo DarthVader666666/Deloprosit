@@ -119,7 +119,6 @@ body {
   width: var(--APP-COMPONENT-WIDTH);
   padding: 10px;
   background-color: var(--CENTRAL-BCKGND-CLR);
-  min-height: 470px;
 }
 
 @media (max-width: 1500px) {

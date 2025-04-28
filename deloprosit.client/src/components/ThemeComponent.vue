@@ -4,6 +4,7 @@ import Button from 'primevue/button';
 import { RouterLink, useRouter } from 'vue-router';
 import { helper } from '@/helper/helper';
 import { computed } from 'vue';
+import SpinningCircle from './SpinningCircle.vue';
 
 const store = useStore();
 const router = useRouter();
@@ -11,6 +12,7 @@ const emit = defineEmits(['removeTheme']);
 
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
+const pending = computed(() => store.getters.getPending);
 
 const props = defineProps({
     theme: {
@@ -44,7 +46,11 @@ const props = defineProps({
             <Button v-if="useDeleteButtons && (store.getters.isAdmin || store.getters.isOwner)" icon="pi pi-times" text severity="danger"
                 title="Удалить раздел" rounded @click="() => emit('removeTheme', props.theme.themeId)"></Button>
         </div>
-        <div v-if="!props.useShortMode" v-html="theme.content" class="theme-content"></div>
+        <div v-if="pending" style="display: flex; flex-direction: column; align-items: center;">
+            <h3>Загрузка...</h3>
+            <SpinningCircle></SpinningCircle>
+        </div>
+        <div v-else-if="!props.useShortMode" v-html="theme.content" class="theme-content"></div>
     </div>
 </template>
 <style scoped>
