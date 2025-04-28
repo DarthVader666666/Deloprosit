@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Deloprosit.Data\Deloprosit.Data.csproj" />
+    <ProjectReference Include="..\Deloprosit.Data\Delopro.Data.csproj" />
   </ItemGroup>
 
 </Project>

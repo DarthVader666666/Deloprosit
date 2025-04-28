@@ -28,11 +28,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Deloprosit.Bll\Deloprosit.Bll.csproj" />
-    <ProjectReference Include="..\deloprosit.client\deloprosit.client.esproj">
+    <ProjectReference Include="..\Deloprosit.Bll\Delopro.Bll.csproj" />
+    <ProjectReference Include="..\deloprosit.client\delopro.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Deloprosit.Data\Deloprosit.Data.csproj" />
+    <ProjectReference Include="..\Deloprosit.Data\Delopro.Data.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,7 +6,7 @@ import fs from 'fs';
 import child_process from 'child_process';
 import { env } from 'process';
 
-const certificateName = "deloprosit.client";
+const certificateName = "delopro.client";
 const certFilePath = `${certificateName}.pem`;
 const keyFilePath = `${certificateName}.key`;
 

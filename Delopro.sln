@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deloprosit.Server", "Deloprosit.Server\Deloprosit.Server.csproj", "{6ABBB21E-BE8A-4162-A123-8DFAA764FF1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Delopro.Server", "Deloprosit.Server\Delopro.Server.csproj", "{6ABBB21E-BE8A-4162-A123-8DFAA764FF1E}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "deloprosit.client", "deloprosit.client\deloprosit.client.esproj", "{E72D060E-D0B9-4ACA-A7A2-D0E9FB82B298}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "delopro.client", "deloprosit.client\delopro.client.esproj", "{E72D060E-D0B9-4ACA-A7A2-D0E9FB82B298}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{6F167688-5496-49F3-A1E5-0D16F78E66E3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Deloprosit.Data", "Deloprosit.Data\Deloprosit.Data.csproj", "{178D6FB6-C46B-411A-9D16-F17FC5A4E89D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Delopro.Data", "Deloprosit.Data\Delopro.Data.csproj", "{178D6FB6-C46B-411A-9D16-F17FC5A4E89D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deloprosit.Bll", "Deloprosit.Bll\Deloprosit.Bll.csproj", "{071C709B-C79F-4D54-88AF-251CC3D122D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Delopro.Bll", "Deloprosit.Bll\Delopro.Bll.csproj", "{071C709B-C79F-4D54-88AF-251CC3D122D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
