@@ -24,14 +24,7 @@ const store = createStore({
         chapterSearchResult: [],
         showSearchBar: true,
         title: null,
-        imagePaths: 
-            [
-                'archive-1.png',
-                'case-files-1.png',
-                'folders-1.png',
-                'laptop-1.png',
-                'laptop-2.png',
-            ],
+        imageNames: [],
         showChapterList: true,
         pending: false
     },
@@ -89,6 +82,9 @@ const store = createStore({
         },
         getPending(state) {
             return state.pending;
+        },
+        getImageNames(state) {
+            return state.imageNames;
         }
     },
     mutations: {
@@ -150,6 +146,9 @@ const store = createStore({
         },
         setPending(state, value) {
             state.pending = value;
+        },
+        setImageNames(state, value) {
+            state.imageNames = value;
         }
     },
     actions: {
@@ -256,14 +255,28 @@ const store = createStore({
         },
         async downloadCaptcha({commit, state}) {
             const captcha = (await axios.get(`${state.serverUrl}/captcha/get`)
-            .then(response => response.data)
-            .catch(error => {
-                if(error.response) {
-                    toast.error(error.response.data.errorText)
+                .then(response => response.data)
+                .catch(error => {
+                    if(error.response) {
+                        toast.error(error.response.data.errorText);
+                    }
                 }
-            }));
+            )
+        );
 
             commit('setCaptcha', captcha);
+        },
+        async downloadImageNames({commit, state}) {
+            const imageNames = (await axios.get(`${state.serverUrl}/home/getimagenames`)
+                .then(response => response.data)
+                .catch(error => {
+                    if(error.response) {
+                        toast.error(error.response.data.errorText);
+                    }
+                }
+            ));
+
+            commit('setImageNames', imageNames);
         }
     }
 });

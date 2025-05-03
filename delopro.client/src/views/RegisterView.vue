@@ -36,7 +36,7 @@ const handlePending = async (promise) => {
     <div class="email-sent-notification" v-if="showEmailNotification">
         <h3>Письмо успешно отправлено</h3>
         <h3>Проверьте свой Email</h3>
-        <img src="/src/assets/images/email-sent.jpg" alt="email-sent.jpg">
+        <img src="/src/assets/email-sent.jpg" alt="email-sent.jpg">
         <Button severity="secondary" raised @click="router.push('/')">Понятно</Button>
     </div>
     <SpinningCircleView v-else-if="pending" title='Письмо отправляется...'/>

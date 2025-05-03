@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Delopro.Bll;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Delopro.Server.Controllers
 {
     [EnableCors("AllowClient")]
+    [Route("api/[controller]")]
     [ApiController]
     public class HomeController : ControllerBase
     {
@@ -23,6 +25,14 @@ namespace Delopro.Server.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        public IActionResult GetImageNames()
+        {
+            var imageNames = Directory.GetFiles(ConfigurationHelper.ChapterImagesPath!).Select(x => x.Split('\\').Last());
+            return Ok(imageNames);
         }
     }
 }

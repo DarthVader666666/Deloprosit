@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive } from 'vue';
+import { onMounted, reactive, computed, ref } from 'vue';
 import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
 import Button from 'primevue/button';
@@ -10,6 +10,8 @@ import { useRouter } from 'vue-router';
 const store = useStore();
 const router = useRouter();
 const emit = defineEmits(['cancel', 'updateChapter']);
+const imageNames = computed(() => store.getters.getImageNames);
+const imagePath = ref(null);
 
 const props = defineProps({
     chapter: {
@@ -81,6 +83,11 @@ function handleInput() {
     document.getElementById('save-button').disabled = false;
 };
 
+function handleSelect(value) {
+    imagePath.value = helper.getImagePath(value);
+    handleInput();
+}
+
 </script>
 
 <template>
@@ -88,7 +95,7 @@ function handleInput() {
         <form class="form-container" @submit.prevent="handleSave(chapter)">
             <div class="inputs">
                 <InputText v-model="chapter.chapterTitle" @input="handleInput" type="text" required placeholder="Заголовок раздела"/>
-                <Select v-model="chapter.imagePath" @change="handleInput" :options="store.state.imagePaths" placeholder="Путь к картинке"/>
+                <Select v-model="chapter.imagePath" @update:model-value="handleSelect" :options="imageNames" placeholder="Путь к картинке"/>
             </div>
             <div class="buttons">
                 <Button type="submit" disabled raised severity="secondary" label="Сохранить" id="save-button"/>
@@ -96,7 +103,7 @@ function handleInput() {
             </div>        
         </form>
         <div class="image">
-            <img :src="helper.getImagePath(chapter.imagePath)" width="150px" height="120px">
+            <img :src="imagePath" width="150px" height="120px">
         </div>
     </div>    
 </template>

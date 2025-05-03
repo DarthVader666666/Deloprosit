@@ -21,7 +21,7 @@ using static Google.Apis.Drive.v3.DriveService;
 var builder = WebApplication.CreateBuilder(args);
 var usePostgres = false;
 
-ConfigurationHelper.Initialize(builder.Configuration, builder.Environment.WebRootPath);
+ConfigurationHelper.Initialize(builder.Configuration, builder.Environment.WebRootPath, builder.Environment.EnvironmentName);
 
 builder.Services.AddLogging(logs =>
 {
@@ -126,7 +126,7 @@ UploadDocuments(scope);
 
 var app = builder.Build();
 
-app.UseStatusCodePagesWithReExecute("/error/{0}");
+app.UseStatusCodePagesWithReExecute("home/api/error/{0}");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
