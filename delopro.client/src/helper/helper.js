@@ -39,7 +39,7 @@ export const helper = {
         return '?' + queryString;
     },
     getImagePath(imageName) {
-        return '/src/assets/chapter_images/' + imageName;
+        return '/src/assets/chapter-' + imageName;
     },
     scrollToTheme(themeId) {
         if(themeId) {

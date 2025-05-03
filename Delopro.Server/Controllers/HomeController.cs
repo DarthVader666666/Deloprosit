@@ -31,7 +31,8 @@ namespace Delopro.Server.Controllers
         [Route("[action]")]
         public IActionResult GetImageNames()
         {
-            var imageNames = Directory.GetFiles(ConfigurationHelper.ChapterImagesPath!).Select(x => x.Split('\\').Last());
+            var imageNames = Directory.GetFiles(ConfigurationHelper.ChapterImagesPath!)
+                .Where(x => x.Contains("chapter-")).Select(x => x.Split('\\').Last().Replace("chapter-", ""));
             return Ok(imageNames);
         }
     }
