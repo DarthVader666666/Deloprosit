@@ -84,7 +84,7 @@ function handleInput() {
 };
 
 function handleSelect(value) {
-    imagePath.value = helper.getImagePath(value);
+    imagePath.value = helper.getImagePath() + value;
     handleInput();
 }
 
@@ -103,7 +103,7 @@ function handleSelect(value) {
             </div>        
         </form>
         <div class="image">
-            <img :src="imagePath" width="150px" height="120px">
+            <img :src="imagePath ? imagePath : (helper.getImagePath() + chapter.imagePath)" width="150px" height="120px">
         </div>
     </div>    
 </template>

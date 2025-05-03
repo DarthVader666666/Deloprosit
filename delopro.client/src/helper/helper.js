@@ -1,3 +1,5 @@
+import store from "@/vuex/store";
+
 export const helper = {
     getUnicodeByteArray: (text) => {
         const utf8Encode = new TextEncoder();
@@ -38,8 +40,8 @@ export const helper = {
         const queryString = array.map(value => `${key}=${value}&`).join('').slice(0, -1);
         return '?' + queryString;
     },
-    getImagePath(imageName) {
-        return '/src/assets/chapter-' + imageName;
+    getImagePath() {
+        return store.getters.environment === 'development' ? '/src/assets/chapter-' : '/assets/';
     },
     scrollToTheme(themeId) {
         if(themeId) {

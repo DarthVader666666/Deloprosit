@@ -17,7 +17,7 @@ const chapters = computed(() => store.state.chapters);
         <div class="chapter-links">
             <div v-for="(chapter, index) in chapters" :key="index" class="chapter">
                 <RouterLink :to="`/chapters/${chapter.chapterId}`" >
-                    <img :src="helper.getImagePath(chapter.imagePath)" width="150px" height="auto">
+                    <img :src="helper.getImagePath() + chapter.imagePath" width="150px" height="auto">
                     <p>{{ chapter.chapterTitle }}</p>
                 </RouterLink>
             </div>
