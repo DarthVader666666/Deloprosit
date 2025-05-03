@@ -41,7 +41,7 @@ export const helper = {
         return '?' + queryString;
     },
     getImagePath() {
-        return store.getters.environment === 'development' ? '/src/assets/chapter-' : '/assets/';
+        return store.getters.environment === 'development' ? '/src/assets/chapter-' : '/chapter-';
     },
     scrollToTheme(themeId) {
         if(themeId) {
