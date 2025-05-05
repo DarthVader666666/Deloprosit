@@ -13,7 +13,7 @@ namespace Delopro.Bll.Services
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Role> _roleRepository;
         private readonly CryptoService _cryptoService;
-        private readonly EmailSender _emailSender;
+        private readonly IEmailSender _emailSender;
 
         private const char rolesSeperator = ',';
         private const string authorizationScheme = "Cookies";
@@ -21,7 +21,7 @@ namespace Delopro.Bll.Services
         private const string key2 = "key2";
         private const string and = "&amp;";
 
-        public UserManager(IRepository<User> userRepository, IRepository<Role> roleRepository, CryptoService cryptoService, EmailSender emailSender)
+        public UserManager(IRepository<User> userRepository, IRepository<Role> roleRepository, CryptoService cryptoService, IEmailSender emailSender)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
@@ -101,7 +101,7 @@ namespace Delopro.Bll.Services
                 $"</a>" +
                 $"</button>";
 
-            var result = await _emailSender.SendEmailAsync(user.Email ?? string.Empty, "Пожалуйста, подтвердите регистрацию в Deloprosit", url);
+            var result = await _emailSender.SendEmailAsync(user.Email ?? string.Empty, "Пожалуйста, подтвердите регистрацию в Delopro", url);
 
             if (!result)
             {

@@ -91,8 +91,17 @@ else
     builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<PostgresDeloproDbContext, MessageRepository>);
 }
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddScoped<IEmailSender, AzureEmailSender>();
+}
+
+if (builder.Environment.IsProduction())
+{
+    builder.Services.AddScoped<IEmailSender, SMTPEmailSender>();
+}
+
 builder.Services.AddSingleton<CryptoService>();
-builder.Services.AddScoped<EmailSender>();
 builder.Services.AddScoped<UserManager>();
 builder.Services.AddSingleton<DriveService>(provider =>
 {

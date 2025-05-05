@@ -16,14 +16,14 @@ namespace Delopro.Server.Controllers
     [ApiController]
     public class FeedbackController : ControllerBase
     {
-        private readonly EmailSender _emailSender;
+        private readonly IEmailSender _emailSender;
         private readonly UserManager _userManager;
         private readonly CryptoService _cryptoService;
         private readonly IRepository<Message> _messageRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public FeedbackController(EmailSender emailSender, UserManager userManager, CryptoService cryptoService,
+        public FeedbackController(IEmailSender emailSender, UserManager userManager, CryptoService cryptoService,
             IRepository<Message> messageRepository, IMapper mapper, IConfiguration configuration)
         {
             _emailSender = emailSender;

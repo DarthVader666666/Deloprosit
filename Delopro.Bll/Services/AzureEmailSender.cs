@@ -1,14 +1,16 @@
 ﻿using Azure.Communication.Email;
 
+using Delopro.Bll.Interfaces;
+
 using Microsoft.Extensions.Configuration;
 
 namespace Delopro.Bll.Services
 {
-    public class EmailSender
+    public class AzureEmailSender: IEmailSender
     {
         private readonly IConfiguration _configuration;
 
-        public EmailSender(IConfiguration configuration)
+        public AzureEmailSender(IConfiguration configuration)
         {
             _configuration = configuration;
         }
