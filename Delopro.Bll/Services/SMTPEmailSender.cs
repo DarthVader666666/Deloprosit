@@ -11,7 +11,7 @@ namespace Delopro.Bll.Services
         {
             try
             {
-                var fromAddress = new MailAddress("postmaster@delopro.site", "Your App Name");
+                var fromAddress = new MailAddress("postmaster@delopro.site", "DeloPro");
                 var toAddress = new MailAddress(to);
 
                 var smtp = new SmtpClient
@@ -21,7 +21,7 @@ namespace Delopro.Bll.Services
                     EnableSsl = true,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
                     UseDefaultCredentials = false,
-                    Credentials = new NetworkCredential("airlex34@gmail.com", "Uchitel15!")
+                    Credentials = new NetworkCredential("postmaster@delopro.site", "DeloPro-Email-4321")
                 };
 
                 var message = new MailMessage(fromAddress, toAddress)
