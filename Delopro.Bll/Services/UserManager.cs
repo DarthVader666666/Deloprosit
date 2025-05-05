@@ -101,7 +101,7 @@ namespace Delopro.Bll.Services
                 $"</a>" +
                 $"</button>";
 
-            var result = await _emailSender.SendEmailAsync(user.Email ?? string.Empty, "Пожалуйста, подтвердите регистрацию в Delopro", url);
+            var result = await Task.Run(() => _emailSender.SendEmail(user.Email ?? string.Empty, "Пожалуйста, подтвердите регистрацию в DeloPro", url));
 
             if (!result)
             {

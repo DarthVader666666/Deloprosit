@@ -15,22 +15,22 @@ namespace Delopro.Bll.Services
             _configuration = configuration;
         }
 
-        public async Task<bool> SendEmailAsync(string email, string subject, string message)
+        public bool SendEmail(string to, string subject, string body)
         {
             var sender = _configuration["AzureEmailSender"];
             var connectionString = _configuration["AzureCommunicationService"];
 
             var client = new EmailClient(connectionString);
 
-            EmailSendOperation? result = null;
+            EmailSendOperation? result;
 
             try
             {
-                result = await client.SendAsync(Azure.WaitUntil.Completed, sender, email, subject, message);
+                result = client.Send(Azure.WaitUntil.Completed, sender, to, subject, body);
             }
-            catch (Exception ex)
+            catch
             {
-                Console.Write(ex.Message);
+                return false;
             }
 
             return result?.Value.Status == EmailSendStatus.Succeeded;
