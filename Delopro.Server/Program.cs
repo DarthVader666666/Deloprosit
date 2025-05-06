@@ -149,8 +149,6 @@ app.UseCookiePolicy(
         Secure = CookieSecurePolicy.Always
     });
 
-app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -160,6 +158,8 @@ app.MapControllerRoute(
 
 if (app.Environment.IsProduction())
 {
+    app.UseRouting();
+
     app.MapWhen(httpContext =>
     {
         var path = httpContext.Request.Path.Value;
