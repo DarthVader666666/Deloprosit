@@ -160,11 +160,7 @@ if (app.Environment.IsProduction())
 {
     app.UseRouting();
 
-    app.MapWhen(httpContext =>
-    {
-        var path = httpContext.Request.Path.Value;
-        return !path.StartsWith("/api");
-    }, 
+    app.MapWhen(httpContext => !httpContext.Request.Path.Value.StartsWith("/api"), 
     appBuilder =>
     {
         appBuilder.UseEndpoints(endpoints =>
