@@ -172,7 +172,8 @@ if (app.Environment.IsProduction())
     appBuilder =>
     {
         appBuilder.UseRouting();
-    
+        appBuilder.UseAuthorization();
+
         appBuilder.UseEndpoints(endpoints =>
         {
             endpoints.MapFallbackToFile("index.html");
