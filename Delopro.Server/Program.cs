@@ -156,27 +156,29 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-app.MapWhen(httpContext =>
+if (app.Environment.IsProduction())
 {
-    var path = httpContext.Request.Path.Value;
-
-    if (path == null)
+    app.MapWhen(httpContext =>
     {
-        return false;
-    }
+        var path = httpContext.Request.Path.Value;
 
-    return !path.StartsWith("/api");
-},
-appBuilder =>
-{
-    appBuilder.UseRouting();
+        if (path == null)
+        {
+            return false;
+        }
 
-    appBuilder.UseEndpoints(endpoints =>
+        return !path.StartsWith("/api");
+    },
+    appBuilder =>
     {
-        endpoints.MapFallbackToFile("index.html");
+        appBuilder.UseRouting();
+    
+        appBuilder.UseEndpoints(endpoints =>
+        {
+            endpoints.MapFallbackToFile("index.html");
+        });
     });
-});
+}
 
 app.Run();
 
