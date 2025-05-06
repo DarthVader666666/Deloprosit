@@ -163,12 +163,6 @@ if (app.Environment.IsProduction())
     app.MapWhen(httpContext =>
     {
         var path = httpContext.Request.Path.Value;
-
-        if (path == null)
-        {
-            return false;
-        }
-
         return !path.StartsWith("/api");
     }, 
     appBuilder =>
