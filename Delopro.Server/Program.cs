@@ -156,7 +156,19 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.MapWhen(ctx => !ctx.Request.Path.Value.StartsWith("/api"), appBuilder =>
+
+app.MapWhen(httpContext =>
+{
+    var path = httpContext.Request.Path.Value;
+
+    if (path == null)
+    {
+        return false;
+    }
+
+    return !path.StartsWith("/api");
+},
+appBuilder =>
 {
     appBuilder.UseRouting();
 
