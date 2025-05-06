@@ -156,19 +156,15 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-if (app.Environment.IsProduction())
+app.MapWhen(ctx => !ctx.Request.Path.Value.StartsWith("/api"), appBuilder =>
 {
-    app.UseRouting();
+    appBuilder.UseRouting();
 
-    app.MapWhen(httpContext => !httpContext.Request.Path.Value.StartsWith("/api"), 
-    appBuilder =>
+    appBuilder.UseEndpoints(endpoints =>
     {
-        appBuilder.UseEndpoints(endpoints =>
-        {
-            endpoints.MapFallbackToFile("index.html");
-        });
+        endpoints.MapFallbackToFile("index.html");
     });
-}
+});
 
 app.Run();
 
