@@ -149,6 +149,8 @@ app.UseCookiePolicy(
         Secure = CookieSecurePolicy.Always
     });
 
+app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -158,10 +160,19 @@ app.MapControllerRoute(
 
 if (app.Environment.IsProduction())
 {
-    app.MapWhen(httpContext => !httpContext.Request.Path.Value.StartsWith("/api"), appBuilder =>
+    app.MapWhen(httpContext =>
     {
-        appBuilder.UseRouting();
+        var path = httpContext.Request.Path.Value;
 
+        if (path == null)
+        {
+            return false;
+        }
+
+        return !path.StartsWith("/api");
+    }, 
+    appBuilder =>
+    {
         appBuilder.UseEndpoints(endpoints =>
         {
             endpoints.MapFallbackToFile("index.html");
