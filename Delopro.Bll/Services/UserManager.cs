@@ -3,6 +3,8 @@ using Delopro.Data.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
+using PasswordGenerator;
+
 using System.Security.Claims;
 using System.Text;
 
@@ -157,6 +159,24 @@ namespace Delopro.Bll.Services
             return await _userRepository.FindByAsync(nicknameOrEmail) != null;
         }
 
+        public string GeneratePassword()
+        {
+            var password = new Password()
+                .IncludeLowercase()
+                .IncludeUppercase()
+                .IncludeNumeric()
+                .IncludeSpecial()
+                .LengthRequired(12);
+
+            return password.Next();
+        }
+
+        public async Task ChangePasswordAsync(User? user, string password, bool doEncryptPassword = true)
+        { 
+            user.Password = doEncryptPassword ? _cryptoService.Encrypt(password) : password;
+            await _userRepository.UpdateAsync(user);
+        }
+
         private async Task<ClaimsIdentity?> GetIdentityAsync(User? user)
         {
             if (user != null)
@@ -181,39 +201,6 @@ namespace Delopro.Bll.Services
         private string? GetByteString(string? keyName, string? text, bool doEncrypt = true)
         {
             return string.Join($"{and}{keyName}=", Encoding.UTF8.GetBytes(doEncrypt ? _cryptoService.Encrypt(text) ?? "" : text ?? "").Select(x => x.ToString()));
-        }
-
-
-        //private static bool IsValidEmail(string? email)
-        //{
-        //    if (email == null)
-        //    { 
-        //        return false;
-        //    }
-
-        //    var beforeAt = email.Split('@');
-
-        //    if (beforeAt.Length != 2)
-        //    {
-        //        return false;
-        //    }
-
-        //    var afterAt = beforeAt[1].Split('.');
-
-        //    if (afterAt.Length != 2)
-        //    {
-        //        return false;
-        //    }
-
-        //    try
-        //    {
-        //        var addr = new MailAddress(email);
-        //        return addr.Address == email;
-        //    }
-        //    catch
-        //    {
-        //        return false;
-        //    }
-        //}
+        }        
     }
 }

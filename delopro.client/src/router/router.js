@@ -10,6 +10,7 @@ import store from '@/vuex/store.js';
 import MessagesView from "@/views/MessagesView.vue";
 import SearchResultView from "@/views/SearchResultView.vue";
 import PersonalDataAgreement from "@/views/PersonalDataAgreement.vue";
+import RecoverPasswordView from "@/views/RecoverPasswordView.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -68,6 +69,11 @@ const router = createRouter({
             path: '/personal-data-agreement',
             name: 'personal-data-agreement',
             component: PersonalDataAgreement
+        },
+        {
+            path: '/recover-password',
+            name: 'recover-password',
+            component: RecoverPasswordView
         }
     ]
 });
@@ -132,6 +138,18 @@ router.afterEach(async (to) => {
      if(to.name === 'personal-data-agreement') {
         store.commit('setTitle', 'Соглашение о хранении и обработке данных');
      }
+
+     if(to.name === 'recover-password') {
+        store.commit('setTitle', 'Восстановление пароля');
+
+        const captchaInput =  document.getElementById('captcha-input');
+
+        if(captchaInput) {
+            captchaInput.value = null;
+        }
+
+        await store.dispatch('downloadCaptcha');
+    }
 
     await store.dispatch('downloadChapters');
     await store.dispatch('downloadChapterNodes');

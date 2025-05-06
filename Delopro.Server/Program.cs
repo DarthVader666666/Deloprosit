@@ -130,7 +130,7 @@ builder.Services.ConfigureAutomapper();
 
 var provider = builder?.Services?.BuildServiceProvider();
 using var scope = provider?.CreateScope();
-MigrateSeedDatabase(scope);
+MigrateDatabase(scope);
 UploadDocuments(scope);
 
 var app = builder.Build();
@@ -188,7 +188,7 @@ TRepository ConfigureRepository<TDbContext, TRepository>(IServiceProvider provid
     return Activator.CreateInstance(typeof(TRepository), provider.GetRequiredService<TDbContext>()) as TRepository ?? throw new NullReferenceException();
 }
 
-void MigrateSeedDatabase(IServiceScope? scope)
+void MigrateDatabase(IServiceScope? scope)
 {
     DeloproDbContext? dbContext = null;
 
