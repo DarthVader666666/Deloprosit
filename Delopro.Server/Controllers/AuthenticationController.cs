@@ -115,7 +115,7 @@ namespace Delopro.Server.Controllers
 
             var password = _userManager.GeneratePassword();
 
-            if (!_emailSender.SendEmail(email, "Восстановление пароля", password))
+            if (!_emailSender.SendEmail(email, "Восстановление пароля", $"Ваш новый пароль:\n\r{password}"))
             {
                 return StatusCode(500, new { errorText = "Ошибка отправки сообщения" });
             }

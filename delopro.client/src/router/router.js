@@ -11,6 +11,7 @@ import MessagesView from "@/views/MessagesView.vue";
 import SearchResultView from "@/views/SearchResultView.vue";
 import PersonalDataAgreement from "@/views/PersonalDataAgreement.vue";
 import RecoverPasswordView from "@/views/RecoverPasswordView.vue";
+import UsersView from "@/views/UsersView.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -74,6 +75,11 @@ const router = createRouter({
             path: '/recover-password',
             name: 'recover-password',
             component: RecoverPasswordView
+        },
+        {
+            path: '/users',
+            name: 'users',
+            component: UsersView
         }
     ]
 });
@@ -149,6 +155,15 @@ router.afterEach(async (to) => {
         }
 
         await store.dispatch('downloadCaptcha');
+    }
+
+    if(to.name === 'users') {
+        await store.dispatch('downloadUsers');
+    }
+
+    if(to.name != 'users') {
+        store.commit('setUsers', []);
+        store.commit('setTitle', 'Пользователи');
     }
 
     await store.dispatch('downloadChapters');

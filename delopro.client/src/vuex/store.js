@@ -26,7 +26,9 @@ const store = createStore({
         title: null,
         imageNames: [],
         showChapterList: true,
-        pending: false
+        pending: false,
+        users: [],
+        user: null
     },
     getters: {
         getChapter(state) {
@@ -85,6 +87,12 @@ const store = createStore({
         },
         getImageNames(state) {
             return state.imageNames;
+        },
+        getUsers(state) {
+            return state.users;
+        },
+        getUser(state) {
+            return state.user;
         }
     },
     mutations: {
@@ -149,6 +157,12 @@ const store = createStore({
         },
         setImageNames(state, value) {
             state.imageNames = value;
+        },
+        setUsers(state, value) {
+            state.users = value;
+        },
+        setUser(state, value) {
+            state.user = value;
         }
     },
     actions: {
@@ -203,7 +217,7 @@ const store = createStore({
             commit('setDocumentNodes', documentNodes);
         },
         async downloadMessages({commit, state}, isRead) {
-            const messages = (await axios.get(`${state.serverUrl}/feedback/getlist/${isRead}`)
+            const messages = (await axios.get(`${state.serverUrl}/feedback/getmessages/${isRead}`)
                 .then(response => response.data)
                 .catch(error => {
                     if(error.response) {
@@ -214,7 +228,7 @@ const store = createStore({
             commit('setMessages', messages);
         },
         async downloadMessage({commit, state}, messageId) {
-            const message = await axios.get(`${state.serverUrl}/feedback/get/${messageId}`)
+            const message = await axios.get(`${state.serverUrl}/feedback/getmessage/${messageId}`)
                 .then(response => {
                     if(response.status == 200) {
                         return response.data;
@@ -277,6 +291,30 @@ const store = createStore({
             ));
 
             commit('setImageNames', imageNames);
+        },
+        async downloadUsers({commit, state}) {
+            const users = (await axios.get(`${state.serverUrl}/administration/getusers`)
+                .then(response => response.data)
+                .catch(error => {
+                    if(error.response) {
+                        toast.error(error.response.data.errorText);
+                    }
+                }
+            ));
+
+            commit('setUsers', users);
+        },
+        async downloadUser({commit, state}, userId) {
+            const user = (await axios.get(`${state.serverUrl}/administration/getuser/${userId}`)
+                .then(response => response.data)
+                .catch(error => {
+                    if(error.response) {
+                        toast.error(error.response.data.errorText);
+                    }
+                }
+            ));
+
+            commit('setUser', user);
         }
     }
 });

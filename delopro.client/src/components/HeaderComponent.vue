@@ -199,12 +199,18 @@ function handleBurgerClick() {
                     severity="contrast" text label="Создать раздел"
                     id="create-chapter-button" style="border-radius: 0"
                 />
-                <Button v-if="isOwner" @click="() => { showMenu = false; router.push('/messages'); }" 
+                <Button v-if="isOwner" 
+                    @click="() => { showMenu = false; router.push('/messages'); }" 
                     severity="contrast" text
                     id="messages-button" style="border-radius: 0"
                 >
                     <span>Сообщения</span>
                     <span class="unread-messages-count" :style="unreadMessagesCount ? '' : 'display: none;'">{{ unreadMessagesCount }}</span>
+                </Button>
+                <Button v-if="isOwner || isAdmin"
+                    @click="() => { showMenu = false; router.push('/users'); }" 
+                    severity="contrast" text label="Пользователи"
+                >
                 </Button>
                 <Button v-if="!nickname" @click="() => { showMenu = false; showLogin = false; router.push('/register'); }" 
                     severity="contrast" text label="Регистрация"

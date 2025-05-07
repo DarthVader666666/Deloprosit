@@ -172,7 +172,12 @@ namespace Delopro.Bll.Services
         }
 
         public async Task ChangePasswordAsync(User? user, string password, bool doEncryptPassword = true)
-        { 
+        {
+            if (user == null)
+            { 
+                throw new ArgumentNullException(nameof(user));
+            }
+
             user.Password = doEncryptPassword ? _cryptoService.Encrypt(password) : password;
             await _userRepository.UpdateAsync(user);
         }

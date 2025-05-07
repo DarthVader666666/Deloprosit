@@ -27,6 +27,10 @@ export const helper = {
         return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
     },
     getDateString(dateValue, short = false) {
+        if(!dateValue) {
+            return null;
+        }
+
         const date = new Date(dateValue);
 
         if(short) {

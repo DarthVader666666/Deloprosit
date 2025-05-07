@@ -89,7 +89,7 @@ namespace Delopro.Server.Controllers
         [HttpGet]
         [Route("[action]/{isRead:bool}")]
         [Authorize(Roles = "Owner")]
-        public async Task<IActionResult> GetList([FromRoute] bool isRead)
+        public async Task<IActionResult> GetMessages([FromRoute] bool isRead)
         {
             var user = await _userManager.GetCurrentUserAsync(HttpContext);
             var messages = (await _messageRepository.GetListAsync(user?.UserId)).Where(message => message?.IsRead == isRead)
@@ -122,7 +122,7 @@ namespace Delopro.Server.Controllers
         [HttpGet]
         [Route("[action]/{messageId:int}")]
         [Authorize(Roles = "Owner")]
-        public async Task<IActionResult> Get([FromRoute] int messageId)
+        public async Task<IActionResult> GetMessage([FromRoute] int messageId)
         {
             var message = await _messageRepository.GetAsync(messageId);
 

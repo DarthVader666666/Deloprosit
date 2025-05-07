@@ -29,7 +29,7 @@ const filters = ref({
 onBeforeUnmount(() => {
     showMessage.value = false;
     store.commit('setMessages', []);
-    message.value - null;
+    store.commit('setMessage', null);
 })
 
 async function onRowSelect(event) {

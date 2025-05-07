@@ -2,6 +2,8 @@
 using Delopro.Data;
 using Delopro.Data.Entities;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Delopro.Bll.Services
 {
     public class UserRepository : IRepository<User>
@@ -52,14 +54,14 @@ namespace Delopro.Bll.Services
             return Task.FromResult(user);
         }
 
-        public Task<User?> GetAsync(int? id)
+        public async Task<User?> GetAsync(int? id)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Users.Include(x => x.UserRoles).FirstOrDefaultAsync(x => x.UserId == id);
         }
 
         public Task<IEnumerable<User?>> GetListAsync(int? id = null)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<IEnumerable<User?>>(_dbContext.Users.Include(x => x.UserRoles));
         }
 
         public async Task<User?> UpdateAsync(User? item)
