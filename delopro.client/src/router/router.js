@@ -159,10 +159,6 @@ router.afterEach(async (to) => {
 
     if(to.name === 'users') {
         await store.dispatch('downloadUsers');
-    }
-
-    if(to.name != 'users') {
-        store.commit('setUsers', []);
         store.commit('setTitle', 'Пользователи');
     }
 
