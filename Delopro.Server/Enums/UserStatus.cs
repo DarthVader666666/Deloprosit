@@ -7,6 +7,8 @@ namespace Delopro.Server.Enums
         [Description("Подтвержден")]
         Confirmed,
         [Description("Не подтвержден")]
-        NotConfirmed
+        NotConfirmed,
+        [Description("Удален")]
+        Deleted
     }
 }

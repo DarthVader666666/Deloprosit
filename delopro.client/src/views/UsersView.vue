@@ -20,25 +20,7 @@ const filters = ref({
 });
 
 const toast = useToast();
-const user = computed(() => store.getters.getUser);
-
 const showUser = ref(false);
-
-const getSeverity = (data) => {
-    switch (data.status) {
-        case 'Подтвержден':
-            return 'success';
-
-        case 'Не подтвержден':
-            return 'warn';
-
-        case 'Удален':
-            return 'danger';
-
-        default:
-            return null;
-    }
-};
 
 onBeforeMount(() => {
     showUser.value = false;
@@ -88,11 +70,11 @@ function closeUserModal() {
         </Column>
         <Column field="status" header="Статус" sortable>
             <template #body="{ data }">
-                <Tag :value="data.status" :severity="getSeverity(data)"></Tag>
+                <Tag :value="helper.userStatuses[data.status]" :severity="helper.getUserTagSeverity(data.status)"></Tag>
             </template>
         </Column>
     </DataTable>
-    <UserComponent v-if="showUser" :user="user" @user-shown="closeUserModal"></UserComponent>
+    <UserComponent v-if="showUser" @user-shown="closeUserModal"></UserComponent>
 </div>
 </template>
 

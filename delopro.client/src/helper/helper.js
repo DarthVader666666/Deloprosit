@@ -95,5 +95,21 @@ export const helper = {
         
             return false;
         }
+    },
+    userStatuses: ['Подтвержден','Не подтвержден','Удален'],
+    getUserTagSeverity(status) {
+        switch (status) {
+            case 0:
+                return 'success';
+    
+            case 1:
+                return 'warn';
+    
+            case 2:
+                return 'danger';
+    
+            default:
+                return null;
+        }
     }
 }

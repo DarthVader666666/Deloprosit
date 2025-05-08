@@ -31,9 +31,9 @@ namespace Delopro.Server.Controllers
         public async Task<IActionResult> GetUsers()
         { 
             var users = await _userRepository.GetListAsync();
-            var userResponseModels = _mapper.Map<IEnumerable<UserResponseModel>>(users);
+            var userShortResponseModels = _mapper.Map<IEnumerable<UserShortResponseModel>>(users);
 
-            return Ok(userResponseModels);
+            return Ok(userShortResponseModels);
         }
 
         [HttpGet]
@@ -41,8 +41,9 @@ namespace Delopro.Server.Controllers
         public async Task<IActionResult> GetUser([FromRoute] int userId)
         {
             var user = await _userRepository.GetAsync(userId);
+            var userLongResponseModel = _mapper.Map<UserLongResponseModel>(user);
 
-            return Ok(user);
+            return Ok(userLongResponseModel);
         }
     }
 }

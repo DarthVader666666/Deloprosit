@@ -38,6 +38,7 @@ namespace Delopro.Data
                 user.Property(x => x.Info).HasMaxLength(maxTextLength);
                 user.Property(x => x.Avatar).HasMaxLength(maxBytesLength);
                 user.Property(x => x.IsConfirmed).HasDefaultValue(false);
+                user.Property(x => x.IsDeleted).HasDefaultValue(false);
                 user.HasData(
                     new User
                     {

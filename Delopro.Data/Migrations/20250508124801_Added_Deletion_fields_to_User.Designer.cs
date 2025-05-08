@@ -4,6 +4,7 @@ using Delopro.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Delopro.Data.Migrations
 {
     [DbContext(typeof(MssqlDeloproDbContext))]
-    partial class MssqlDeloproDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250508124801_Added_Deletion_fields_to_User")]
+    partial class Added_Deletion_fields_to_User
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
