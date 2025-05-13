@@ -15,6 +15,7 @@
         public string? Info { get; set; } = null;
         public byte[]? Avatar { get; set; } = null;
         public string? Email { get; set; }
+        public string? Phone { get; set; }
         public string? Password { get; set; }
         public bool IsConfirmed { get; set; } = false;
         public bool IsDeleted { get; set; } = false;

@@ -31,11 +31,13 @@ builder.Services.AddLogging(logs =>
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-builder.Services.AddAuthentication(o =>
+builder.Services.AddAuthentication(options =>
 {
-    o.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
-    o.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
-    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+    options.DefaultForbidScheme = GoogleOpenIdConnectDefaults.AuthenticationScheme;
+    //options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    //options.DefaultForbidScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
@@ -80,6 +82,7 @@ if (!usePostgres)
     builder.Services.AddScoped<IRepository<Theme>, ThemeRepository>(ConfigureRepository<MssqlDeloproDbContext, ThemeRepository>);
     builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<MssqlDeloproDbContext, CaptchaRepository>);
     builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<MssqlDeloproDbContext, MessageRepository>);
+    builder.Services.AddScoped<IRepository<UserRole>, UserRoleRepository>(ConfigureRepository<MssqlDeloproDbContext, UserRoleRepository>);
 }
 else
 {
@@ -89,6 +92,7 @@ else
     builder.Services.AddScoped<IRepository<Theme>, ThemeRepository>(ConfigureRepository<PostgresDeloproDbContext, ThemeRepository>);
     builder.Services.AddScoped<IRepository<Captcha>, CaptchaRepository>(ConfigureRepository<PostgresDeloproDbContext, CaptchaRepository>);
     builder.Services.AddScoped<IRepository<Message>, MessageRepository>(ConfigureRepository<PostgresDeloproDbContext, MessageRepository>);
+    builder.Services.AddScoped<IRepository<UserRole>, UserRoleRepository>(ConfigureRepository<PostgresDeloproDbContext, UserRoleRepository>);
 }
 
 if (builder.Environment.IsDevelopment() || usePostgres)

@@ -68,6 +68,7 @@ namespace Delopro.Server.Configurations
                         .ForMember(dest => dest.Contacts, opts => opts.MapFrom(src => GetContacts(src.Email, src.Phone)));
 
                     autoMapperConfig.CreateMap<User, UserShortResponseModel>()
+                        .ForMember(dest => dest.Email, opts => opts.MapFrom(src => cryptoService.Decrypt(src.Email)))
                         .ForMember(dest => dest.Roles, opts => opts.MapFrom(src => 
                             src.UserRoles != null 
                             ? string.Join(", ", src.UserRoles.Select(x => GetEnumDescription((UserRoleType)x.RoleId))) 
@@ -85,6 +86,7 @@ namespace Delopro.Server.Configurations
                         .ForMember(dest => dest.FirstName, opts => opts.MapFrom(src => cryptoService.Decrypt(src.FirstName)))
                         .ForMember(dest => dest.LastName, opts => opts.MapFrom(src => cryptoService.Decrypt(src.LastName)))
                         .ForMember(dest => dest.Email, opts => opts.MapFrom(src => cryptoService.Decrypt(src.Email)))
+                        .ForMember(dest => dest.Phone, opts => opts.MapFrom(src => cryptoService.Decrypt(src.Phone)))
                         .ForMember(dest => dest.Status, opts => opts.MapFrom(src => src.IsDeleted ? UserStatus.Deleted :
                             (src.IsConfirmed ? UserStatus.Confirmed : UserStatus.NotConfirmed))
                         );

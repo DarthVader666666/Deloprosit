@@ -80,7 +80,7 @@ namespace Delopro.Server.Controllers
             return Ok(new UserLogInResponseModel()
             {
                 Nickname = claims.FirstOrDefault(x => x.Type == ClaimsIdentity.DefaultNameClaimType)?.Value,
-                Roles = claims.FirstOrDefault(x => x.Type == ClaimsIdentity.DefaultRoleClaimType)?.Value.Split(','),
+                Roles = claims.Where(x => x.Type == ClaimsIdentity.DefaultRoleClaimType).Select(x => x.Value).ToArray(),
                 IsAuthenticated = user.Identity.IsAuthenticated
             });
         }

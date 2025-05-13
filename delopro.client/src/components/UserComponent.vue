@@ -3,21 +3,82 @@ import { computed, ref } from 'vue';
 import { helper } from '@/helper/helper';
 import Button from 'primevue/button';
 import { useStore } from 'vuex';
+import { useToast } from  'vue-toastification';
 import Tag from 'primevue/tag';
 import Select from 'primevue/select';
+import MultiSelect from 'primevue/multiselect';
+import axios from 'axios';
 
 const store = useStore();
-const user = computed(() => store.getters.getUser);
-const updatedUser = ref({...user.value});
+const toast = useToast();
+
+const updatedUser = ref({
+    userId: null,
+    deletionDate: null,
+    status: null,
+    roles: []
+});
+const user = computed(() => {
+    const user = store.getters.getUser;
+    defineUpdatedUserFileds(user)
+    return user;
+});
+
+const selectedRoles = ref([]);
 const emit = defineEmits(['user-shown']);
 
-function handleUpdate(status) {
+function defineUpdatedUserFileds(user = null) {
+    updatedUser.value.userId = user.userId;
+    updatedUser.value.deletionDate = user.deletionDate;
+    updatedUser.value.status = user.status;
+    updatedUser.value.roles = user.roles;
+
+    selectedRoles.value = helper.userRoles.filter(x => user.roles.includes(helper.userRoles.indexOf(x)));
+}
+
+function handleUpdateStatus(status) {
     updatedUser.value.status = helper.userStatuses.indexOf(status);
+
+    if(status === 'Удален') {
+        let deletionDate = helper.getFutureDate(30);
+        updatedUser.value.deletionDate = deletionDate;
+    }
+    else {
+        updatedUser.value.deletionDate = null;
+    }
+}
+
+async function handleUpdateRoles(roles) {
+    updatedUser.value.roles = roles.map(x => helper.userRoles.indexOf(x));
 }
 
 function handleCancel() {
     emit('user-shown');
-    updatedUser.value = {...user.value};
+}
+
+async function updateUser() {
+    const url = store.state.serverUrl;
+
+    await axios.put(`${url}/administration/updateuser`,  updatedUser.value,
+    {
+        headers: {
+            'Content': 'application/json',
+            'Accept': '*/*'
+        }
+    })
+    .then(response => {
+        if(response.status === 200) {
+            toast.success(response.data.okText);
+        }
+    })
+    .catch(error => {
+        if(error.response) {
+            toast.error(error.response.data.errorText)
+        }
+    });
+
+    await store.dispatch('downloadUsers');
+    emit('user-shown');
 }
 
 </script>
@@ -25,7 +86,8 @@ function handleCancel() {
 <template>    
 
 <div class="user">
-    <div style="display: flex; justify-content: end; padding-bottom: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 30px;">
+        <span style="color: red">{{ updatedUser.deletionDate && 'Пользователь будет удален ' + helper.getDateString(updatedUser.deletionDate) }}</span>
         <Button @click.prevent="handleCancel" style="width: 25px; height: 25px; margin-top: 10px;" severity="secondary" raised rounded icon="pi pi-times"/>
     </div>
     <div style="display: flex; gap: 10px; justify-content: space-between;">
@@ -38,13 +100,13 @@ function handleCancel() {
                 <span style="font-weight: bold;">Email:</span>
                 <span>{{ user.email }}</span>
             </div>
+            <div v-if="user.phone">
+                <span style="font-weight: bold;">Телефон:</span>
+                <span>{{ user.phone }}</span>
+            </div>
             <div v-if="user.firstName">
                 <span style="font-weight: bold;">Имя:</span>
-                <span>{{ user.firstName }}</span>
-            </div>
-            <div v-if="user.lastName">
-                <span style="font-weight: bold;">Фамилия:</span>
-                <span>{{ user.lastName }}</span>
+                <span>{{ user.firstName + user.lastName ? ' ' + user.lastName : '' }}</span>
             </div>
             <div v-if="user.birthDate">
                 <span style="font-weight: bold;">Дата рождения:</span>
@@ -55,13 +117,13 @@ function handleCancel() {
                 <span>{{ helper.getDateString(user.registerDate) }}</span>
             </div>
             <div v-if="user.status">
-                <span>Статус: </span>
+                <span>Статус:</span>
                 <span>{{ user.status }}</span>
             </div>
         </div>
         <div style="display: flex; flex-direction: column; gap: 5px;">
             <span style="font-weight: bold;">Статус:</span>
-            <Select @update:model-value="handleUpdate" :options="helper.userStatuses" class="status-selector">
+            <Select @update:model-value="handleUpdateStatus" :options="helper.userStatuses" class="selector">
                 <template #value>
                     <Tag :value="helper.userStatuses[updatedUser.status]" :severity="helper.getUserTagSeverity(updatedUser.status)"></Tag>
                 </template>
@@ -69,10 +131,12 @@ function handleCancel() {
                     <Tag :value="slotProps.option" :severity="helper.getUserTagSeverity(helper.userStatuses.indexOf(slotProps.option))"></Tag>
                 </template>
             </Select>
+            <span style="font-weight: bold;">Роли:</span>
+            <MultiSelect @update:model-value="handleUpdateRoles" v-model:model-value="selectedRoles" :options="helper.userRoles" class="selector" />
         </div>
     </div>
     <div class="buttons">
-        <Button type="submit" raised severity="secondary" >
+        <Button type="button" @click="updateUser" raised severity="secondary" >
             <i class="pi pi-save"></i>
             <span>Сохранить</span>
         </Button>
@@ -90,7 +154,7 @@ function handleCancel() {
     flex-direction: column;
     justify-content: space-between;
     max-height: 100%;
-    width: 30%;
+    width: 50%;
     box-shadow: var(--COMPONENT-BOX-SHADOW);
     position: fixed;
     z-index: 3;
@@ -114,12 +178,12 @@ function handleCancel() {
     gap: 5px;
 }
 
-.status-selector {
+.selector {
     width: 180px;
     height: 35px;
 }
 
-.status-selector:deep(span) {
+.selector:deep(span) {
     padding: 3px;
     width: 100%;
     text-align: center;
@@ -146,7 +210,7 @@ ul li span {
 
 @media (max-width: 1100px) {
     .user {
-        width: 90%;
+        width: 70%;
     }
 }
 

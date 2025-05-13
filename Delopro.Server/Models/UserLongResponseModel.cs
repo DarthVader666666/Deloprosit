@@ -1,6 +1,4 @@
-﻿using Delopro.Data.Entities;
-
-namespace Delopro.Server.Models
+﻿namespace Delopro.Server.Models
 {
     public class UserLongResponseModel
     {
@@ -10,13 +8,15 @@ namespace Delopro.Server.Models
         public string? LastName { get; set; } = null;
         public DateTime? BirthDate { get; set; } = null;
         public DateTime? RegisterDate { get; set; }
+        public DateTime? DeletionDate { get; set; }
         public string? Country { get; set; } = null;
         public string? City { get; set; } = null;
         public string? UserTitle { get; set; }
         public string? Info { get; set; } = null;
         public byte[]? Avatar { get; set; } = null;
         public string? Email { get; set; }
+        public string? Phone { get; set; }
         public int? Status { get; set; }
-        public virtual ICollection<UserRole>? UserRoles { get; set; }
+        public int[]? Roles { get; set; }
     }
 }

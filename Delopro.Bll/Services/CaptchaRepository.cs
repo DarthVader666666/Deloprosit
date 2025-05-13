@@ -18,7 +18,12 @@ namespace Delopro.Bll.Services
             throw new NotImplementedException();
         }
 
-        public Task<Captcha?> DeleteAsync(int? id)
+        public Task<Captcha?> DeleteAsync(int? id_1, int? id_2 = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteRangeAsync(IEnumerable<Captcha> items)
         {
             throw new NotImplementedException();
         }

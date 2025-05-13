@@ -18,7 +18,12 @@ namespace Delopro.Bll.Services
             throw new NotImplementedException();
         }
 
-        public Task<Role?> DeleteAsync(int? id)
+        public Task<Role?> DeleteAsync(int? id_1, int? id_2 = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteRangeAsync(IEnumerable<Role> items)
         {
             throw new NotImplementedException();
         }

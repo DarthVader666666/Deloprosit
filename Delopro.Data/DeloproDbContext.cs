@@ -6,7 +6,7 @@ namespace Delopro.Data
 {
     public class DeloproDbContext: DbContext
     {
-        const int maxRoleNameLength = 50;
+        const int minNameLength = 50;
         const int maxNameLength = 100;
         const int maxTextLength = 1000;
         const int maxBytesLength = 8000;
@@ -28,6 +28,7 @@ namespace Delopro.Data
                 user.HasIndex(x => x.Nickname).IsUnique();
                 user.HasMany(x => x.Messages).WithOne(x => x.UserReceiver).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
                 user.Property(x => x.Email).HasMaxLength(maxNameLength).IsRequired();
+                user.Property(x => x.Phone).HasMaxLength(minNameLength).IsRequired(false).HasDefaultValue(null);
                 user.Property(x => x.Nickname).HasMaxLength(maxNameLength).IsRequired();
                 user.Property(x => x.Password).HasMaxLength(maxNameLength).IsRequired();
                 user.Property(x => x.FirstName).HasMaxLength(maxNameLength);
@@ -62,7 +63,7 @@ namespace Delopro.Data
             {
                 role.HasKey(x => x.RoleId);
                 role.HasIndex(x => x.RoleName).IsUnique();
-                role.Property(x => x.RoleName).HasMaxLength(maxRoleNameLength).IsRequired();
+                role.Property(x => x.RoleName).HasMaxLength(minNameLength).IsRequired();
                 role.HasData(
                     new Role
                     {

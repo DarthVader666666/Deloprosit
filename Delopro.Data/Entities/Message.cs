@@ -3,7 +3,7 @@
     public class Message
     {
         public int MessageId { get; set; }
-        public int UserId { get; set; }
+        public int UserId { get; set; } = 1;
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? Phone { get; set; }

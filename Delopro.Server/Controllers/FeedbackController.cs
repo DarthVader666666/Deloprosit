@@ -61,9 +61,6 @@ namespace Delopro.Server.Controllers
             {
                 var message = _mapper.Map<Message>(messageForm);
 
-                var user = await _userManager.GetUserByAsync(nickname: _configuration["OwnerNickname"]) ?? throw new NullReferenceException();
-                message.UserId = user.UserId;
-
                 message.Name = _cryptoService.Encrypt(message.Name);
                 message.Email = _cryptoService.Encrypt(message.Email);
                 message.Phone = _cryptoService.Encrypt(message.Phone);
@@ -91,8 +88,7 @@ namespace Delopro.Server.Controllers
         [Authorize(Roles = "Owner")]
         public async Task<IActionResult> GetMessages([FromRoute] bool isRead)
         {
-            var user = await _userManager.GetCurrentUserAsync(HttpContext);
-            var messages = (await _messageRepository.GetListAsync(user?.UserId)).Where(message => message?.IsRead == isRead)
+            var messages = (await _messageRepository.GetListAsync()).Where(message => message?.IsRead == isRead)
                 .Select(message =>
                 {
                     if (message == null)
@@ -186,8 +182,7 @@ namespace Delopro.Server.Controllers
         {
             try
             {
-                var user = await _userManager.GetCurrentUserAsync(HttpContext);
-                var count = (await _messageRepository.GetListAsync(user?.UserId)).Count(message => !(message?.IsRead ?? true));
+                var count = (await _messageRepository.GetListAsync()).Count(message => !(message?.IsRead ?? true));
 
                 return Ok(count);
             }

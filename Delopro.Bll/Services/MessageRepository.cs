@@ -28,7 +28,12 @@ namespace Delopro.Bll.Services
             return message.Entity;
         }
 
-        public Task<Message?> DeleteAsync(int? id)
+        public Task<Message?> DeleteAsync(int? id_1, int? id_2 = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteRangeAsync(IEnumerable<Message> items)
         {
             throw new NotImplementedException();
         }
@@ -67,22 +72,16 @@ namespace Delopro.Bll.Services
 
         public Task<IEnumerable<Message?>> GetListAsync(int? id = null)
         {
-            if (id == null)
-            {
-                return Task.FromResult<IEnumerable<Message?>>([]);
-            }
-
             IEnumerable<Message?> messages = [];
 
-            try 
+            try
             {
-                messages = _dbContext.Messages.Where(x => x.UserId == id).OrderByDescending(x => x.DateSent);
+                messages = id != null ? _dbContext.Messages.Where(x => x.UserId == id).OrderByDescending(x => x.DateSent) : _dbContext.Messages.OrderByDescending(x => x.DateSent);
             }
             catch(SqlException)
             {
                 return Task.FromResult<IEnumerable<Message?>>([]);
             }
-
 
             return Task.FromResult(messages);
         }

@@ -18,8 +18,10 @@ const toast = useToast();
 const router = useRouter();
 
 const nickname = computed(() => store.state.nickname);
+const isAuthenticated = computed(() => store.getters.isAuthenticated);
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
+const isUser = computed(() => store.getters.isUser);
 const unreadMessagesCount = computed(() => store.getters.getUnreadMessagesCount);
 const darkenBackground = computed(() => showLogin.value || showMenu.value || showAccountSettings.value);
 
@@ -189,7 +191,7 @@ function handleBurgerClick() {
                     severity="contrast" text label="Главная" 
                     id="home-button" style="border-radius: 0"
                 />
-                <Button v-if="!(isAdmin || isOwner)"
+                <Button v-if="!isAuthenticated || isUser"
                     @click="() => { showMenu = false; router.push('/feedback'); }" 
                     severity="contrast" text label="Обратная связь"
                     id="feedback-button" style="border-radius: 0"
@@ -212,11 +214,11 @@ function handleBurgerClick() {
                     severity="contrast" text label="Пользователи"
                 >
                 </Button>
-                <Button v-if="!nickname" @click="() => { showMenu = false; showLogin = false; router.push('/register'); }" 
+                <Button v-if="!isAuthenticated || isUser" @click="() => { showMenu = false; showLogin = false; router.push('/register'); }" 
                     severity="contrast" text label="Регистрация"
                     id="register-button" style="border-radius: 0"
                 />
-                <Button v-if="!nickname" @click="() => { showMenu = false; showLogin = !showLogin; }" 
+                <Button v-if="!isAuthenticated" @click="() => { showMenu = false; showLogin = !showLogin; }" 
                     severity="contrast" text label="Войти" icon="pi pi-sign-in"
                     id="login-button" style="border-radius: 0"
                 />

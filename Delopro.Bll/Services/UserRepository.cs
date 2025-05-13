@@ -31,7 +31,12 @@ namespace Delopro.Bll.Services
             return createdUser;
         }
 
-        public Task<User?> DeleteAsync(int? id)
+        public Task<User?> DeleteAsync(int? id_1, int? id_2 = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteRangeAsync(IEnumerable<User> items)
         {
             throw new NotImplementedException();
         }

@@ -76,6 +76,15 @@ const store = createStore({
         isOwner(state) {
             return state.roles.includes('Owner');
         },
+        isUser(state) {
+            return state.roles.includes('User');
+        },
+        isAuthenticated(state) {
+            return state.nickname && state.roles && state.roles.length > 0;
+        },
+        getUserRoles(state) {
+            return state.roles;
+        },
         getShowChapterList(state) {
             return state.showChapterList;
         },

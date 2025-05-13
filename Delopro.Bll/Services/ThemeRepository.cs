@@ -28,9 +28,9 @@ namespace Delopro.Bll.Services
             return createdTheme;
         }
 
-        public async Task<Theme?> DeleteAsync(int? id)
+        public async Task<Theme?> DeleteAsync(int? id_1, int? id_2 = null)
         {
-            var theme = await GetAsync(id);
+            var theme = await GetAsync(id_1);
 
             if (theme == null)
             {
@@ -41,6 +41,11 @@ namespace Delopro.Bll.Services
             await _dbContext.SaveChangesAsync();
 
             return deletedTheme;
+        }
+
+        public Task DeleteRangeAsync(IEnumerable<Theme> items)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<bool> ExistsAsync(Theme? item)

@@ -41,8 +41,6 @@ async function handleSendProcess(promise) {
 }
 
 function sendMessage() {
-    console.log(email.value)
-
     const promise = axios.post(`${store.state.serverUrl}/authentication/recoverpassword`, null, 
     {
         headers: {

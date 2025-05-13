@@ -352,6 +352,10 @@ namespace Delopro.Data.Migrations.PostgresDeloproDb
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("Phone")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<DateTime?>("RegisterDate")
                         .HasColumnType("timestamp without time zone");
 

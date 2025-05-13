@@ -8,18 +8,16 @@ import InputText from 'primevue/inputtext';
 import Column from 'primevue/column';
 import Tag from 'primevue/tag';
 import UserComponent from '@/components/UserComponent.vue';
-import { useToast } from  'vue-toastification';
-import axios from 'axios';
 
 const store = useStore();
 const users = computed(() => store.getters.getUsers);
 
 const filters = ref({
     nickname: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    email: { value: null, matchMode: FilterMatchMode.CONTAINS },
     registerDate: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
-const toast = useToast();
 const showUser = ref(false);
 
 onBeforeMount(() => {
@@ -43,12 +41,22 @@ function closeUserModal() {
 <template>
 <div class="users-container">
     <DataTable :value="users" paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" v-model:filters="filters" filterDisplay="row" 
-        :globalFilterFields="['nickname', 'registerDate', 'roles', 'status']" stripedRows showGridlines selectionMode="single" @rowSelect="onRowSelect">
+        :globalFilterFields="['nickname', 'email', 'registerDate', 'roles', 'status']" stripedRows showGridlines selectionMode="single" @rowSelect="onRowSelect">
         <Column field="nickname" header="Никнэйм" sortable>
             <template #body="{ data }">
                 <div style="display: flex; align-items: center; gap: 20px;">
-                    <img :src="`data:image;base64,${data.avatar}`" style="border-radius: 50%;height: 50px; width: 50px;" >
+                    <img :src="`data:image;base64,${data.avatar}`" style="border-radius: 50%; height: 50px; width: 50px;" >
                     <span>{{ data.nickname }}</span>
+                </div>
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+                <InputText v-model="filterModel.value" type="text" @input="filterCallback()" style="width:100%" placeholder="Поиск" />
+            </template>
+        </Column>
+        <Column field="email" header="Email" sortable>
+            <template #body="{ data }">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <span>{{ data.email }}</span>
                 </div>
             </template>
             <template #filter="{ filterModel, filterCallback }">

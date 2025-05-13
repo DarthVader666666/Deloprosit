@@ -111,5 +111,12 @@ export const helper = {
             default:
                 return null;
         }
+    },
+    userRoles: ['Owner','Admin','User'],
+    getFutureDate(days) {
+        let date = this.getCurrentDate();
+        const result = new Date(date);
+        result.setDate(result.getDate() + days);
+        return result;
     }
 }

@@ -68,9 +68,9 @@ namespace Delopro.Bll.Services
 
             await httpContext.SignInAsync(authorizationScheme, claimsPrinciple);
 
-            var roles = claimsIdentity.Claims.FirstOrDefault(x => x.Type == ClaimsIdentity.DefaultRoleClaimType)?.Value;
+            var roles = claimsIdentity.Claims.Where(x => x.Type == ClaimsIdentity.DefaultRoleClaimType).Select(x => x.Value).ToArray();
 
-            return (user.Nickname, roles?.Split(rolesSeperator));
+            return (user.Nickname, roles);
         }
 
         public async Task LogOut(HttpContext httpContext)
@@ -192,8 +192,12 @@ namespace Delopro.Bll.Services
                     {
                         new (ClaimsIdentity.DefaultNameClaimType, user.Nickname ?? string.Empty),
                         new ("Email", _cryptoService.Decrypt(user.Email) ?? string.Empty),
-                        new (ClaimsIdentity.DefaultRoleClaimType, string.Join(rolesSeperator, rolesArray.Select(x => x?.RoleName)))
                     };
+
+                foreach (var role in rolesArray)
+                {
+                    claims.Add(new Claim(ClaimsIdentity.DefaultRoleClaimType, role?.RoleName ?? ""));
+                }
 
                 var claimsIdentity = new ClaimsIdentity(claims, authorizationScheme);
 
