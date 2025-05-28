@@ -1,4 +1,5 @@
 ﻿using Delopro.Bll.Interfaces;
+using Google;
 using Google.Apis.Drive.v3;
 
 using Microsoft.AspNetCore.StaticFiles;
@@ -39,7 +40,14 @@ namespace Delopro.Bll.Services
             var request = _driveService.Files.Delete(id);
             request.SupportsAllDrives = true;
 
-            request.Execute();
+            try
+            {
+                request.Execute();
+            }
+            catch (GoogleApiException ex)
+            {
+                throw ex;
+            }
         }
 
         public void CreateFolder(string? folderName)

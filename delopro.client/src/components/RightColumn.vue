@@ -211,12 +211,10 @@ async function uploadFiles(event) {
 
 async function deleteDocument() {
     hideButtons();
-    
+
     if(!window.confirm(`${(editedNode.value.data.type === 'file' ? `Файл "${editedNode.value.data.name}" будет удален` : `Папка "${editedNode.value.data.name}" и всё её содержимое будет удалено`)}, вы уверены?`)) {
         return;
     }
-
-    resetTempValues();
 
     await axios.post(`${store.state.serverUrl}/documents/delete`,
         {
@@ -228,6 +226,7 @@ async function deleteDocument() {
         if(response.status === 200) {
             toast.success(response.data.okText);
             await store.dispatch('downloadDocumentNodes');
+            resetTempValues();
         }
     })
     .catch(error => {
