@@ -210,6 +210,8 @@ async function uploadFiles(event) {
 }
 
 async function deleteDocument() {
+    hideButtons();
+    
     if(!window.confirm(`${(editedNode.value.data.type === 'file' ? `Файл "${editedNode.value.data.name}" будет удален` : `Папка "${editedNode.value.data.name}" и всё её содержимое будет удалено`)}, вы уверены?`)) {
         return;
     }
