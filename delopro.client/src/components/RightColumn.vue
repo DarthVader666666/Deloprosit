@@ -146,6 +146,8 @@ function updateName(node) {
         return;
     }
 
+    resetTempValues();
+
     axios.put(`${store.state.serverUrl}/documents/update`, 
         {
             newName: newName.value,
@@ -212,6 +214,8 @@ async function deleteDocument() {
         return;
     }
 
+    resetTempValues();
+
     await axios.post(`${store.state.serverUrl}/documents/delete`,
         {
             path: editedNode.value.data.path,
@@ -256,9 +260,7 @@ async function moveFile() {
         return;
     }
 
-    moveFolder.value = null;
-    editedNode.value = null;
-    editedNodeId.value = null;
+    resetTempValues();
     
     await axios.post(`${store.state.serverUrl}/documents/move`,
         {
@@ -277,6 +279,12 @@ async function moveFile() {
             toast.error(error.response.data.errorText)
         }
     })
+}
+
+function resetTempValues() {
+    moveFolder.value = null;
+    editedNode.value = null;
+    editedNodeId.value = null;
 }
 
 async function copyUrlToClipboard() {
