@@ -26,6 +26,15 @@ const filters = ref({
     dateSent: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
 
+// watch(showMessage, (oldValue, newValue) => {
+//     if(!newValue) {
+//         helper.darkenBackground();
+//     }
+//     else {
+//         helper.lightenBackground();
+//     }
+// });
+
 onBeforeUnmount(() => {
     showMessage.value = false;
     store.commit('setMessages', []);

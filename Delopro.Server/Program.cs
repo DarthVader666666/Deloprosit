@@ -107,28 +107,36 @@ if (builder.Environment.IsProduction() && !usePostgres)
 
 builder.Services.AddSingleton<CryptoService>();
 builder.Services.AddScoped<UserManager>();
-builder.Services.AddSingleton<DriveService>(provider =>
+
+if (builder.Environment.IsProduction())
 {
-    var cryptoService = provider.GetService<CryptoService>();
-    var secrets = builder.Configuration["GoogleDrive:Secrets"];
-    var decryptedContent = cryptoService?.Decrypt(secrets);
-    var credential = GoogleCredential.FromJson(decryptedContent);
-
-    if (credential.IsCreateScopedRequired)
+    builder.Services.AddSingleton<DriveService>(provider =>
     {
-        credential = credential.CreateScoped(ScopeConstants.DriveFile);
-    }
+        var cryptoService = provider.GetService<CryptoService>();
+        var secrets = builder.Configuration["GoogleDrive:Secrets"];
+        var decryptedContent = cryptoService?.Decrypt(secrets);
+        var credential = GoogleCredential.FromJson(decryptedContent);
 
-    var driveService = new DriveService(new BaseClientService.Initializer()
-    {
-        HttpClientInitializer = credential,
-        ApplicationName = builder.Configuration["GoogleDrive:ApplicationName"] ?? string.Empty
+        if (credential.IsCreateScopedRequired)
+        {
+            credential = credential.CreateScoped(ScopeConstants.DriveFile);
+        }
+
+        var driveService = new DriveService(new BaseClientService.Initializer()
+        {
+            HttpClientInitializer = credential,
+            ApplicationName = builder.Configuration["GoogleDrive:ApplicationName"] ?? string.Empty
+        });
+
+        return driveService;
     });
 
-    return driveService;
-});
-
-builder.Services.AddSingleton<GoogleDriveService>();
+    builder.Services.AddSingleton<IDriveService, GoogleDriveService>();
+}
+else
+{
+    builder.Services.AddSingleton<IDriveService, LocalDriveService>();
+}
 
 builder.Services.ConfigureAutomapper();
 
@@ -220,6 +228,6 @@ void MigrateDatabase(IServiceScope? scope)
 
 void UploadDocuments(IServiceScope? scope)
 {
-    var driveService = scope?.ServiceProvider.GetRequiredService<GoogleDriveService>();
+    var driveService = scope?.ServiceProvider.GetRequiredService<IDriveService>();
     Task.Run(() => driveService?.RestoreAllDocuments());
 }

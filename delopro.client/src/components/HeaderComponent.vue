@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { helper } from '@/helper/helper.js';
 import { useStore } from 'vuex';
@@ -52,27 +52,11 @@ watch(showMenu, (oldValue, newValue) => {
 });
 
 watch(darkenBackground, (oldValue, newValue) => {
-    const containers = [
-        document.getElementsByClassName('main-container'),
-        document.getElementsByClassName('search-bar'),
-        document.getElementsByClassName('title')
-    ]
-
     if(!newValue) {
-        containers.forEach(items => {
-            for(let item of items) {            
-                item.style.opacity = 0.8;
-                item.style.filter = 'brightness(50%)';
-            }
-        })
+        helper.darkenBackground();
     }
     else {
-        containers.forEach(items => {
-            for(let item of items) {
-                item.style.removeProperty('opacity');
-                item.style.removeProperty('filter');
-            }
-        })
+        helper.lightenBackground();
     }
 });
 
@@ -153,6 +137,20 @@ const handleLogout = () => {
     }
 }
 
+const handleLoginButtonClick = async () => {
+    showMenu.value = false; 
+    showLogin.value = !showLogin.value;
+
+    if(showLogin.value) {
+        loginRequestForm.value.nicknameOrEmail = null;
+        loginRequestForm.value.password = null;
+
+        await nextTick();
+        const loginInput = document.getElementById('login-input');
+        loginInput.focus();
+    }
+}
+
 function handleBurgerClick() {
     showMenu.value = !showMenu.value;
 }
@@ -189,38 +187,46 @@ function handleBurgerClick() {
                 <Button
                     @click="() => { showMenu = false; router.push('/'); }" 
                     severity="contrast" text label="Главная" 
-                    id="home-button" style="border-radius: 0"
+                    id="home-button"
                 />
-                <Button v-if="!isAuthenticated || isUser"
-                    @click="() => { showMenu = false; router.push('/feedback'); }" 
-                    severity="contrast" text label="Обратная связь"
-                    id="feedback-button" style="border-radius: 0"
-                />
-                <Button v-if="isAdmin || isOwner"
-                    @click="() => { showMenu = false; router.push('/chapters/create'); }"
-                    severity="contrast" text label="Создать раздел"
-                    id="create-chapter-button" style="border-radius: 0"
-                />
-                <Button v-if="isOwner" 
-                    @click="() => { showMenu = false; router.push('/messages'); }" 
-                    severity="contrast" text
-                    id="messages-button" style="border-radius: 0"
-                >
-                    <span>Сообщения</span>
-                    <span class="unread-messages-count" :style="unreadMessagesCount ? '' : 'display: none;'">{{ unreadMessagesCount }}</span>
-                </Button>
-                <Button v-if="isOwner || isAdmin"
-                    @click="() => { showMenu = false; router.push('/users'); }" 
-                    severity="contrast" text label="Пользователи"
-                >
-                </Button>
-                <Button v-if="!isAuthenticated || isUser" @click="() => { showMenu = false; showLogin = false; router.push('/register'); }" 
-                    severity="contrast" text label="Регистрация"
-                    id="register-button" style="border-radius: 0"
-                />
-                <Button v-if="!isAuthenticated" @click="() => { showMenu = false; showLogin = !showLogin; }" 
+                <div v-if="isOwner">
+                    <Button
+                        @click="() => { showMenu = false; router.push('/messages'); }" 
+                        severity="contrast" text
+                        id="messages-button"
+                    >
+                        <span>Сообщения</span>
+                        <span class="unread-messages-count" :style="unreadMessagesCount ? '' : 'display: none;'">{{ unreadMessagesCount }}</span>
+                    </Button>
+                </div>
+                <div v-if="isAdmin"></div>
+                <div v-if="isOwner || isAdmin">
+                    <Button
+                        @click="() => { showMenu = false; router.push('/chapters/create'); }"
+                        severity="contrast" text label="Создать раздел"
+                        id="create-chapter-button"
+                    />                    
+                    <Button
+                        @click="() => { showMenu = false; router.push('/users'); }" 
+                        severity="contrast" text label="Пользователи"
+                    >
+                    </Button>
+                </div>
+                <div v-if="!isAuthenticated || isUser">
+                    <Button
+                        @click="() => { showMenu = false; router.push('/feedback'); }" 
+                        severity="contrast" text label="Обратная связь"
+                        id="feedback-button"
+                    />                    
+                    <Button 
+                        @click="() => { showMenu = false; showLogin = false; router.push('/register'); }" 
+                        severity="contrast" text label="Регистрация"
+                        id="register-button"
+                    />
+                </div>                
+                <Button v-if="!isAuthenticated" @click="handleLoginButtonClick"
                     severity="contrast" text label="Войти" icon="pi pi-sign-in"
-                    id="login-button" style="border-radius: 0"
+                    id="login-button"
                 />
             </div>            
             <div v-if="nickname && showAccountSettings" class="slide-container" id="account-settings">
@@ -240,10 +246,10 @@ function handleBurgerClick() {
         </div>
     </div>
 
-    <form v-if="showLogin" class="slide-container" @submit.prevent="handleLogin" @keydown.enter.prevent="handleLogin" id="login-form">
+    <form v-show="showLogin" class="slide-container" @submit.prevent="handleLogin" @keydown.enter.prevent="handleLogin" id="login-form">
         <div class="login-input">
             <label>Логин: </label>
-            <InputText v-model="loginRequestForm.nicknameOrEmail" type="text" placeholder="Почта или никнэйм" required/>
+            <InputText v-model="loginRequestForm.nicknameOrEmail" type="text" placeholder="Почта или никнэйм" required id="login-input"/>
         </div>
         <div class="login-input">
             <label>Пароль: </label>
@@ -289,7 +295,6 @@ function handleBurgerClick() {
     .account button {
         height: 50px;
         width: 50px;
-        border-radius: 50%;
     }
 
     .slide-container {
@@ -303,27 +308,40 @@ function handleBurgerClick() {
         padding: 15px;
         border-radius: 3px;
         box-shadow: var(--MENU-BOX-SHADOW);
-        align-items: start;
         animation-name: slide;
         animation-duration: 0.2s;
         transform: translateX(0%);
-        gap: 12px;
         min-width: 220px;
+    }
+
+    .slide-container:deep(button):not(.account button) {
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .slide-container button:deep(span) {
+        font-weight: bold;
+        color: var(--TEXT-COLOR);
+    }
+
+    .slide-container input[type="text"], input[type="password"] {
+        font-size: medium;
+        height: 30px;
     }
 
     .menu {
         display: flex;
         flex-direction: row;
         align-items: end;
-        gap: 10px;
+        gap: 0px;
     }
 
-    .slide-container:deep(button) {
-        width: 100%;
+    .menu button:not(.account button)  {
+        border-radius: 0;
     }
 
-    .slide-container button:deep(span) {
-        font-weight: bold;
+    .menu button:deep(span) {
+        font-weight:bold;
         color: var(--TEXT-COLOR);
     }
 
@@ -347,20 +365,6 @@ function handleBurgerClick() {
         font-size: x-large;
     }
 
-    .menu button:not(.account button)  {
-        border-radius: 0;
-    }
-
-    .menu button:deep(span) {
-        font-weight:bold;
-        color: var(--TEXT-COLOR);
-    }
-
-    .slide-container input[type="text"], input[type="password"] {
-        font-size: medium;
-        height: 30px;
-    }
-
     .login-input {
         display: flex;
         flex-direction: column;
@@ -379,6 +383,7 @@ function handleBurgerClick() {
         display: flex;
         flex-direction: row;
         align-items: center;
+        margin-top: 8px;
     }
 
     .bottom-part button {
@@ -451,7 +456,7 @@ function handleBurgerClick() {
 
         .account {
             position: relative;
-            padding: 0;
+            padding: 0 0 15px 0;
             right: 0;
             margin: auto;
         }

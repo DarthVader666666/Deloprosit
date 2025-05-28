@@ -1,5 +1,5 @@
 ﻿using Delopro.Bll;
-using Delopro.Bll.Services;
+using Delopro.Bll.Interfaces;
 using Delopro.Server.Enums;
 using Delopro.Server.Models;
 
@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
+using System;
+using System.IO;
 
 namespace Delopro.Server.Controllers
 {
@@ -22,14 +24,14 @@ namespace Delopro.Server.Controllers
         private readonly string? documentsDirectoryName;
         private readonly string? webRootPath;
 
-        private readonly GoogleDriveService _googleDriveService;
+        private readonly IDriveService _driveService;
 
-        public DocumentsController(GoogleDriveService googleDriveService)
+        public DocumentsController(IDriveService driveService)
         {
             docsPath = ConfigurationHelper.DocsPath;
             webRootPath = ConfigurationHelper.WebRootPath;
             documentsDirectoryName = ConfigurationHelper.DocsFolderName;
-            _googleDriveService = googleDriveService;   
+            _driveService = driveService;
         }
 
         [HttpGet]
@@ -147,7 +149,7 @@ namespace Delopro.Server.Controllers
                     if (System.IO.File.Exists(path))
                     {
                         System.IO.File.Delete(path);
-                        Task.Run(() => _googleDriveService.Delete(path));
+                        Task.Run(() => _driveService.Delete(path));
                     }
                     else
                     {
@@ -164,7 +166,7 @@ namespace Delopro.Server.Controllers
                         }
 
                         Directory.Delete(path);
-                        Task.Run(() => _googleDriveService.Delete(path, isFolder: true));
+                        Task.Run(() => _driveService.Delete(path, isFolder: true));
                     }
                     else
                     {
@@ -196,7 +198,7 @@ namespace Delopro.Server.Controllers
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path ?? throw new NullReferenceException());
-                    Task.Run(() => _googleDriveService.CreateFolder(path.Split(Path.DirectorySeparatorChar).Last()));
+                    Task.Run(() => _driveService.CreateFolder(path.Split(Path.DirectorySeparatorChar).Last()));
                 }
                 else
                 {
@@ -246,7 +248,7 @@ namespace Delopro.Server.Controllers
 
                     if (System.IO.File.Exists(filePath))
                     {
-                        Task.Run(() => _googleDriveService.CreateFile(filePath, overwrite));
+                        await Task.Run(() => _driveService.CreateFile(filePath, overwrite));
                     }
                 }
             }
@@ -281,12 +283,12 @@ namespace Delopro.Server.Controllers
                 if (updateDocumentModel.Type.Equals(nameof(DocumentType.Folder), StringComparison.OrdinalIgnoreCase))
                 {
                     Directory.Move(sourcePath, destPath);
-                    Task.Run(() => _googleDriveService.Rename(sourcePath, updateDocumentModel.NewName, isFolder: true));
+                    Task.Run(() => _driveService.Rename(sourcePath, updateDocumentModel.NewName, isFolder: true));
                 }
                 else if (updateDocumentModel.Type.Equals(nameof(DocumentType.File), StringComparison.OrdinalIgnoreCase))
                 {
                     System.IO.File.Move(sourcePath, destPath);
-                    Task.Run(() => _googleDriveService.Rename(sourcePath, updateDocumentModel.NewName));
+                    Task.Run(() => _driveService.Rename(sourcePath, updateDocumentModel.NewName));
                 }
                 else
                 {
@@ -299,6 +301,38 @@ namespace Delopro.Server.Controllers
             }
 
             return Ok(new { okText = "Имя успешно обновлено" });
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        [Authorize(Roles = "Owner, Admin")]
+        public async Task<IActionResult> Move()
+        {
+            var reader = new StreamReader(HttpContext.Request.Body);
+            var moveFileModel = JsonConvert.DeserializeObject<MoveFileModel>(await reader.ReadToEndAsync());
+
+            if (moveFileModel == null || moveFileModel.OldPath == null || moveFileModel.NewPath == null)
+            {
+                return BadRequest(new { errorText = "Не указан путь для перемещения файла" });
+            }
+
+            var oldPath = Path.Combine(webRootPath ?? string.Empty, Path.Combine(moveFileModel.OldPath.Split(Path.DirectorySeparatorChar)));
+            var newPath = Path.Combine(webRootPath ?? string.Empty, Path.Combine(moveFileModel.NewPath.Split(Path.DirectorySeparatorChar)));            
+
+            try
+            {
+                var overwrite = System.IO.File.Exists(newPath);
+                Directory.Move(oldPath, newPath);
+
+                Task.Run(() => _driveService.Delete(oldPath));
+                Task.Run(() => _driveService.CreateFile(newPath, overwrite));
+
+                return Ok(new { okText = $"Файл \"{Path.GetFileName(oldPath)}\" успешно перемещен" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { errorText = $"Ошибка при перемещении файла: {ex.Message}" });
+            }
         }
 
         private static string? ByteLengthToSizeString(long? length)

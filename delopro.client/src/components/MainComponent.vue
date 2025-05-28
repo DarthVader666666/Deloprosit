@@ -50,7 +50,9 @@ function hideDocuments() {
 </script>
 
 <template>
-    <h2 v-if="title" class="title">{{ title }}</h2>
+    <div v-if="title" class="title">
+        <h2>{{ title }}</h2>
+    </div>    
     <div class="main-container">
         <LeftColumnView/>
         <RouterView id="central-container"/>
@@ -82,6 +84,7 @@ function hideDocuments() {
   width: var(--CENTRAL-COLUMN_WIDTH);
   background-color: var(--CENTRAL-BCKGND-CLR);
   padding: 10px;
+  overflow-wrap: break-word;
 }
 
 #right-container {

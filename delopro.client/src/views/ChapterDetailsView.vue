@@ -36,7 +36,7 @@ function nextTheme() {
 <template>
 <div class="chapter-details-container">
     <div v-if="chapter">
-        <div class="title">
+        <div class="chapter-title">
             <h3>
                 <Button text rounded severity="contrast" icon="pi pi-home" title="На главную" @click.prevent="() => router.push('/')"/>
                 {{chapter.chapterTitle}}
@@ -63,15 +63,16 @@ function nextTheme() {
     flex-direction: column;
 }
 
-.title {
+.chapter-title {
     display: flex;
     flex-direction: row;
     padding-right: 15px;
     align-items: center;
     justify-content: space-between;
+    height: 35px;
 }
 
-.title input {
+.chapter-title input {
     margin-top: 5px;
     height: 22px;
     font-size: 15px;
@@ -79,7 +80,7 @@ function nextTheme() {
     width: 66%;
 }
 
-.title span {
+.chapter-title span {
     font-size: small;
 }
 
@@ -117,7 +118,7 @@ function nextTheme() {
 }
 
 @media (max-width: 800px) {
-    .title span {
+    .chapter-title span {
         display: none;
     }
 }

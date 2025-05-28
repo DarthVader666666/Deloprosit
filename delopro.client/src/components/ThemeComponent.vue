@@ -86,6 +86,7 @@ const props = defineProps({
 .theme-content {
     padding: 18px 20px 20px 20px;
     background: white;
+    overflow-x: scroll;
 }
 
 .theme-content:deep(img) {

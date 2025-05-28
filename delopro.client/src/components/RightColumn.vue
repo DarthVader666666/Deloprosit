@@ -5,7 +5,7 @@ import TreeTable from 'primevue/treetable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
-import { computed, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import axios from 'axios';
@@ -22,6 +22,9 @@ const showUploadMenu = ref(false);
 const newFolderName = ref(null);
 const folderName = ref('');
 const newName = ref(null);
+const moveFolder = ref(null);
+const editedNode = ref(null);
+const editedNodeId = ref(null);
 
 onMounted(() => {
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['create-folder-menu', 'create-folder-button'])) showNewFolderMenu.value = false });
@@ -54,45 +57,92 @@ function createFolder() {
     })
 }
 
-function showRenameInput(node) {
-    newName.value = node.data.name;
-
-    const names = document.querySelectorAll('[id$=_name]');
-    const inputs = document.querySelectorAll('[id$=_input]');
-    const editButtons = document.querySelectorAll('[id$=_edit-button]');
-    const buttons = document.querySelectorAll('[id$=_buttons]');
+function hideButtons() {
+    const name = document.getElementById(`${editedNodeId.value}_name`);
+    const rename = document.getElementById(`${editedNodeId.value}_rename`);
+    const settings = document.getElementById(`${editedNodeId.value}_settings`);
+    const closeSettings = document.getElementById(`${editedNodeId.value}_close-settings`);
+    const pathSelector = document.getElementById(`${editedNodeId.value}_path-selector`);
     
-    names.forEach(name => name.style.display = 'block');
-    inputs.forEach(input => input.style.display = 'none');
-    editButtons.forEach(editButton => editButton.style.display = 'inline-flex');
-    buttons.forEach(button => button.style.display = 'none');
-
-    document.getElementById(`${node.data.path}_${node.data.type}_edit-button`).style.display = 'none';    
-    document.getElementById(`${node.data.path}_${node.data.type}_name`).style.display = 'none';
-    document.getElementById(`${node.data.path}_${node.data.type}_input`).style.display = 'block';
-    document.getElementById(`${node.data.path}_${node.data.type}_buttons`).style.display = 'flex';
-
-    if(node.data.type === 'file') {
-        document.getElementById(`${node.data.path}_${node.data.type}_copy-url-button`).style.display = 'none';
-    }
+    name.style.display = 'block';
+    rename.style.display = 'none';
+    settings.style.display = 'none';
+    closeSettings.style.display = 'none';
+    pathSelector.style.display = 'none';
 }
 
-function cancelEdit(node) {
-    newName.value = null;
-
-    document.getElementById(`${node.data.path}_${node.data.type}_input`).style.display = 'none';
-    document.getElementById(`${node.data.path}_${node.data.type}_name`).style.display = 'block';
-    document.getElementById(`${node.data.path}_${node.data.type}_edit-button`).style.display = 'inline-flex';
-    document.getElementById(`${node.data.path}_${node.data.type}_buttons`).style.display = 'none';
-
-    if(node.data.type === 'file') {
-        document.getElementById(`${node.data.path}_${node.data.type}_copy-url-button`).style.display = 'inline-flex';
+async function showSettings(node) {
+    if(editedNode.value) {
+        hideButtons();
     }
+
+    editedNode.value = node;
+    editedNodeId.value = `${node.data.path}_${node.data.type}`;
+
+    const settingButtons = document.getElementById(`${editedNodeId.value}_settings`);
+    const showSettings = document.getElementById(`${editedNodeId.value}_show-settings`);
+    const closeSettings = document.getElementById(`${editedNodeId.value}_close-settings`);
+    const name = document.getElementById(`${editedNodeId.value}_name`);
+
+    await nextTick();
+
+    settingButtons.style.display = 'inline-flex';
+    showSettings.style.display = 'none';
+    closeSettings.style.display = 'inline-flex';
+    name.style.display = 'none';
+}
+
+function showRenameInput() {
+    hideButtons();
+
+    newName.value = editedNode.value.data.name;
+
+    document.getElementById(`${editedNodeId.value}_name`).style.display = 'none';
+    document.getElementById(`${editedNodeId.value}_rename`).style.display = 'block';
+    document.getElementById(`${editedNodeId.value}_settings`).style.display = 'none';
+
+    const renameInput = document.getElementById(`${editedNodeId.value}_rename-input`);
+    renameInput.focus();
+}
+
+function showPathSelector() {
+    hideButtons();
+
+    const name = document.getElementById(`${editedNodeId.value}_name`);
+    const pathSelector = document.getElementById(`${editedNodeId.value}_path-selector`);
+
+    name.style.display = 'none';
+    pathSelector.style.display = 'inline-flex';
+}
+
+function mouseEnterDocumentHandler(node) {
+    const showSettings = document.getElementById(`${node.data.path}_${node.data.type}_show-settings`);
+
+    if(!showSettings || node.data.type === 'root') {
+        return;
+    }
+
+    showSettings.style.display = 'inline-flex';
+}
+
+function mouseLeaveDocumentHandler(node) {
+    const showSettings = document.getElementById(`${node.data.path}_${node.data.type}_show-settings`);
+
+    if(!showSettings) {
+        return;  
+    }
+
+    showSettings.style.display = 'none';
+}
+
+function cancelRename() {
+    newName.value = null;
+    hideButtons();
 }
 
 function updateName(node) {
     if(newName.value === node.data.name) {
-        cancelEdit(node);
+        cancelRename();
         return;
     }
 
@@ -110,6 +160,8 @@ function updateName(node) {
             showUploadMenu.value = false;
             toast.success(response.data.okText);
             await store.dispatch('downloadDocumentNodes');
+            editedNode.value = null;
+            editedNodeId.value = null;
         }
     })
     .catch(error => {
@@ -135,14 +187,15 @@ async function uploadFiles(event) {
 
     formData.append("folderName", folderName.value);
 
+    showUploadMenu.value = false;
+
     await axios.post(`${store.state.serverUrl}/documents/upload`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
     })
     .then( async response => {
-        if(response.status === 200) {
-            showUploadMenu.value = false;
+        if(response.status === 200) {            
             toast.success(response.data.okText);
             await store.dispatch('downloadDocumentNodes');
         }
@@ -154,15 +207,15 @@ async function uploadFiles(event) {
     })
 }
 
-async function deleteDocument(node) {
-    if(!window.confirm(`${(node.data.type === 'file' ? `Файл "${node.data.name}" будет удален` : `Папка "${node.data.name}" и всё её содержимое будет удалено`)}, вы уверены?`)) {
+async function deleteDocument() {
+    if(!window.confirm(`${(editedNode.value.data.type === 'file' ? `Файл "${editedNode.value.data.name}" будет удален` : `Папка "${editedNode.value.data.name}" и всё её содержимое будет удалено`)}, вы уверены?`)) {
         return;
     }
 
     await axios.post(`${store.state.serverUrl}/documents/delete`,
         {
-            path: node.data.path,
-            type: node.data.type
+            path: editedNode.value.data.path,
+            type: editedNode.value.data.type
         }
     )
     .then( async response => {
@@ -178,10 +231,60 @@ async function deleteDocument(node) {
     })
 }
 
-async function copyUrlToClipboard(node) {
-    const url = store.getters.serverUrl.replace('api', '') + node.data.path.replace('\\', '/');
+async function moveFile() {
+    hideButtons();
+
+    const oldPath = editedNode.value.data.path;
+    let pathArray = editedNode.value.data.path.split('\\');
+    
+    if(pathArray.length > 2 && moveFolder.value) {
+        pathArray.splice(pathArray.length - 2, 1, moveFolder.value);
+    }
+    else if(pathArray.length === 2 && moveFolder.value) {
+        pathArray.splice(pathArray.length - 1, 0, moveFolder.value);
+    }
+    else if (pathArray.length > 2 && !moveFolder.value) {
+        pathArray.splice(pathArray.length - 2, 1);
+    }
+    else {
+        return;
+    }
+
+    const newPath = pathArray.join('\\');
+
+    if(newPath === oldPath) {
+        return;
+    }
+
+    moveFolder.value = null;
+    editedNode.value = null;
+    editedNodeId.value = null;
+    
+    await axios.post(`${store.state.serverUrl}/documents/move`,
+        {
+            oldPath: oldPath,
+            newPath: newPath
+        }
+    )
+    .then( async response => {
+        if(response.status === 200) {
+            toast.success(response.data.okText);
+            await store.dispatch('downloadDocumentNodes');
+        }
+    })
+    .catch(error => {
+        if(error.response) {
+            toast.error(error.response.data.errorText)
+        }
+    })
+}
+
+async function copyUrlToClipboard() {
+    hideButtons();
+
+    const url = store.getters.serverUrl.replace('api', '') + editedNode.value.data.path.replace('\\', '/');
     navigator.clipboard.writeText(url);
-    toast.success(`Ссылка для "${node.data.name}" скопирована`);
+    toast.success(`Ссылка для "${editedNode.value.data.name}" скопирована`);
 }
 
 </script>
@@ -224,6 +327,7 @@ async function copyUrlToClipboard(node) {
                         <FileUpload
                             mode="basic" 
                             name="files"
+                            :multiple="true"
                             :maxFileSize="20000000"
                             chooseLabel="Файл"
                             chooseIcon="pi pi-upload"
@@ -243,34 +347,72 @@ async function copyUrlToClipboard(node) {
                 </div>
             </div>
             <hr/>
-            <TreeTable :value="documentNodes" class="tree-table">
-                <Column field="name" expander style="width: 90%">
-                    <template #body="{ node }">
-                        <i :class="node.icon" style="font-size: small;"></i>
-                        <span :title="node.data.size"
-                            :class="node.data.type"
-                            @click="node.data.type === 'file' ? download(node) : null"
-                            :style="node.data.type === 'folder' ? 'font-weight:bold;' : 'font-weight:normal;'" :id="`${node.data.path}_${node.data.type}_name`">
-                            {{ node.data.name }}
-                        </span>
-                        <input type="text" v-model="newName" @keydown.esc="cancelEdit(node)" @keydown.enter="updateName(node)" class="rename-input" style="display: none;" :id="`${node.data.path}_${node.data.type}_input`">
-                        <Button v-if="node.data.type != 'root' && (isAdmin || isOwner)" @click="showRenameInput(node)" :id="`${node.data.path}_${node.data.type}_edit-button`"
-                            class="document-button" text rounded severity="contrast" icon="pi pi-pencil" title="Переименовать"></Button>
-                        <Button v-if="node.data.type != 'root' && node.data.type != 'folder' && (isAdmin || isOwner)" @click="copyUrlToClipboard(node)" :id="`${node.data.path}_${node.data.type}_copy-url-button`"
-                            class="document-button" text rounded severity="contrast" icon="pi pi-link" title="Копировать ссылку"></Button>
 
-                        <div v-if="node.data.type != 'root' && (isAdmin || isOwner)" style="display: none;" :id="`${node.data.path}_${node.data.type}_buttons`">
-                            <Button @click="cancelEdit(node)"
-                                class="document-button" rounded severity="danger" text icon="pi pi-ban" title="Отмена"></Button>
-                            <Button @click="updateName(node)"
-                                class="document-button" rounded severity="primary" text icon="pi pi-check" title="Ок"></Button>
-                        </div>                        
-                    </template>
-                </Column>
-                <Column v-if="isAdmin || isOwner" style="width: 10%">
-                    <template #body="{node}">
-                        <Button v-if="node.data.type != 'root'" @click="deleteDocument(node)" 
-                            class="document-button" rounded severity="danger" text icon="pi pi-times" title="Удалить"/>
+            <TreeTable :value="documentNodes" scrollable scrollHeight="85vh" class="tree-table">
+                <Column field="name" expander>
+                    <template #body="{ node }">
+                        <div style="display: flex; flex-direction: row; align-items: center; gap: 5px;"
+                            @mouseleave="mouseLeaveDocumentHandler(node)">
+
+                            <!-- Document name -->
+                            <div @mouseenter="mouseEnterDocumentHandler(node)" 
+                                :id="`${node.data.path}_${node.data.type}_name`">
+                                
+                                <i :class="node.icon" style="font-size: small; padding-right: 3px;"></i>
+
+                                <span :title="node.data.size "
+                                    :class="node.data.type"
+                                    @click="node.data.type === 'file' ? download(node) : null"
+                                    :style="node.data.type === 'folder' ? 'font-weight:bold;' : 'font-weight:normal;'">
+                                    {{ node.data.name }}
+                                </span>
+                            </div>
+
+                            <div v-if="node.data.type != 'root' && (isAdmin || isOwner)">
+                                <!-- Settings -->
+                                <div class="setting-buttons" :id="`${node.data.path}_${node.data.type}_settings`">
+                                    <Button @click="showRenameInput"
+                                        text rounded severity="contrast" icon="pi pi-pencil" title="Переименовать"/>
+                                    <Button v-if="editedNode && editedNode.data.type != 'folder'" @click="copyUrlToClipboard"
+                                        text rounded severity="contrast" icon="pi pi-link" title="Копировать ссылку"/>
+                                    <Button v-if="editedNode && editedNode.data.type != 'folder'" @click="showPathSelector"
+                                        text rounded severity="contrast" icon="pi pi-file-export" title="Переместить"/>
+                                    <Button @click="deleteDocument" 
+                                        rounded severity="danger" text icon="pi pi-trash" title="Удалить"/>
+                                </div>
+
+                                <!-- Path selector -->
+                                <div style="display: none;" :id="`${node.data.path}_${node.data.type}_path-selector`">
+                                   <Select class="path-selector" :options="documentNodes.map(node => node.data.name)" v-model="moveFolder"
+                                        v-on:change="moveFile" placeholder="Путь..."></Select>
+                                   <Button  @click="showSettings(node)" text rounded severity="contrast" icon="pi pi-arrow-left" title="Назад"/>
+                                </div>
+
+                                <!-- Rename -->
+                                <div style="display: none;" :id="`${node.data.path}_${node.data.type}_rename`">
+                                    <input type="text" v-model="newName" class="rename-input"
+                                        :id="`${node.data.path}_${node.data.type}_rename-input`"
+                                        @keydown.esc="cancelRename(node)" @keydown.enter="updateName(node)">
+
+                                    <Button @click="cancelRename(node)"
+                                        rounded severity="danger" text icon="pi pi-ban" title="Отмена"/>
+                                    <Button @click="updateName(node)"
+                                        rounded severity="primary" text icon="pi pi-check" title="Ок"/>
+                                </div>
+
+                                <!-- Show settings -->
+                                <Button  @click="showSettings(node)"
+                                    text rounded severity="contrast" icon="pi pi-cog" title="Настройки"
+                                    style="display: none;"
+                                    :id="`${node.data.path}_${node.data.type}_show-settings`"/>
+
+                                <!-- Close settings -->
+                                <Button  @click="hideButtons"
+                                    text rounded severity="contrast" icon="pi pi-times" title="Закрыть"
+                                    style="display: none;"
+                                    :id="`${node.data.path}_${node.data.type}_close-settings`"/>
+                            </div>
+                        </div>
                     </template>
                 </Column>
             </TreeTable>
@@ -303,7 +445,7 @@ async function copyUrlToClipboard(node) {
     }
 
     .tree-table {
-        font-size: small;        
+        font-size: small;
     }
 
     .tree-table:deep(th) {
@@ -316,30 +458,22 @@ async function copyUrlToClipboard(node) {
     }
 
     .tree-table:deep(button) {
-        height: 25px;
-        width: 25px;
-    }
-
-    .tree-table:deep(.document-button) {
         height: 20px;
-        width: 17px;
+        width: 20px;
     }
 
-    .tree-table:deep(.delete-button span) {
-        font-size: x-small;
-    }
-
-    .tree-table:deep(.document-button span) {
-        font-size: x-small;
-    }
-
-    .tree-table:deep(.file:hover) {
-        cursor: pointer;
-        text-decoration: underline;
+    .tree-table:deep(button span) {
+        font-size: small;
+        background-color: transparent;
     }
 
     .tree-table:deep(*) {
         background: var(--COLUMNS-BCKGND-CLR);
+    }
+
+    .file:hover {
+        cursor: pointer;
+        text-decoration: underline;
     }
 
     .right-column-menu {
@@ -361,6 +495,14 @@ async function copyUrlToClipboard(node) {
         max-width: 100px;
     }
 
+    .setting-buttons {
+        display: none; 
+        border: solid; 
+        border-width: 1px; 
+        background-color: white; 
+        gap: 3px
+    }
+
     .buttons {
         display: flex;
         flex-direction: row;
@@ -373,6 +515,15 @@ async function copyUrlToClipboard(node) {
         height: 38px;
         padding-left: 8px;
         padding-right: 8px;
+    }
+
+    .path-selector {
+        height: 20px;
+    }
+
+    .path-selector:deep(span) {
+        padding: 2px 0 2px 4px;
+        border-radius: 20%;
     }
 
     @media (max-width: 1500px) {

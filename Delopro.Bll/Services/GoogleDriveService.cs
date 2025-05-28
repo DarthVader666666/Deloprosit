@@ -1,10 +1,11 @@
-﻿using Google.Apis.Drive.v3;
+﻿using Delopro.Bll.Interfaces;
+using Google.Apis.Drive.v3;
 
 using Microsoft.AspNetCore.StaticFiles;
 
 namespace Delopro.Bll.Services
 {
-    public class GoogleDriveService
+    public class GoogleDriveService: IDriveService
     {
         private readonly DriveService _driveService;
         const string folderMimeType = "application/vnd.google-apps.folder";

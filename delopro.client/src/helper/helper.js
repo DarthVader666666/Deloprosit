@@ -118,5 +118,29 @@ export const helper = {
         const result = new Date(date);
         result.setDate(result.getDate() + days);
         return result;
+    },
+    darkenContainers: [
+            document.getElementsByClassName('main-container'),
+            document.getElementsByClassName('search-bar'),
+            document.getElementsByClassName('title')
+        ],
+    lightenContainers: [
+        document.getElementsByClassName('message'),
+    ],
+    darkenBackground() {
+        this.darkenContainers.forEach(items => {
+            for(let item of items) {            
+                item.style.opacity = 0.8;
+                item.style.filter = 'brightness(50%)';
+            }
+        })
+    },
+    lightenBackground() {
+        this.darkenContainers.forEach(items => {
+            for(let item of items) {
+                item.style.removeProperty('opacity');
+                item.style.removeProperty('filter');
+            }
+        })
     }
 }
