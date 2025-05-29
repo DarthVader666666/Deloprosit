@@ -58,6 +58,13 @@ function createFolder() {
 }
 
 function hideButtons() {
+    if(!editedNode.value) {
+        return;
+    }
+    else if(!editedNodeId.value) {
+        editedNodeId.value = `${editedNode.value.data.path}_${editedNode.value.data.type}`;
+    }
+
     const name = document.getElementById(`${editedNodeId.value}_name`);
     const rename = document.getElementById(`${editedNodeId.value}_rename`);
     const settings = document.getElementById(`${editedNodeId.value}_settings`);
