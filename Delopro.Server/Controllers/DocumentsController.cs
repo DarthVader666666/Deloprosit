@@ -70,7 +70,7 @@ namespace Delopro.Server.Controllers
             parentNode.Data = new TreeNode
             {
                 Name = shortPath == documentsDirectoryName ? "" : rootDirectoryInfo.Name,
-                Path = path,
+                Path = shortPath,
                 Type = shortPath == documentsDirectoryName ? nameof(DocumentType.Root).ToLower() : nameof(DocumentType.Folder).ToLower(),
             };
 
@@ -89,7 +89,7 @@ namespace Delopro.Server.Controllers
                 Data = new TreeNode
                 {
                     Name = f.Name,
-                    Path = Path.Combine(path ?? string.Empty, f.Name),
+                    Path = Path.Combine(shortPath ?? string.Empty, f.Name),
                     Type = nameof(DocumentType.File).ToLower(),
                     Size = ByteLengthToSizeString(f.Length),
                 }
