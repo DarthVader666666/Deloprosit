@@ -55,13 +55,12 @@ const store = createStore({
         },
         getFolderPaths(state) {
             state.folderPaths = ['...'];
-            const depth = 6;
             state.documentNodes.forEach(node => getPaths(node.children));
 
             function getPaths(nodes) {
                 nodes.forEach(node => {
                     if(node.data.type === 'folder') {
-                        state.folderPaths.push(node.data.path.split('\\').slice(depth).join('\\'));
+                        state.folderPaths.push(node.data.path);
                         getPaths(node.children);
                     }                        
                 });
