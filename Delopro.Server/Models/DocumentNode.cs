@@ -5,6 +5,6 @@
         public string? Key { get; set; }
         public TreeNode? Data { get; set; }
         public string? Icon { get; set; }
-        public IEnumerable<DocumentNode>? Children { get; set; }
+        public List<DocumentNode>? Children { get; set; } = [];
     }
 }

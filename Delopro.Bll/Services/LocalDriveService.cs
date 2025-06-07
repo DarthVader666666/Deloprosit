@@ -4,12 +4,12 @@ namespace Delopro.Bll.Services
 {
     public class LocalDriveService : IDriveService
     {
-        public void CreateFile(string? filePath, bool overwrite = false)
+        public void CreateFile(string? filePath)
         {
             throw new NotImplementedException();
         }
 
-        public void CreateFolder(string? folderName)
+        public void CreateFolder(string folderPath)
         {
             throw new NotImplementedException();
         }

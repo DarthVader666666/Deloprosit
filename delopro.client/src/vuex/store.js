@@ -18,6 +18,7 @@ const store = createStore({
         themes: [],
         documents: [],
         documentNodes: [],
+        folderPaths: [],
         messages: [],
         message: null,
         unreadMessagesCount: 0,
@@ -51,6 +52,22 @@ const store = createStore({
         },
         getDocumentNodes(state) {
             return state.documentNodes;
+        },
+        getFolderPaths(state) {
+            state.folderPaths = ['...'];
+            const depth = 6;
+            state.documentNodes.forEach(node => getPaths(node.children));
+
+            function getPaths(nodes) {
+                nodes.forEach(node => {
+                    if(node.data.type === 'folder') {
+                        state.folderPaths.push(node.data.path.split('\\').slice(depth).join('\\'));
+                        getPaths(node.children);
+                    }                        
+                });
+            };
+
+            return state.folderPaths;
         },
         getMessages(state) {
             return state.messages;

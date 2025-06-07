@@ -35,7 +35,8 @@ namespace Delopro.Bll.Services
 
         public void Delete(string? path, bool isFolder = false)
         {
-            string? id = GetId(path, isFolder);
+            string? parentId;
+            string? id = GetId(path, out parentId, isFolder);
 
             var request = _driveService.Files.Delete(id);
             request.SupportsAllDrives = true;
@@ -50,13 +51,19 @@ namespace Delopro.Bll.Services
             }
         }
 
-        public void CreateFolder(string? folderName)
+        public void CreateFolder(string folderPath)
         {
+            var newFolderName = folderPath.Replace(ConfigurationHelper.DocsPath!, "")
+                .TrimStart(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar).Last();
+
+            string? parentId;
+            GetId(folderPath, out parentId, isFolder: true);
+
             var folderMetadata = new Google.Apis.Drive.v3.Data.File()
             {
-                Name = folderName,
+                Name = newFolderName,
                 MimeType = folderMimeType,
-                Parents = [ ConfigurationHelper.DocsFolderId ]
+                Parents = [ parentId ]
             };
 
             try
@@ -71,19 +78,12 @@ namespace Delopro.Bll.Services
             }
         }
 
-        public void CreateFile(string? filePath, bool overwrite = false)
+        public void CreateFile(string? filePath)
         {
-            if(overwrite)
-            {
-                Delete(filePath);
-            }
-
             var fileName = Path.GetFileName(filePath);
-            var parentFolderName = filePath?.Split(Path.DirectorySeparatorChar)[..^1].Last();
 
-            var folderId = parentFolderName == ConfigurationHelper.DocsFolderName 
-                ? ConfigurationHelper.DocsFolderId 
-                : GetId(parentFolderName, isFolder: true);
+            string folderId;
+            GetId(filePath, out folderId, isFolder: true);
 
             var fileMetadata = new Google.Apis.Drive.v3.Data.File()
             {
@@ -117,7 +117,8 @@ namespace Delopro.Bll.Services
                 throw new ArgumentNullException(nameof(newName), "Не указано");
             }
 
-            var id = GetId(path, isFolder);
+            string parentId;
+            var id = GetId(path, out parentId, isFolder);
 
             var file = _driveService.Files.Get(id).Execute() ?? throw new NullReferenceException($"Файл(папка) не найдена в облачном хранилище");
 
@@ -154,48 +155,28 @@ namespace Delopro.Bll.Services
             }
         }
 
-        private string? GetId(string? path, bool isFolder = false)
+        private string? GetId(string? path, out string? parentId, bool isFolder = false)
         {
-            string? id;
+            var pathArray = path?.Replace(ConfigurationHelper.DocsPath!, "").TrimStart(Path.DirectorySeparatorChar).Split(Path.DirectorySeparatorChar);
+            string? id = null;
+            parentId = ConfigurationHelper.DocsFolderId;
 
-            if (isFolder)
+            foreach (var name in pathArray ?? [])
             {
-                id = GetIdCore(path?.Split(Path.DirectorySeparatorChar).Last());
-            }
-            else
-            {
-                var parentFolderName = path?.Split(Path.DirectorySeparatorChar)[..^1].Last();
+                var files = GetFileList(parentId);
+                id = files.FirstOrDefault(x => x.MimeType == folderMimeType && x.Name == name)?.Id;
 
-                var folderId = parentFolderName == ConfigurationHelper.DocsFolderName
-                    ? ConfigurationHelper.DocsFolderId
-                    : GetId(parentFolderName, isFolder: true);
-
-                id = GetIdCore(Path.GetFileName(path), folderId);
+                if (id != null)
+                {
+                    parentId = id;
+                }
+                else if(!isFolder)
+                {
+                    id = files.FirstOrDefault(x => x.MimeType != folderMimeType && x.Name == name)?.Id ?? id;
+                }
             }
 
             return id;
-
-
-            string? GetIdCore(string? name, string? folderId = null)
-            {
-                try
-                {
-                    var files = GetFileList(folderId);
-
-                    if (isFolder)
-                    {
-                        return files.FirstOrDefault(x => x.MimeType == folderMimeType && x.Name == name)?.Id;
-                    }
-                    else
-                    {
-                        return files.FirstOrDefault(x => x.MimeType != folderMimeType && x.Name == name)?.Id;
-                    }
-                }
-                catch
-                {
-                    return null;
-                }
-            }
         }
 
         private IList<Google.Apis.Drive.v3.Data.File> GetFileList(string? folderId = null)
@@ -206,16 +187,6 @@ namespace Delopro.Bll.Services
             var result = request.Execute();
 
             return result.Files;
-        }
-
-        private async Task LoopFolderContentsAsync(string? folderId, Action driveAction)
-        {
-            var files = GetFileList(folderId);
-
-            foreach (var item in files)
-            {
-                await LoopFolderContentsAsync(item.Id, driveAction);
-            }
         }
 
         private static string GetMimeType(string? filePath)

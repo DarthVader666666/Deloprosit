@@ -3,7 +3,6 @@ import FileUpload from 'primevue/fileupload';
 import Button from 'primevue/button';
 import TreeTable from 'primevue/treetable';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import { computed, nextTick, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
@@ -16,45 +15,45 @@ const toast = useToast();
 const isAdmin = computed(() => store.getters.isAdmin);
 const isOwner = computed(() => store.getters.isOwner);
 const documentNodes = computed(() => store.getters.getDocumentNodes);
+const folderPaths = computed(() => store.getters.getFolderPaths);
 
 const showNewFolderMenu = ref(false);
 const showUploadMenu = ref(false);
 const newFolderName = ref(null);
-const folderName = ref('');
 const newName = ref(null);
 const moveFolder = ref(null);
 const editedNode = ref(null);
 const editedNodeId = ref(null);
 
 onMounted(() => {
-    window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['create-folder-menu', 'create-folder-button'])) showNewFolderMenu.value = false });
+    window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['create-folder-menu', 'create-folder-button', 'new-folder-path-select'], true)) showNewFolderMenu.value = false });
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['upload-file-menu', 'upload-file-button', 'folder-select'], true)) showUploadMenu.value = false });
 });
 
-function createFolder() {
-    if(!newFolderName.value) {
-        newFolderName.value = '';
+function createFolder(path) {
+    if(!(path && newFolderName.value)) {
         return;
     }
 
     axios.post(`${store.state.serverUrl}/documents/addfolder`, 
         {
-            folderName: newFolderName.value
+            folderPath: path + '\\' + newFolderName.value
         }
     )
     .then( async response => {
         if(response.status === 200) {
-            newFolderName.value = '';
-            showNewFolderMenu.value = false;
+            hideButtons();
+            resetTempValues();
             toast.success(response.data.okText);
             await store.dispatch('downloadDocumentNodes');
         }
     })
     .catch(error => {
         if(error.response) {
+            resetTempValues();
             toast.error(error.response.data.errorText)
         }
-    })
+    });
 }
 
 function hideButtons() {
@@ -67,12 +66,14 @@ function hideButtons() {
 
     const name = document.getElementById(`${editedNodeId.value}_name`);
     const rename = document.getElementById(`${editedNodeId.value}_rename`);
+    const newFolder = document.getElementById(`${editedNodeId.value}_new-folder`);
     const settings = document.getElementById(`${editedNodeId.value}_settings`);
     const closeSettings = document.getElementById(`${editedNodeId.value}_close-settings`);
     const pathSelector = document.getElementById(`${editedNodeId.value}_path-selector`);
-    
+
     name.style.display = 'block';
     rename.style.display = 'none';
+    newFolder.style.display = 'none';
     settings.style.display = 'none';
     closeSettings.style.display = 'none';
     pathSelector.style.display = 'none';
@@ -112,6 +113,17 @@ function showRenameInput() {
     renameInput.focus();
 }
 
+function showNewFolderInput() {
+    hideButtons();
+
+    document.getElementById(`${editedNodeId.value}_name`).style.display = 'none';
+    document.getElementById(`${editedNodeId.value}_new-folder`).style.display = 'block';
+    document.getElementById(`${editedNodeId.value}_settings`).style.display = 'none';
+
+    const newFolderInput = document.getElementById(`${editedNodeId.value}_new-folder-input`);
+    newFolderInput.focus();
+}
+
 function showPathSelector() {
     hideButtons();
 
@@ -125,7 +137,7 @@ function showPathSelector() {
 function mouseEnterDocumentHandler(node) {
     const showSettings = document.getElementById(`${node.data.path}_${node.data.type}_show-settings`);
 
-    if(!showSettings || node.data.type === 'root') {
+    if(!showSettings) {
         return;
     }
 
@@ -142,18 +154,16 @@ function mouseLeaveDocumentHandler(node) {
     showSettings.style.display = 'none';
 }
 
-function cancelRename() {
-    newName.value = null;
+function cancel() {
+    resetTempValues();
     hideButtons();
 }
 
 function updateName(node) {
     if(newName.value === node.data.name) {
-        cancelRename();
+        cancel();
         return;
     }
-
-    resetTempValues();
 
     axios.put(`${store.state.serverUrl}/documents/update`, 
         {
@@ -171,6 +181,7 @@ function updateName(node) {
             await store.dispatch('downloadDocumentNodes');
             editedNode.value = null;
             editedNodeId.value = null;
+            hideButtons();
         }
     })
     .catch(error => {
@@ -185,16 +196,17 @@ function download(node) {
         window.open(store.getters.serverUrl.replace('api', '') + node.data.path.replace('\\', '/'));
 }
 
-async function uploadFiles(event) {
+async function uploadFiles(event, path) {
     const files = event.files;
     let formData = new FormData();
     files.forEach(file => formData.append("files", file));
 
-    if(!folderName.value) {
-        folderName.value = '';
+    if(!path) {
+        hideButtons();
+        return;
     }
 
-    formData.append("folderName", folderName.value);
+    formData.append("folderName", path);
 
     showUploadMenu.value = false;
 
@@ -214,11 +226,11 @@ async function uploadFiles(event) {
             toast.error(error.response.data.errorText)
         }
     })
+
+    hideButtons();
 }
 
 async function deleteDocument() {
-    hideButtons();
-
     if(!window.confirm(`${(editedNode.value.data.type === 'file' ? `Файл "${editedNode.value.data.name}" будет удален` : `Папка "${editedNode.value.data.name}" и всё её содержимое будет удалено`)}, вы уверены?`)) {
         return;
     }
@@ -231,9 +243,10 @@ async function deleteDocument() {
     )
     .then( async response => {
         if(response.status === 200) {
-            toast.success(response.data.okText);
+            editedNode.value = null;
+            editedNodeId.value = null;
+            toast.success(response.data.okText);            
             await store.dispatch('downloadDocumentNodes');
-            resetTempValues();
         }
     })
     .catch(error => {
@@ -244,32 +257,10 @@ async function deleteDocument() {
 }
 
 async function moveFile() {
-    hideButtons();
+    const oldPath = editedNode.value.data.path.replace('...', '');
+    let fileName = '\\' + editedNode.value.data.path.split('\\').at(-1);
+    const newPath = moveFolder.value.replace('...', '') + fileName;
 
-    const oldPath = editedNode.value.data.path;
-    let pathArray = editedNode.value.data.path.split('\\');
-    
-    if(pathArray.length > 2 && moveFolder.value) {
-        pathArray.splice(pathArray.length - 2, 1, moveFolder.value);
-    }
-    else if(pathArray.length === 2 && moveFolder.value) {
-        pathArray.splice(pathArray.length - 1, 0, moveFolder.value);
-    }
-    else if (pathArray.length > 2 && !moveFolder.value) {
-        pathArray.splice(pathArray.length - 2, 1);
-    }
-    else {
-        return;
-    }
-
-    const newPath = pathArray.join('\\');
-
-    if(newPath === oldPath) {
-        return;
-    }
-
-    resetTempValues();
-    
     await axios.post(`${store.state.serverUrl}/documents/move`,
         {
             oldPath: oldPath,
@@ -278,21 +269,27 @@ async function moveFile() {
     )
     .then( async response => {
         if(response.status === 200) {
+            editedNode.value = null;
+            editedNodeId.value = null;
+            hideButtons();
+            resetTempValues();
             toast.success(response.data.okText);
             await store.dispatch('downloadDocumentNodes');
         }
     })
     .catch(error => {
         if(error.response) {
-            toast.error(error.response.data.errorText)
+            toast.error(error.response.data.errorText);
         }
     })
 }
 
 function resetTempValues() {
+    // editedNode.value = null;
+    // editedNodeId.value = null;
     moveFolder.value = null;
-    editedNode.value = null;
-    editedNodeId.value = null;
+    newFolderName.value = null;
+    newName.value = null;
 }
 
 async function copyUrlToClipboard() {
@@ -309,58 +306,6 @@ async function copyUrlToClipboard() {
         <div class="items">
             <div class="items-header">
                 <strong style="margin: 5px 0 6px 0;">Документы:</strong>
-                <Button v-if="isAdmin || isOwner"
-                    @click="showNewFolderMenu = !showNewFolderMenu"
-                    id="create-folder-button"
-                    severity="secondary"
-                    raised
-                    icon="pi pi-folder-plus"
-                    title="Создать папку"
-                    style="height: 30px; min-width: 40px;"
-                />
-                <Button v-if="isAdmin || isOwner"
-                    @click="showUploadMenu = !showUploadMenu"
-                    id="upload-file-button"
-                    severity="secondary"
-                    raised
-                    icon="pi pi-upload"
-                    title="Выбрать файл"
-                    style="height: 30px; min-width: 40px;"
-                />
-                <div v-if="showNewFolderMenu" class="right-column-menu" id="create-folder-menu">
-                    <span>Новая папка:</span>
-                    <InputText v-model="newFolderName" placeholder="Имя папки" @keydown.enter="createFolder">
-                    </InputText>
-                    <div class="buttons">
-                        <Button severity="secondary" @click="createFolder" raised label="Создать"/>
-                        <Button severity="contrast" @click="() => { newFolderName = null; showNewFolderMenu = false }" raised label="Отмена"/>
-                    </div>
-                </div>
-                <div v-if="showUploadMenu" class="right-column-menu" id="upload-file-menu">
-                    <span>Выберите путь:</span>
-                    <Select :options="documentNodes.map(node => node.data.name)" v-model="folderName" id="folder-select"></Select>
-                    <div class="buttons">
-                        <FileUpload
-                            mode="basic" 
-                            name="files"
-                            :multiple="true"
-                            :maxFileSize="20000000"
-                            chooseLabel="Файл"
-                            chooseIcon="pi pi-upload"
-                            :auto="true"
-                            :chooseButtonProps="
-                            {
-                                'severity': 'secondary',
-                                'text': false,
-                                'raised': true
-                            }"
-                            customUpload
-                            title="Выгрузить файл"
-                            @select="uploadFiles"
-                        />
-                        <Button severity="contrast" raised @click="() => { folderName = ''; showUploadMenu = false }" label="Отмена"/>
-                    </div>
-                </div>
             </div>
             <hr/>
 
@@ -384,35 +329,73 @@ async function copyUrlToClipboard() {
                                 </span>
                             </div>
 
-                            <div v-if="node.data.type != 'root' && (isAdmin || isOwner)">
+                            <div v-if="(isAdmin || isOwner)">
                                 <!-- Settings -->
-                                <div class="setting-buttons" :id="`${node.data.path}_${node.data.type}_settings`">
-                                    <Button @click="showRenameInput"
-                                        text rounded severity="contrast" icon="pi pi-pencil" title="Переименовать"/>
-                                    <Button v-if="editedNode && editedNode.data.type != 'folder'" @click="copyUrlToClipboard"
-                                        text rounded severity="contrast" icon="pi pi-link" title="Копировать ссылку"/>
-                                    <Button v-if="editedNode && editedNode.data.type != 'folder'" @click="showPathSelector"
-                                        text rounded severity="contrast" icon="pi pi-file-export" title="Переместить"/>
-                                    <Button @click="deleteDocument" 
-                                        rounded severity="danger" text icon="pi pi-trash" title="Удалить"/>
+                                <div class="setting-buttons" :id="`${node.data.path}_${node.data.type}_settings`">                                    
+                                    <div v-if="editedNode && editedNode.data.type != 'folder' && node.data.type != 'root'">
+                                        <Button @click="copyUrlToClipboard"
+                                            text rounded severity="contrast" icon="pi pi-link" title="Копировать ссылку"/>
+                                        <Button @click="showPathSelector"
+                                            text rounded severity="contrast" icon="pi pi-file-export" title="Переместить"/>
+                                    </div>
+                                    <FileUpload v-if="node.data.type == 'folder' || node.data.type == 'root'"
+                                            mode="basic" 
+                                            name="files"
+                                            :multiple="true"
+                                            :maxFileSize="20000000"
+                                            class="p-button-icon-only"
+                                            chooseIcon="pi pi-upload"
+                                            :auto="true"
+                                            :chooseButtonProps="
+                                            {
+                                                'severity': 'contrast',
+                                                'text': true,
+                                                'raised': false
+                                            }"
+                                            customUpload
+                                            title="Добавить файлы"
+                                            @select="uploadFiles($event, node.data.path)"
+                                        />
+                                    <Button v-if="node.data.type == 'folder' || node.data.type == 'root'"
+                                            @click="showNewFolderInput"
+                                            text rounded severity="contrast" icon="pi pi-folder-plus" title="Добавить папку"/>
+                                        
+                                    <div v-if="node.data.type != 'root'">
+                                        <Button @click="showRenameInput"
+                                            text rounded severity="contrast" icon="pi pi-pencil" title="Переименовать"/>
+                                        <Button v-if="node.data.type != 'root'" @click="deleteDocument"
+                                            rounded severity="danger" text icon="pi pi-trash" title="Удалить"/>
+                                    </div>                                    
                                 </div>
 
-                                <!-- Path selector -->
+                                <!-- Move File -->
                                 <div style="display: none;" :id="`${node.data.path}_${node.data.type}_path-selector`">
-                                   <Select class="path-selector" :options="documentNodes.map(node => node.data.name)" v-model="moveFolder"
+                                   <Select class="path-selector" :options="folderPaths" v-model="moveFolder"
                                         v-on:change="moveFile" placeholder="Путь..."></Select>
                                    <Button  @click="showSettings(node)" text rounded severity="contrast" icon="pi pi-arrow-left" title="Назад"/>
                                 </div>
 
                                 <!-- Rename -->
                                 <div style="display: none;" :id="`${node.data.path}_${node.data.type}_rename`">
-                                    <input type="text" v-model="newName" class="rename-input"
+                                    <input type="text" v-model="newName" class="settings-input"
                                         :id="`${node.data.path}_${node.data.type}_rename-input`"
-                                        @keydown.esc="cancelRename(node)" @keydown.enter="updateName(node)">
+                                        @keydown.esc="cancel(node)" @keydown.enter="updateName(node)">
 
-                                    <Button @click="cancelRename(node)"
+                                    <Button @click="cancel(node)"
                                         rounded severity="danger" text icon="pi pi-ban" title="Отмена"/>
                                     <Button @click="updateName(node)"
+                                        rounded severity="primary" text icon="pi pi-check" title="Ок"/>
+                                </div>
+
+                                <!-- New Folder -->
+                                <div style="display: none;" :id="`${node.data.path}_${node.data.type}_new-folder`">
+                                    <input type="text" v-model="newFolderName" class="settings-input"
+                                        :id="`${node.data.path}_${node.data.type}_new-folder-input`"
+                                        @keydown.esc="cancel(node)" @keydown.enter="createFolder(node.data.path)">
+
+                                    <Button @click="cancel(node)"
+                                        rounded severity="danger" text icon="pi pi-ban" title="Отмена"/>
+                                    <Button @click="createFolder(node.data.path)"
                                         rounded severity="primary" text icon="pi pi-check" title="Ок"/>
                                 </div>
 
@@ -461,7 +444,7 @@ async function copyUrlToClipboard() {
     }
 
     .tree-table {
-        font-size: small;
+        font-size: small;        
     }
 
     .tree-table:deep(th) {
@@ -497,7 +480,7 @@ async function copyUrlToClipboard() {
         flex-direction: column;
         padding: 20px;
         width: 300px;
-        height: 140px;
+        height: auto;
         background: var(--MENU-BCKGND-CLR);
         position: absolute;
         z-index: 1;
@@ -507,16 +490,21 @@ async function copyUrlToClipboard() {
         top: 60px;
     }
 
-    .rename-input {
+    .settings-input {
         max-width: 100px;
+        background-color: white;
     }
 
     .setting-buttons {
         display: none; 
         border: solid; 
         border-width: 1px; 
-        background-color: white; 
-        gap: 3px
+        background-color: white;
+        gap: 0px
+    }
+
+    .setting-buttons:deep(*) {
+        background-color: white;
     }
 
     .buttons {
