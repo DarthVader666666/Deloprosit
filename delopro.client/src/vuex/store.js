@@ -60,7 +60,7 @@ const store = createStore({
             function getPaths(nodes) {
                 nodes.forEach(node => {
                     if(node.data.type === 'folder') {
-                        state.folderPaths.push(node.data.path);
+                        state.folderPaths.push(node.data.path.split('\\').slice(1).join('\\'));
                         getPaths(node.children);
                     }                        
                 });
