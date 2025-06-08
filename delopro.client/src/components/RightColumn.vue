@@ -24,6 +24,7 @@ const newName = ref(null);
 const moveFolder = ref(null);
 const editedNode = ref(null);
 const editedNodeId = ref(null);
+const expandedNodes = { 'docs': true }
 
 onMounted(() => {
     window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['create-folder-menu', 'create-folder-button', 'new-folder-path-select'], true)) showNewFolderMenu.value = false });
@@ -309,7 +310,7 @@ async function copyUrlToClipboard() {
             </div>
             <hr/>
 
-            <TreeTable :value="documentNodes" scrollable scrollHeight="85vh" class="tree-table">
+            <TreeTable :value="documentNodes" v-model:expandedKeys="expandedNodes" scrollable scrollHeight="85vh" class="tree-table">
                 <Column field="name" expander>
                     <template #body="{ node }">
                         <div style="display: flex; flex-direction: row; align-items: center; gap: 5px;"
