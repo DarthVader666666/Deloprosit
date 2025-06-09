@@ -117,6 +117,7 @@ function setCaptchaMatch(isMatch) {
                 <span>Ваше имя:</span>
                 <InputText required v-model="messageForm.name"></InputText>
             </div>
+            <h4 style="margin: 10px 0 0 0;">Email или номер телефона</h4>
             <div class="send-message-input">
                 <span>Ваш Email:</span>        
                 <InputText type="email" :invalid="invalid" v-model="messageForm.email" id="email"></InputText>

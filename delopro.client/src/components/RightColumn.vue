@@ -372,7 +372,13 @@ async function copyUrlToClipboard() {
                                 <!-- Move File -->
                                 <div style="display: none;" :id="`${node.data.path}_${node.data.type}_path-selector`">
                                    <Select class="path-selector" :options="folderPaths" v-model="moveFolder"
-                                        v-on:change="moveFile" placeholder="Путь..."></Select>
+                                        v-on:change="moveFile" placeholder="Путь...">
+                                        <template #option="{ option }">
+                                            <span style="font-size: small;">
+                                                {{option}}
+                                            </span>
+                                        </template>
+                                    </Select>
                                    <Button  @click="showSettings(node)" text rounded severity="contrast" icon="pi pi-arrow-left" title="Назад"/>
                                 </div>
 

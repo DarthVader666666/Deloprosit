@@ -179,7 +179,7 @@ namespace Delopro.Server.Controllers
         {
             var reader = new StreamReader(HttpContext.Request.Body);
             var folderPath = JsonConvert.DeserializeObject<FolderPathModel>(await reader.ReadToEndAsync())?.FolderPath?.Replace('-', ' ');
-            var path = Path.Combine(docsPath!, folderPath!);
+            var path = Path.Combine(webRootPath!, folderPath!);
 
             try
             {
