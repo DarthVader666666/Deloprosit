@@ -245,7 +245,7 @@ namespace Delopro.Server.Controllers
                             _driveService.CreateFile(filePath);
                         }
                     }
-                });                
+                });
             }
             catch (GoogleApiException ex)
             {
