@@ -208,7 +208,7 @@ namespace Delopro.Server.Controllers
         [HttpPost]
         [Route("[action]")]
         [Authorize(Roles = "Owner, Admin")]
-        public IActionResult Upload([FromForm] UploadFileModel? uploadFileModel)
+        public async Task<IActionResult> Upload([FromForm] UploadFileModel? uploadFileModel)
         {
             if (uploadFileModel == null || uploadFileModel.Files == null || !uploadFileModel.Files.Any())
             {
@@ -224,7 +224,7 @@ namespace Delopro.Server.Controllers
                 {
                     fileNames.Add(file.FileName);
 
-                    var filePath = Path.Combine(docsPath ?? throw new NullReferenceException("Не задан путь к файлу"),
+                    var filePath = Path.Combine(webRootPath ?? throw new NullReferenceException("Не задан путь к файлу"),
                         uploadFileModel.FolderName ?? string.Empty, file.FileName);
 
                     if (!System.IO.File.Exists(filePath))

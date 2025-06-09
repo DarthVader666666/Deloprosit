@@ -108,35 +108,28 @@ if (builder.Environment.IsProduction() && !usePostgres)
 builder.Services.AddSingleton<CryptoService>();
 builder.Services.AddScoped<UserManager>();
 
-if (builder.Environment.IsProduction())
+builder.Services.AddSingleton<DriveService>(provider =>
 {
-    builder.Services.AddSingleton<DriveService>(provider =>
+    var cryptoService = provider.GetService<CryptoService>();
+    var secrets = builder.Configuration["GoogleDrive:Secrets"];
+    var decryptedContent = cryptoService?.Decrypt(secrets);
+    var credential = GoogleCredential.FromJson(decryptedContent);
+
+    if (credential.IsCreateScopedRequired)
     {
-        var cryptoService = provider.GetService<CryptoService>();
-        var secrets = builder.Configuration["GoogleDrive:Secrets"];
-        var decryptedContent = cryptoService?.Decrypt(secrets);
-        var credential = GoogleCredential.FromJson(decryptedContent);
+        credential = credential.CreateScoped(ScopeConstants.DriveFile);
+    }
 
-        if (credential.IsCreateScopedRequired)
-        {
-            credential = credential.CreateScoped(ScopeConstants.DriveFile);
-        }
-
-        var driveService = new DriveService(new BaseClientService.Initializer()
-        {
-            HttpClientInitializer = credential,
-            ApplicationName = builder.Configuration["GoogleDrive:ApplicationName"] ?? string.Empty
-        });
-
-        return driveService;
+    var driveService = new DriveService(new BaseClientService.Initializer()
+    {
+        HttpClientInitializer = credential,
+        ApplicationName = builder.Configuration["GoogleDrive:ApplicationName"] ?? string.Empty
     });
 
-    builder.Services.AddSingleton<IDriveService, GoogleDriveService>();
-}
-else
-{
-    builder.Services.AddSingleton<IDriveService, LocalDriveService>();
-}
+    return driveService;
+});
+
+builder.Services.AddSingleton<IDriveService, GoogleDriveService>();
 
 builder.Services.ConfigureAutomapper();
 

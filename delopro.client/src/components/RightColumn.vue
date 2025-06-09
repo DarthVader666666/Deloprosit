@@ -246,7 +246,7 @@ async function deleteDocument() {
         if(response.status === 200) {
             editedNode.value = null;
             editedNodeId.value = null;
-            toast.success(response.data.okText);            
+            toast.success(response.data.okText);
             await store.dispatch('downloadDocumentNodes');
         }
     })
@@ -370,7 +370,7 @@ async function copyUrlToClipboard() {
                                 </div>
 
                                 <!-- Move File -->
-                                <div style="display: none;" :id="`${node.data.path}_${node.data.type}_path-selector`">
+                                <div style="display: none;" :id="`${node.data.path}_${node.data.type}_path-selector`" @keydown.esc="showSettings(node)">
                                    <Select class="path-selector" :options="folderPaths" v-model="moveFolder"
                                         v-on:change="moveFile" placeholder="Путь...">
                                         <template #option="{ option }">
@@ -386,9 +386,9 @@ async function copyUrlToClipboard() {
                                 <div style="display: none;" :id="`${node.data.path}_${node.data.type}_rename`">
                                     <input type="text" v-model="newName" class="settings-input"
                                         :id="`${node.data.path}_${node.data.type}_rename-input`"
-                                        @keydown.esc="cancel(node)" @keydown.enter="updateName(node)">
+                                        @keydown.esc="showSettings(node)" @keydown.enter="updateName(node)">
 
-                                    <Button @click="cancel(node)"
+                                    <Button @click="showSettings(node)"
                                         rounded severity="danger" text icon="pi pi-ban" title="Отмена"/>
                                     <Button @click="updateName(node)"
                                         rounded severity="primary" text icon="pi pi-check" title="Ок"/>
@@ -398,9 +398,9 @@ async function copyUrlToClipboard() {
                                 <div style="display: none;" :id="`${node.data.path}_${node.data.type}_new-folder`">
                                     <input type="text" v-model="newFolderName" class="settings-input"
                                         :id="`${node.data.path}_${node.data.type}_new-folder-input`"
-                                        @keydown.esc="cancel(node)" @keydown.enter="createFolder(node.data.path)">
+                                        @keydown.esc="showSettings(node)" @keydown.enter="createFolder(node.data.path)">
 
-                                    <Button @click="cancel(node)"
+                                    <Button @click="showSettings(node)"
                                         rounded severity="danger" text icon="pi pi-ban" title="Отмена"/>
                                     <Button @click="createFolder(node.data.path)"
                                         rounded severity="primary" text icon="pi pi-check" title="Ок"/>
