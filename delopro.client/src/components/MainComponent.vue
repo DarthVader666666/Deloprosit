@@ -4,23 +4,31 @@ import RightColumnView from './RightColumn.vue'
 import Button from 'primevue/button';
 import { RouterView } from 'vue-router';
 import { useStore } from 'vuex';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 
 const store = useStore();
 const title = computed(() => store.state.title);
-const showRightColumn = ref(false);
+const showRightColumn = computed(() => store.getters.getShowRightColumn);
 
 onMounted(() => {
     window.addEventListener('resize', () => {
         if(window.innerWidth > 1100 || (window.innerWidth < 1100 && !showRightColumn.value)) {
             hideDocuments();
+            store.commit('setShowRightColumn', false);
         }
     });
 })
 
-function showDocuments() {
-    showRightColumn.value = true;
+watch(showRightColumn, (oldValue, newValue) => {
+    if(!newValue) {
+        showDocuments();
+    }
+    else {
+        hideDocuments();
+    }
+})
 
+function showDocuments() {
     const rightColumn = document.getElementById('right-container');
     rightColumn.style.position = 'fixed';
     rightColumn.style.zIndex = '1';
@@ -31,8 +39,6 @@ function showDocuments() {
 }
 
 function hideDocuments() {
-    showRightColumn.value = false;
-
     const rightColumn = document.getElementById('right-container');
     rightColumn.style.removeProperty('box-shadow');
     rightColumn.style.position = 'sticky';
@@ -58,8 +64,8 @@ function hideDocuments() {
         <RouterView id="central-container"/>
         <RightColumnView/>
         <div class="document-button">
-            <Button v-if="!showRightColumn" @click="showDocuments" severity="secondary" raised icon="pi pi-caret-left"></Button>
-            <Button v-else @click="hideDocuments" severity="contrast" raised icon="pi pi-caret-right"></Button>
+            <Button v-if="!showRightColumn" @click="store.commit('setShowRightColumn', true)" severity="secondary" raised icon="pi pi-caret-left"></Button>
+            <Button v-else @click="store.commit('setShowRightColumn', false)" severity="contrast" raised icon="pi pi-caret-right"></Button>
         </div>
     </div>
 </template>

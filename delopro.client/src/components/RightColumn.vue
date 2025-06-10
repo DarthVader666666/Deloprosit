@@ -4,7 +4,7 @@ import Button from 'primevue/button';
 import TreeTable from 'primevue/treetable';
 import Column from 'primevue/column';
 import Select from 'primevue/select';
-import { computed, nextTick, onMounted, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import axios from 'axios';
@@ -21,11 +21,8 @@ const newName = ref(null);
 const moveFolder = ref(null);
 const editedNode = ref(null);
 const editedNodeId = ref(null);
-const expandedNodes = { 'docs': true }
-
-onMounted(() => {
-    // this.$refs.treeTable.$el.querySelector('.p-treetable-wrapper').tabIndex = -1;
-});
+const expandedNodes = { 'docs': true };
+const interval = ref(null);
 
 function createFolder(path) {
     if(!(path && newFolderName.value)) {
@@ -307,6 +304,14 @@ function disableArrowKeysEvents(event) {
     }
 }
 
+function startCountdown(node) {
+    interval.value = setTimeout(() => showSettings(node), 1200);
+}
+
+function stopCountdown() {
+    clearTimeout(interval.value);
+}
+
 </script>
 <template>
     <div id="right-container">
@@ -323,7 +328,7 @@ function disableArrowKeysEvents(event) {
                             @mouseleave="mouseLeaveDocumentHandler(node)">
 
                             <!-- Document name -->
-                            <div @mouseenter="mouseEnterDocumentHandler(node)" 
+                            <div @mouseenter="mouseEnterDocumentHandler(node)" @touchstart="startCountdown(node)" @touchend="stopCountdown" @touchmove="stopCountdown"
                                 :id="`${node.data.path}_${node.data.type}_name`">
                                 
                                 <i :class="node.icon" style="font-size: small; padding-right: 3px;"></i>
@@ -464,6 +469,10 @@ function disableArrowKeysEvents(event) {
         display: none;
     }
 
+    .tree-table:deep(tr) {
+        height: 22px;
+    }
+
     .tree-table:deep(td) {
         padding: 0;
         border: none;
@@ -471,7 +480,7 @@ function disableArrowKeysEvents(event) {
 
     .tree-table:deep(button) {
         height: 20px;
-        width: 20px;
+        width: 25px;
     }
 
     .tree-table:deep(button span) {
@@ -488,21 +497,6 @@ function disableArrowKeysEvents(event) {
         text-decoration: underline;
     }
 
-    .right-column-menu {
-        display: flex;
-        flex-direction: column;
-        padding: 20px;
-        width: 300px;
-        height: auto;
-        background: var(--MENU-BCKGND-CLR);
-        position: absolute;
-        z-index: 1;
-        box-shadow: var(--MENU-BOX-SHADOW);
-        border-radius: 5px;
-        right: 0;
-        top: 60px;
-    }
-
     .settings-input {
         max-width: 100px;
         background-color: white;
@@ -510,6 +504,7 @@ function disableArrowKeysEvents(event) {
 
     .setting-buttons {
         display: none; 
+        align-items: center;
         border: solid; 
         border-width: 1px; 
         background-color: white;
@@ -518,20 +513,6 @@ function disableArrowKeysEvents(event) {
 
     .setting-buttons:deep(*) {
         background-color: white;
-    }
-
-    .buttons {
-        display: flex;
-        flex-direction: row;
-        justify-content: end;
-        gap: 15px;
-        padding-top: 15px;
-    }
-
-    .buttons button {
-        height: 38px;
-        padding-left: 8px;
-        padding-right: 8px;
     }
 
     .path-selector {
@@ -546,6 +527,36 @@ function disableArrowKeysEvents(event) {
     @media (max-width: 1500px) {
         .items-header a span {
             display: none;
+        }
+    }
+
+    @media (max-width: 1100px) {
+        .tree-table:deep(tr) {
+            height: 28px;
+        }
+
+        .tree-table {
+            font-size: medium;
+        }
+
+        .setting-buttons {
+            height: 28px;
+        }
+
+        .setting-buttons:deep(button span) {
+            font-size: 0.9rem;
+        }
+
+        .setting-buttons:deep(button) {
+            margin: 3px;
+        }
+
+        .settings-input {
+            height: 28px;
+        }
+
+        .settings-input {
+            font-size: medium;
         }
     }
 </style>

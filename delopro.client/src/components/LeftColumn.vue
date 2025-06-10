@@ -72,8 +72,8 @@ function handleThemeClick(node) {
     }
 
     .tree:deep(button) {
-        height: 26px;
-        width: 22px;
+        height: 20px;
+        width: 20px;
     }
 
     .tree:deep(div) {

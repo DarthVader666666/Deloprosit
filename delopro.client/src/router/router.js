@@ -85,6 +85,8 @@ const router = createRouter({
 });
 
 router.afterEach(async (to) => {
+    store.commit('setShowRightColumn', false);
+
     if(to.name === 'chapter-details') {
         await store.dispatch('downloadChapter', to.params['chapterId']);
         await store.dispatch('downloadTheme', to.params['themeId']);

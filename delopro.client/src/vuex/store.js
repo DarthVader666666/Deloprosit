@@ -27,6 +27,7 @@ const store = createStore({
         title: null,
         imageNames: [],
         showChapterList: true,
+        showRightColumn: false,
         pending: false,
         users: [],
         user: null
@@ -104,6 +105,9 @@ const store = createStore({
         getShowChapterList(state) {
             return state.showChapterList;
         },
+        getShowRightColumn(state) {
+            return state.showRightColumn;  
+        },
         getCaptcha(state) {
             return state.captcha;
         },
@@ -173,6 +177,9 @@ const store = createStore({
         },
         setShowChapterList(state, value) {
             state.showChapterList = value;
+        },
+        setShowRightColumn(state, value) {
+            state.showRightColumn = value;
         },
         setCaptcha(state, value) {
             state.captcha = value;
