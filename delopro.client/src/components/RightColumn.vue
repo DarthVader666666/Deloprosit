@@ -8,7 +8,6 @@ import { computed, nextTick, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useToast } from 'vue-toastification';
 import axios from 'axios';
-import { helper } from '@/helper/helper';
 
 const store = useStore();
 const toast = useToast();
@@ -17,8 +16,6 @@ const isOwner = computed(() => store.getters.isOwner);
 const documentNodes = computed(() => store.getters.getDocumentNodes);
 const folderPaths = computed(() => store.getters.getFolderPaths);
 
-const showNewFolderMenu = ref(false);
-const showUploadMenu = ref(false);
 const newFolderName = ref(null);
 const newName = ref(null);
 const moveFolder = ref(null);
@@ -27,8 +24,7 @@ const editedNodeId = ref(null);
 const expandedNodes = { 'docs': true }
 
 onMounted(() => {
-    window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['create-folder-menu', 'create-folder-button', 'new-folder-path-select'], true)) showNewFolderMenu.value = false });
-    window.addEventListener('click', (event) => { if(!helper.closeMenu(event, ['upload-file-menu', 'upload-file-button', 'folder-select'], true)) showUploadMenu.value = false });
+    // this.$refs.treeTable.$el.querySelector('.p-treetable-wrapper').tabIndex = -1;
 });
 
 function createFolder(path) {
@@ -177,7 +173,6 @@ function updateName(node) {
     .then( async response => {
         newName.value = null;
         if(response.status === 200) {
-            showUploadMenu.value = false;
             toast.success(response.data.okText);
             await store.dispatch('downloadDocumentNodes');
             editedNode.value = null;
@@ -208,8 +203,6 @@ async function uploadFiles(event, path) {
     }
 
     formData.append("folderName", path);
-
-    showUploadMenu.value = false;
 
     await axios.post(`${store.state.serverUrl}/documents/upload`, formData, {
         headers: {
@@ -301,6 +294,19 @@ async function copyUrlToClipboard() {
     toast.success(`Ссылка для "${editedNode.value.data.name}" скопирована`);
 }
 
+function enableArrowKeysEvents(event) {
+    if ([38, 40, 37, 39].includes(event.keyCode)) {
+        event.stopPropagation();
+        return true;
+    }
+}
+
+function disableArrowKeysEvents(event) {
+    if ([38, 40, 37, 39].includes(event.keyCode)) {
+        event.preventDefault();
+    }
+}
+
 </script>
 <template>
     <div id="right-container">
@@ -310,7 +316,7 @@ async function copyUrlToClipboard() {
             </div>
             <hr/>
 
-            <TreeTable :value="documentNodes" v-model:expandedKeys="expandedNodes" scrollable scrollHeight="85vh" class="tree-table">
+            <TreeTable :value="documentNodes" v-model:expandedKeys="expandedNodes" scrollable scrollHeight="85vh" class="tree-table" @keydown="disableArrowKeysEvents">
                 <Column field="name" expander>
                     <template #body="{ node }">
                         <div style="display: flex; flex-direction: row; align-items: center; gap: 5px;"
@@ -386,24 +392,24 @@ async function copyUrlToClipboard() {
                                 <div style="display: none;" :id="`${node.data.path}_${node.data.type}_rename`">
                                     <input type="text" v-model="newName" class="settings-input"
                                         :id="`${node.data.path}_${node.data.type}_rename-input`"
-                                        @keydown.esc="showSettings(node)" @keydown.enter="updateName(node)">
+                                        @keydown.stop="enableArrowKeysEvents" @keydown.esc="showSettings(node)" @keydown.enter="updateName(node)">
 
-                                    <Button @click="showSettings(node)"
-                                        rounded severity="danger" text icon="pi pi-ban" title="Отмена"/>
                                     <Button @click="updateName(node)"
                                         rounded severity="primary" text icon="pi pi-check" title="Ок"/>
+                                    <Button @click="showSettings(node)"
+                                        rounded severity="danger" text icon="pi pi-ban" title="Отмена"/>
                                 </div>
 
                                 <!-- New Folder -->
                                 <div style="display: none;" :id="`${node.data.path}_${node.data.type}_new-folder`">
                                     <input type="text" v-model="newFolderName" class="settings-input"
                                         :id="`${node.data.path}_${node.data.type}_new-folder-input`"
-                                        @keydown.esc="showSettings(node)" @keydown.enter="createFolder(node.data.path)">
+                                        @keydown.stop="enableArrowKeysEvents" @keydown.esc="showSettings(node)" @keydown.enter="createFolder(node.data.path)">
 
-                                    <Button @click="showSettings(node)"
-                                        rounded severity="danger" text icon="pi pi-ban" title="Отмена"/>
                                     <Button @click="createFolder(node.data.path)"
                                         rounded severity="primary" text icon="pi pi-check" title="Ок"/>
+                                    <Button @click="showSettings(node)"
+                                        rounded severity="danger" text icon="pi pi-ban" title="Отмена"/>
                                 </div>
 
                                 <!-- Show settings -->
